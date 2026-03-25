@@ -1,0 +1,1043 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Simulateur Studio — Configurateur libre</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif;background:#f5f5f2;color:#1a1a1a;font-size:14px;line-height:1.5}
+.header{background:#1a1a1a;color:#fff;padding:1.2rem 2rem;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.5rem}
+.logo{font-size:19px;font-weight:700;letter-spacing:.04em}
+.header-sub{font-size:12px;color:#aaa;margin-top:2px}
+.header-badge{font-size:11px;background:#333;padding:3px 10px;border-radius:5px;color:#ccc}
+.tabs-wrap{background:#fff;border-bottom:1px solid #e0e0db;padding:0 2rem;position:sticky;top:0;z-index:10}
+.tabs{display:flex;gap:0;overflow-x:auto}
+.tab{padding:.75rem 1.4rem;font-size:13px;border:none;background:none;cursor:pointer;color:#888;border-bottom:2px solid transparent;font-weight:500;transition:.15s;white-space:nowrap}
+.tab.active{color:#1a1a1a;border-bottom-color:#1a1a1a}
+.page{max-width:1160px;margin:0 auto;padding:1.5rem 1.5rem 4rem}
+.pane{display:none}.pane.active{display:block}
+.section-title{font-size:15px;font-weight:700;margin:1.6rem 0 .9rem;padding-bottom:.4rem;border-bottom:2px solid #1a1a1a;display:flex;align-items:center;justify-content:space-between}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+.grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.card{background:#fff;border:1px solid #e0e0db;border-radius:10px;padding:1.1rem 1.25rem}
+.lbl{font-size:11px;color:#888;margin-bottom:4px;text-transform:uppercase;letter-spacing:.04em}
+.val{font-size:22px;font-weight:700}
+.val-sm{font-size:17px;font-weight:700}
+.sub{font-size:11px;color:#aaa;margin-top:2px}
+.good{color:#0f6e56}.warn{color:#854f0b}.bad{color:#a32d2d}.neutral{color:#555}
+.badge{display:inline-block;font-size:11px;padding:2px 9px;border-radius:5px;font-weight:600}
+.b-go{background:#e1f5ee;color:#085041}
+.b-warn{background:#faeeda;color:#633806}
+.b-bad{background:#fcebeb;color:#791f1f}
+.b-blue{background:#e6f1fb;color:#0c447c}
+.b-dark{background:#e8e8e8;color:#333}
+.note{background:#f4f4f0;border-left:3px solid #bbb;padding:10px 14px;font-size:12px;color:#666;border-radius:0 6px 6px 0;line-height:1.7}
+.note.warn{border-left-color:#ba7517;background:#faeeda;color:#4d2e08}
+.note.good{border-left-color:#1d9e75;background:#e1f5ee;color:#064a38}
+
+/* SPACE CARDS */
+.space-list{display:flex;flex-direction:column;gap:10px;margin-bottom:1rem}
+.space-card{background:#fff;border:1.5px solid #e0e0db;border-radius:10px;padding:1rem 1.2rem}
+.space-card.type-studio{border-left:4px solid #1a1a1a}
+.space-card.type-ecole{border-left:4px solid #1d9e75}
+.space-card.type-atelier{border-left:4px solid #f0a47f}
+.space-card.type-loueur{border-left:4px solid #378add}
+.space-card.type-bureau{border-left:4px solid #9b7fdb}
+.space-header{display:flex;align-items:center;gap:10px;margin-bottom:.8rem;flex-wrap:wrap}
+.space-header input[type=text]{font-size:14px;font-weight:600;border:none;border-bottom:1.5px solid #e0e0db;padding:2px 4px;background:transparent;min-width:140px;flex:1}
+.space-header input[type=text]:focus{outline:none;border-bottom-color:#1a1a1a}
+.space-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px}
+.sp-field{display:flex;flex-direction:column;gap:3px}
+.sp-field label{font-size:11px;color:#888;text-transform:uppercase;letter-spacing:.03em}
+.sp-field input[type=number]{width:100%;padding:5px 8px;border:1.5px solid #e0e0db;border-radius:6px;font-size:13px;font-weight:600}
+.sp-field input[type=number]:focus{outline:none;border-color:#1a1a1a}
+.sp-field select{width:100%;padding:5px 8px;border:1.5px solid #e0e0db;border-radius:6px;font-size:13px;background:#fff}
+.sp-field select:focus{outline:none;border-color:#1a1a1a}
+.slider-row{display:flex;flex-direction:column;gap:3px}
+.slider-row label{font-size:11px;color:#888;text-transform:uppercase;letter-spacing:.03em}
+.slider-wrap{display:flex;align-items:center;gap:8px}
+.slider-wrap input[type=range]{flex:1;accent-color:#1a1a1a}
+.slider-wrap .sv{font-size:13px;font-weight:700;min-width:75px;text-align:right}
+.del-btn{margin-left:auto;background:none;border:1px solid #e0e0db;border-radius:6px;padding:4px 10px;cursor:pointer;font-size:12px;color:#a32d2d;flex-shrink:0}
+.del-btn:hover{background:#fcebeb}
+.add-btn{background:#1a1a1a;color:#fff;border:none;border-radius:8px;padding:8px 18px;cursor:pointer;font-size:13px;font-weight:600;transition:.15s}
+.add-btn:hover{background:#333}
+.add-btn.secondary{background:#fff;color:#1a1a1a;border:1.5px solid #1a1a1a}
+.add-btn.secondary:hover{background:#f4f4f0}
+
+/* PERSONNEL */
+.pers-list{display:flex;flex-direction:column;gap:8px;margin-bottom:1rem}
+.pers-row{background:#fff;border:1px solid #e0e0db;border-radius:8px;padding:.7rem 1rem;display:grid;grid-template-columns:1fr 80px 130px 100px auto;gap:10px;align-items:center}
+.pers-row input{padding:4px 8px;border:1.5px solid #e0e0db;border-radius:5px;font-size:13px;width:100%}
+.pers-row input:focus{outline:none;border-color:#1a1a1a}
+.pers-computed{font-size:12px;color:#888;text-align:right}
+
+/* CHARGES */
+.charge-block{background:#fff;border:1px solid #e0e0db;border-radius:10px;padding:1rem 1.25rem;margin-bottom:10px}
+.charge-block-title{font-size:13px;font-weight:700;margin-bottom:.8rem;color:#444}
+.cr{display:flex;align-items:center;gap:10px;margin-bottom:7px}
+.cr label{font-size:13px;color:#555;flex:1}
+.cr input[type=range]{width:140px;flex-shrink:0;accent-color:#1a1a1a}
+.cr .cv{font-size:13px;font-weight:700;min-width:100px;text-align:right}
+.cr input[type=number].cv-input{width:110px;padding:4px 8px;border:1.5px solid #e0e0db;border-radius:5px;font-size:13px;text-align:right}
+.cr input[type=number].cv-input:focus{outline:none;border-color:#1a1a1a}
+
+/* FINANCEMENT */
+.fin-block{background:#fff;border:1px solid #e0e0db;border-radius:10px;padding:1rem 1.25rem;margin-bottom:10px}
+.fin-block-title{font-size:13px;font-weight:700;margin-bottom:.8rem;color:#444}
+.fr{display:flex;align-items:center;gap:10px;margin-bottom:7px}
+.fr label{font-size:13px;color:#555;flex:1}
+.fr input[type=range]{width:160px;flex-shrink:0;accent-color:#1a1a1a}
+.fr .fv{font-size:13px;font-weight:700;min-width:110px;text-align:right}
+.pret-result{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:.6rem}
+.pret-cell{background:#f4f4f0;border-radius:6px;padding:6px 10px;font-size:12px}
+.pret-cell .pc-lbl{color:#888;margin-bottom:2px}
+.pret-cell .pc-val{font-weight:700;font-size:14px}
+
+/* RESULTS */
+.res-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin-bottom:1.2rem}
+.res-card{background:#fff;border:1px solid #e0e0db;border-radius:10px;padding:.9rem 1rem}
+.res-card.highlight{border-color:#1a1a1a;border-width:2px}
+.res-card .rc-lbl{font-size:10px;color:#888;text-transform:uppercase;letter-spacing:.04em;margin-bottom:3px}
+.res-card .rc-val{font-size:20px;font-weight:700}
+.res-card .rc-sub{font-size:11px;color:#aaa;margin-top:2px}
+.chart-wrap{background:#fff;border:1px solid #e0e0db;border-radius:10px;padding:1.2rem}
+.chart-title{font-size:13px;font-weight:700;margin-bottom:.8rem}
+.verdict{padding:12px 16px;border-radius:8px;font-size:13px;line-height:1.7;border-left:4px solid;margin-bottom:1rem}
+.verdict.go{background:#e1f5ee;border-color:#1d9e75;color:#064a38}
+.verdict.warn{background:#faeeda;border-color:#ba7517;color:#4d2e08}
+.verdict.bad{background:#fcebeb;border-color:#a32d2d;color:#501313}
+.proj-table{width:100%;border-collapse:collapse;font-size:13px;margin-top:.5rem}
+.proj-table th{background:#1a1a1a;color:#fff;padding:7px 12px;text-align:right;font-weight:500}
+.proj-table th:first-child{text-align:left}
+.proj-table td{padding:6px 12px;border-bottom:1px solid #ebebeb;text-align:right}
+.proj-table td:first-child{text-align:left;color:#555}
+.proj-table tr:nth-child(even) td{background:#f9f9f7}
+.proj-table .total td{font-weight:700;background:#f0f0ec!important}
+.legend{display:flex;gap:16px;flex-wrap:wrap;margin-bottom:.5rem}
+.legend span{display:flex;align-items:center;gap:5px;font-size:12px;color:#555}
+.legend-dot{width:12px;height:12px;border-radius:3px}
+
+/* BENCH TABLE */
+.table-wrap{overflow-x:auto}
+table.bench{width:100%;border-collapse:collapse;font-size:13px}
+table.bench th{background:#1a1a1a;color:#fff;padding:8px 12px;text-align:left;font-weight:500}
+table.bench th.r,table.bench td.r{text-align:right}
+table.bench tr:nth-child(even) td{background:#f9f9f7}
+table.bench td{padding:7px 12px;border-bottom:1px solid #ebebeb}
+
+.type-tag{display:inline-block;font-size:10px;font-weight:700;padding:2px 8px;border-radius:4px;text-transform:uppercase}
+.tt-studio{background:#e8e8e8;color:#1a1a1a}
+.tt-ecole{background:#e1f5ee;color:#085041}
+.tt-atelier{background:#faeeda;color:#633806}
+.tt-loueur{background:#e6f1fb;color:#0c447c}
+.tt-bureau{background:#eeedfe;color:#3c3489}
+
+.budget-bar-wrap{background:#fff;border:1px solid #e0e0db;border-radius:10px;padding:1rem 1.25rem;margin-bottom:1rem}
+.bar-track{height:16px;background:#f0f0ec;border-radius:8px;overflow:hidden;position:relative;margin:.4rem 0}
+.bar-fill{height:100%;border-radius:8px;transition:width .3s;position:absolute}
+.bar-labels{display:flex;justify-content:space-between;font-size:11px;color:#aaa}
+
+@media(max-width:700px){.res-grid{grid-template-columns:1fr 1fr}.pers-row{grid-template-columns:1fr 1fr}.space-grid{grid-template-columns:1fr 1fr}}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div>
+    <div class="logo">Simulateur Studio — Configurateur libre</div>
+    <div class="header-sub">Construisez votre studio sur mesure · Benchmarks européens · ProFilms 2026</div>
+  </div>
+  <div style="display:flex;gap:8px;flex-wrap:wrap">
+    <span class="header-badge">v1.0</span>
+    <span class="header-badge" id="hb_capex">CAPEX —</span>
+    <span class="header-badge" id="hb_ca5">CA an 5 —</span>
+  </div>
+</div>
+
+<div class="tabs-wrap">
+  <div class="tabs">
+    <button class="tab active" onclick="showTab('programme',this)">1 · Programme</button>
+    <button class="tab" onclick="showTab('charges',this)">2 · Charges & Personnel</button>
+    <button class="tab" onclick="showTab('financement',this)">3 · Financement</button>
+    <button class="tab" onclick="showTab('resultats',this)">4 · Résultats</button>
+    <button class="tab" onclick="showTab('benchmarks',this)">5 · Benchmarks</button>
+  </div>
+</div>
+
+<!-- ===== TAB 1 : PROGRAMME ===== -->
+<div id="pane-programme" class="pane active">
+<div class="page">
+
+  <div class="section-title">
+    <span>Studios de production</span>
+    <button class="add-btn" onclick="addSpace('studio')">+ Ajouter un studio</button>
+  </div>
+  <div class="space-list" id="list-studio"></div>
+
+  <div class="section-title">
+    <span>Espaces formation & école</span>
+    <button class="add-btn secondary" onclick="addSpace('ecole')">+ Ajouter</button>
+  </div>
+  <div class="space-list" id="list-ecole"></div>
+
+  <div class="section-title">
+    <span>Ateliers & workshops</span>
+    <button class="add-btn secondary" onclick="addSpace('atelier')">+ Ajouter</button>
+  </div>
+  <div class="space-list" id="list-atelier"></div>
+
+  <div class="section-title">
+    <span>Espaces loueurs / boutiques</span>
+    <button class="add-btn secondary" onclick="addSpace('loueur')">+ Ajouter</button>
+  </div>
+  <div class="space-list" id="list-loueur"></div>
+
+  <div class="section-title">
+    <span>Bureaux & services annexes</span>
+    <button class="add-btn secondary" onclick="addSpace('bureau')">+ Ajouter</button>
+  </div>
+  <div class="space-list" id="list-bureau"></div>
+
+  <div class="note" style="margin-top:1.5rem">
+    <strong>Paramètre de construction</strong> · Coût standard : <strong id="cout_std_display">6 500 CHF/m²</strong>
+    <span style="margin-left:16px">
+      <input type="range" id="global_cout_std" min="4000" max="12000" step="200" value="6500" oninput="updateCoutStd(this.value)" style="width:120px;accent-color:#1a1a1a;vertical-align:middle">
+    </span>
+    · Studios grand plateau ×2.0 · Studios standard ×1.5 · Studios petit ×1.3 · Infrastructure partagée +15%
+  </div>
+</div>
+</div>
+
+<!-- ===== TAB 2 : CHARGES ===== -->
+<div id="pane-charges" class="pane">
+<div class="page">
+
+  <div class="section-title">
+    <span>Personnel — équipe fixe</span>
+    <button class="add-btn secondary" onclick="addPersonnel()">+ Ajouter un poste</button>
+  </div>
+  <div style="background:#fff;border:1px solid #e0e0db;border-radius:10px;overflow:hidden;margin-bottom:.5rem">
+    <div style="display:grid;grid-template-columns:1fr 80px 130px 100px auto;gap:10px;padding:.6rem 1rem;background:#f4f4f0;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:#888">
+      <span>Poste / Rôle</span><span>EPT</span><span>Salaire brut/an</span><span>Coût total</span><span></span>
+    </div>
+    <div class="pers-list" id="pers-list"></div>
+  </div>
+  <div style="background:#fff;border:1px solid #e0e0db;border-radius:8px;padding:.8rem 1rem;font-size:13px;display:flex;justify-content:space-between;align-items:center;margin-bottom:1.5rem">
+    <span style="color:#555">Charges patronales appliquées : <strong>14%</strong> du salaire brut · Total masse salariale annuelle</span>
+    <span style="font-size:18px;font-weight:700" id="total_masse_sal">—</span>
+  </div>
+
+  <div class="section-title">Frais fixes opérationnels</div>
+
+  <div class="charge-block">
+    <div class="charge-block-title">Immobilier & infrastructure</div>
+    <div class="cr"><label>Maintenance & réparations (% CAPEX/an)</label>
+      <input type="range" id="c_maint" min="0.1" max="3" step="0.05" value="0.8" oninput="updateChargeSlider('c_maint','cv_maint',v=>v.toFixed(2)+'%')">
+      <span class="cv" id="cv_maint">0.80%</span></div>
+    <div class="cr"><label>Loyer / DDP site (CHF/an, 0 si propriété)</label>
+      <input type="number" class="cv-input" id="c_loyer" value="0" min="0" step="10000" oninput="recalc()">
+    </div>
+  </div>
+
+  <div class="charge-block">
+    <div class="charge-block-title">Utilités (proportionnelles à la surface construite)</div>
+    <div class="cr"><label>Électricité + chauffage (CHF/m²/an)</label>
+      <input type="range" id="c_elec" min="5" max="40" step="1" value="12" oninput="updateChargeSlider('c_elec','cv_elec',v=>v+' CHF/m²/an')">
+      <span class="cv" id="cv_elec">12 CHF/m²/an</span></div>
+    <div class="cr"><label>Eau & charges fluides (CHF/m²/an)</label>
+      <input type="range" id="c_eau" min="1" max="15" step="0.5" value="3" oninput="updateChargeSlider('c_eau','cv_eau',v=>v+' CHF/m²/an')">
+      <span class="cv" id="cv_eau">3 CHF/m²/an</span></div>
+  </div>
+
+  <div class="charge-block">
+    <div class="charge-block-title">Frais administratifs & commerciaux</div>
+    <div class="cr"><label>Assurances & licences (CHF/an)</label>
+      <input type="number" class="cv-input" id="c_assur" value="100000" min="0" step="5000" oninput="recalc()">
+    </div>
+    <div class="cr"><label>Marketing & communication (% du CA)</label>
+      <input type="range" id="c_mkt" min="1" max="20" step="0.5" value="8" oninput="updateChargeSlider('c_mkt','cv_mkt',v=>v+'%')">
+      <span class="cv" id="cv_mkt">8%</span></div>
+    <div class="cr"><label>Honoraires (juridique, audit, conseil) CHF/an</label>
+      <input type="number" class="cv-input" id="c_honor" value="50000" min="0" step="5000" oninput="recalc()">
+    </div>
+    <div class="cr"><label>Frais admin divers (CHF/an)</label>
+      <input type="number" class="cv-input" id="c_admin" value="60000" min="0" step="5000" oninput="recalc()">
+    </div>
+  </div>
+
+  <div class="charge-block">
+    <div class="charge-block-title">Montée en charge — occupation an 1 (% de l'objectif cible)</div>
+    <div class="cr"><label>Studios : occupation an 1 = X% de la cible an 5</label>
+      <input type="range" id="ramp_studio" min="10" max="80" step="5" value="30" oninput="updateChargeSlider('ramp_studio','cv_ramp_studio',v=>v+'%')">
+      <span class="cv" id="cv_ramp_studio">30%</span></div>
+    <div class="cr"><label>Annexes / bureau / loueurs : an 1</label>
+      <input type="range" id="ramp_annexe" min="20" max="90" step="5" value="50" oninput="updateChargeSlider('ramp_annexe','cv_ramp_annexe',v=>v+'%')">
+      <span class="cv" id="cv_ramp_annexe">50%</span></div>
+    <div class="cr"><label>Baux long terme (école, atelier) : an 1</label>
+      <input type="range" id="ramp_bail" min="30" max="100" step="5" value="70" oninput="updateChargeSlider('ramp_bail','cv_ramp_bail',v=>v+'%')">
+      <span class="cv" id="cv_ramp_bail">70%</span></div>
+    <div class="note" style="margin-top:.5rem;font-size:11px">La montée en charge progresse linéairement de l'an 1 jusqu'à l'occupation cible à l'an 5 pour les studios et annexes. Les baux à long terme sont plus stables et atteignent leur cible plus rapidement.</div>
+  </div>
+
+</div>
+</div>
+
+<!-- ===== TAB 3 : FINANCEMENT ===== -->
+<div id="pane-financement" class="pane">
+<div class="page">
+
+  <div class="section-title">Structure de financement</div>
+
+  <div class="fin-block">
+    <div class="fin-block-title">Capital sans retour (fondations, mécénat, subventions publiques)</div>
+    <div class="fr"><label>Fonds propres Fondation(s)</label>
+      <input type="range" id="f_fondation" min="0" max="300000000" step="1000000" value="50000000" oninput="updateFinSlider()">
+      <span class="fv" id="fv_fondation">50.0 M CHF</span></div>
+    <div class="fr"><label>Subventions publiques (Canton, Commune, Confédération)</label>
+      <input type="range" id="f_public" min="0" max="200000000" step="1000000" value="20000000" oninput="updateFinSlider()">
+      <span class="fv" id="fv_public">20.0 M CHF</span></div>
+    <div class="fr"><label>Mécénat & fondations privées</label>
+      <input type="range" id="f_mecenat" min="0" max="200000000" step="1000000" value="15000000" oninput="updateFinSlider()">
+      <span class="fv" id="fv_mecenat">15.0 M CHF</span></div>
+    <div class="fr"><label>Fonds propres promoteur</label>
+      <input type="range" id="f_propres" min="0" max="100000000" step="500000" value="0" oninput="updateFinSlider()">
+      <span class="fv" id="fv_propres">0 CHF</span></div>
+  </div>
+
+  <div class="fin-block">
+    <div class="fin-block-title">Dette bancaire (optionnel)</div>
+    <div class="fr"><label>Montant emprunt</label>
+      <input type="range" id="f_pret_mt" min="0" max="150000000" step="500000" value="0" oninput="updateFinSlider()">
+      <span class="fv" id="fv_pret_mt">0 CHF</span></div>
+    <div class="fr"><label>Taux annuel (%)</label>
+      <input type="range" id="f_pret_tx" min="1" max="8" step="0.25" value="3.5" oninput="updateFinSlider()">
+      <span class="fv" id="fv_pret_tx">3.50%</span></div>
+    <div class="fr"><label>Durée (années)</label>
+      <input type="range" id="f_pret_dur" min="5" max="40" step="1" value="25" oninput="updateFinSlider()">
+      <span class="fv" id="fv_pret_dur">25 ans</span></div>
+    <div class="pret-result" id="pret_result"></div>
+  </div>
+
+  <div id="fin_bilan" style="margin-top:.5rem"></div>
+
+  <div class="budget-bar-wrap" style="margin-top:1rem">
+    <div style="font-size:13px;font-weight:700;margin-bottom:.5rem;display:flex;justify-content:space-between">
+      <span>Couverture du CAPEX</span>
+      <span id="fin_pct_txt"></span>
+    </div>
+    <div class="bar-track">
+      <div class="bar-fill" id="fin_bar" style="width:0%;background:#1d9e75"></div>
+    </div>
+    <div class="bar-labels">
+      <span>0</span><span id="fin_bar_mid"></span><span id="fin_bar_max"></span>
+    </div>
+  </div>
+
+</div>
+</div>
+
+<!-- ===== TAB 4 : RÉSULTATS ===== -->
+<div id="pane-resultats" class="pane">
+<div class="page">
+
+  <div id="verdict_block" style="margin-bottom:1rem"></div>
+
+  <div class="res-grid" id="res_kpis"></div>
+
+  <div class="grid2" style="margin-bottom:1.2rem">
+    <div class="chart-wrap">
+      <div class="chart-title">Chiffre d'affaires — projection 5 ans (CHF)</div>
+      <div class="legend">
+        <span><div class="legend-dot" style="background:#1a1a1a"></div>CA</span>
+        <span><div class="legend-dot" style="background:#f0a47f"></div>Charges totales</span>
+        <span><div class="legend-dot" style="background:#378add;opacity:.5"></div>dont annuité prêt</span>
+      </div>
+      <div style="position:relative;height:230px"><canvas id="chartCA"></canvas></div>
+    </div>
+    <div class="chart-wrap">
+      <div class="chart-title">Répartition du CA an 5 par source</div>
+      <div style="position:relative;height:230px"><canvas id="chartDonut"></canvas></div>
+    </div>
+  </div>
+
+  <div class="card" style="margin-bottom:1.2rem">
+    <div class="chart-title">Projection détaillée 5 ans</div>
+    <div class="table-wrap">
+    <table class="proj-table">
+      <thead>
+        <tr>
+          <th style="text-align:left">Indicateur</th>
+          <th>An 1 (2031)</th><th>An 2 (2032)</th><th>An 3 (2033)</th><th>An 4 (2034)</th><th>An 5 (2035)</th>
+        </tr>
+      </thead>
+      <tbody id="proj_tbody"></tbody>
+    </table>
+    </div>
+  </div>
+
+  <div class="grid2">
+    <div class="card">
+      <div class="chart-title">Décomposition des charges an 5</div>
+      <div style="position:relative;height:220px"><canvas id="chartCharges"></canvas></div>
+    </div>
+    <div class="card">
+      <div style="margin-bottom:.8rem">
+        <div class="chart-title">Indicateurs clés</div>
+      </div>
+      <div id="kpi_detail" style="font-size:13px;line-height:2.2"></div>
+    </div>
+  </div>
+
+</div>
+</div>
+
+<!-- ===== TAB 5 : BENCHMARKS ===== -->
+<div id="pane-benchmarks" class="pane">
+<div class="page">
+  <div class="section-title">Benchmarks européens — tarifs & occupation de référence</div>
+
+  <div class="note warn" style="margin-bottom:1.2rem">
+    Les surfaces publiées par les studios étrangers correspondent à leur surface totale construite, sans distinction entre plateaux nets et espaces de services. La comparaison directe de surface est impossible — seuls les indicateurs tarifaires et financiers sont comparables.
+  </div>
+
+  <div class="table-wrap card" style="margin-bottom:1.2rem">
+    <table class="bench">
+      <thead>
+        <tr>
+          <th>Studio</th><th>Pays</th><th>Structure</th>
+          <th class="r">Tarif plateau</th><th class="r">Occupation</th>
+          <th class="r">CAPEX</th><th class="r">CA estimé an 5</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td><strong>MBS Studios Vienne</strong></td><td>Autriche</td><td>Privé</td><td class="r">2–4 €/m²/j</td><td class="r">60–70%</td><td class="r">~150–200 M€</td><td class="r">~40 M€</td></tr>
+        <tr><td><strong>CNA Luxembourg</strong> <span class="badge b-go" style="font-size:10px">modèle cible</span></td><td>Luxembourg</td><td>Fondation publique</td><td class="r">1.5–2.5 €/m²/j</td><td class="r">45–55%</td><td class="r">~80 M€</td><td class="r">~5 M€</td></tr>
+        <tr><td><strong>Cité du Cinéma Paris</strong></td><td>France</td><td>Privé</td><td class="r">2–5 €/m²/j</td><td class="r">50–60%</td><td class="r">~200 M€</td><td class="r">~30 M€</td></tr>
+        <tr><td><strong>Babelsberg (Potsdam)</strong></td><td>Allemagne</td><td>Privé côté</td><td class="r">1.5–3 €/m²/j</td><td class="r">55–65%</td><td class="r">~250 M€</td><td class="r">~45 M€</td></tr>
+        <tr><td><strong>Cinecittà (Rome)</strong></td><td>Italie</td><td>Public/PPP</td><td class="r">1.0–2.5 €/m²/j</td><td class="r">40–60%</td><td class="r">~100 M€</td><td class="r">~15 M€</td></tr>
+        <tr><td><strong>Studios Casablanca</strong></td><td>Maroc</td><td>Public</td><td class="r">0.5–1.0 €/m²/j</td><td class="r">30–50%</td><td class="r">~60 M€</td><td class="r">~5 M€</td></tr>
+        <tr style="background:#f9f9f7"><td><strong>BP ProFilms (Hive)</strong></td><td>Suisse</td><td>Fondation</td><td class="r bad">0.50 CHF/m²/j</td><td class="r bad">15% (an 5)</td><td class="r">186 M CHF</td><td class="r">4.0 M CHF</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="section-title">Sensibilité — impact du tarif sur le CA annuel (8 560 m² plateaux)</div>
+  <div class="table-wrap card" style="margin-bottom:1.2rem">
+    <table class="bench">
+      <thead><tr><th>Tarif CHF/m²/jour</th><th class="r">Occup. 15%</th><th class="r">Occup. 30%</th><th class="r">Occup. 45%</th><th class="r">Occup. 55%</th><th class="r">Occup. 70%</th></tr></thead>
+      <tbody id="sensib_tbody"></tbody>
+    </table>
+  </div>
+
+  <div class="section-title">Grille tarifaire de référence pour ce simulateur</div>
+  <div class="table-wrap card">
+    <table class="bench">
+      <thead><tr><th>Type d'espace</th><th>Mode facturation</th><th class="r">Bas de marché</th><th class="r">Standard</th><th class="r">Haut de marché</th><th>Remarque</th></tr></thead>
+      <tbody>
+        <tr><td>Studio grand plateau</td><td>Journalier</td><td class="r">1.00 CHF</td><td class="r">1.50–2.00 CHF</td><td class="r">3.00 CHF</td><td>Par m² · Minimum 1 journée</td></tr>
+        <tr><td>Studio standard</td><td>Journalier</td><td class="r">0.75 CHF</td><td class="r">1.20–1.50 CHF</td><td class="r">2.50 CHF</td><td>Par m² · Minimum 1/2 journée</td></tr>
+        <tr><td>Annexes / HMC / loges</td><td>Journalier</td><td class="r">0.30 CHF</td><td class="r">0.50–0.80 CHF</td><td class="r">1.50 CHF</td><td>Généralement packagé avec studio</td></tr>
+        <tr><td>École / formation</td><td>Mensuel</td><td class="r">150 CHF/m²</td><td class="r">250–350 CHF/m²</td><td class="r">500 CHF/m²</td><td>Bail long terme 3–10 ans</td></tr>
+        <tr><td>Ateliers / workshops</td><td>Mensuel</td><td class="r">80 CHF/m²</td><td class="r">150–200 CHF/m²</td><td class="r">300 CHF/m²</td><td>Bail moyen terme</td></tr>
+        <tr><td>Loueurs / boutiques</td><td>Mensuel</td><td class="r">100 CHF/m²</td><td class="r">180–250 CHF/m²</td><td class="r">400 CHF/m²</td><td>Bail commercial standard</td></tr>
+        <tr><td>Bureaux de production</td><td>Mensuel</td><td class="r">120 CHF/m²</td><td class="r">200–300 CHF/m²</td><td class="r">450 CHF/m²</td><td>Bureaux équipés</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+</div>
+
+<div style="background:#f0f0ec;border-top:1px solid #e0e0db;padding:.8rem 2rem;font-size:11px;color:#888;display:flex;justify-content:space-between;flex-wrap:wrap;gap:.5rem">
+  <span>Simulateur Studio — Configurateur libre · ProFilms 2026 · Données architecturales CCHE Lausanne</span>
+  <span id="foot_date"></span>
+</div>
+
+<script>
+// ============================================================
+// STATE
+// ============================================================
+document.getElementById('foot_date').textContent = new Date().toLocaleDateString('fr-CH',{day:'2-digit',month:'long',year:'numeric'});
+
+let spaceId = 0;
+let persId = 0;
+let coutStd = 6500;
+
+// spaces: { id, type, name, surface, studioType, tarifMode, tarif, occupation }
+let spaces = [];
+// personnel: { id, role, ept, salaire }
+let personnel = [];
+
+let charts = {};
+
+const STUDIO_TYPES = {grand:'Grand plateau (×2.0)',standard:'Standard (×1.5)',petit:'Petit (×1.3)'};
+const CAPEX_MULT = {grand:2.0,standard:1.5,petit:1.3};
+const SPACE_LABELS = {studio:'Studio',ecole:'École/Formation',atelier:'Atelier',loueur:'Loueur/Boutique',bureau:'Bureau/Admin'};
+
+// ============================================================
+// INIT
+// ============================================================
+function init(){
+  // 2 studios par défaut
+  addSpace('studio', {name:'Studio A — Grand plateau', surface:1200, studioType:'grand', tarifMode:'daily', tarif:1.5, occupation:40});
+  addSpace('studio', {name:'Studio B — Standard', surface:600, studioType:'standard', tarifMode:'daily', tarif:1.2, occupation:40});
+  // 1 école
+  addSpace('ecole', {name:'École de cinéma', surface:800, studioType:'standard', tarifMode:'monthly', tarif:250, occupation:80});
+
+  // Personnel par défaut (basé BP ProFilms)
+  addPersonnel({role:'Direction des studios', ept:1, salaire:150000});
+  addPersonnel({role:'Direction des opérations', ept:1, salaire:84000});
+  addPersonnel({role:'Responsable commercial/marketing', ept:0.5, salaire:50000});
+  addPersonnel({role:'Administration / comptabilité', ept:1, salaire:85000});
+  addPersonnel({role:'Secrétaire / accueil', ept:1, salaire:80000});
+  addPersonnel({role:'Technicien IT (50%)', ept:0.5, salaire:36000});
+  addPersonnel({role:'Facility manager (50%)', ept:0.5, salaire:36000});
+  addPersonnel({role:'Conseil de Fondation', ept:0, salaire:60000});
+
+  updateFinSlider();
+  buildSensibTable();
+}
+
+// ============================================================
+// SPACE MANAGEMENT
+// ============================================================
+function addSpace(type, defaults={}){
+  const id = ++spaceId;
+  const isDaily = (type === 'studio');
+  const tarifMode = defaults.tarifMode || (isDaily ? 'daily' : 'monthly');
+  const sp = {
+    id, type,
+    name: defaults.name || SPACE_LABELS[type]+' '+id,
+    surface: defaults.surface || (type==='studio' ? 500 : 300),
+    studioType: defaults.studioType || 'standard',
+    tarifMode,
+    tarif: defaults.tarif || (tarifMode==='daily' ? 1.5 : 200),
+    occupation: defaults.occupation || (type==='studio' ? 40 : 75)
+  };
+  spaces.push(sp);
+  renderSpace(sp);
+  recalc();
+}
+
+function renderSpace(sp){
+  const container = document.getElementById('list-'+sp.type);
+  const isStudio = sp.type==='studio';
+  const isDaily = sp.tarifMode==='daily';
+
+  const div = document.createElement('div');
+  div.className = `space-card type-${sp.type}`;
+  div.id = `sc-${sp.id}`;
+
+  const tarifMin = isDaily ? 0.5 : 50;
+  const tarifMax = isDaily ? 3.0 : 600;
+  const tarifStep = isDaily ? 0.05 : 10;
+  const tarifSuffix = isDaily ? ' CHF/m²/j' : ' CHF/m²/mois';
+
+  div.innerHTML = `
+    <div class="space-header">
+      <span class="type-tag tt-${sp.type}">${SPACE_LABELS[sp.type]}</span>
+      <input type="text" value="${sp.name}" onchange="updateSpaceField(${sp.id},'name',this.value)" placeholder="Nom de l'espace">
+      <button class="del-btn" onclick="removeSpace(${sp.id},'${sp.type}')">Supprimer</button>
+    </div>
+    <div class="space-grid">
+      <div class="sp-field">
+        <label>Surface (m²)</label>
+        <input type="number" value="${sp.surface}" min="10" step="10" onchange="updateSpaceField(${sp.id},'surface',+this.value)">
+      </div>
+      ${isStudio ? `<div class="sp-field">
+        <label>Type de studio</label>
+        <select onchange="updateSpaceField(${sp.id},'studioType',this.value)">
+          ${Object.entries(STUDIO_TYPES).map(([k,v])=>`<option value="${k}" ${sp.studioType===k?'selected':''}>${v}</option>`).join('')}
+        </select>
+      </div>` : `<div class="sp-field">
+        <label>Mode facturation</label>
+        <select onchange="updateSpaceTarifMode(${sp.id},this.value)">
+          <option value="daily" ${sp.tarifMode==='daily'?'selected':''}>Journalier (m²/j)</option>
+          <option value="monthly" ${sp.tarifMode==='monthly'?'selected':''}>Mensuel (m²/mois)</option>
+        </select>
+      </div>`}
+      <div class="slider-row" style="grid-column:span 2">
+        <label>Tarif${tarifSuffix.replace(' CHF','')}</label>
+        <div class="slider-wrap">
+          <input type="range" min="${tarifMin}" max="${tarifMax}" step="${tarifStep}" value="${sp.tarif}"
+            oninput="updateSpaceSlider(${sp.id},'tarif',+this.value,'tv_tarif_${sp.id}','${tarifSuffix}')">
+          <span class="sv" id="tv_tarif_${sp.id}">${sp.tarif.toFixed(2)}${tarifSuffix}</span>
+        </div>
+      </div>
+      <div class="slider-row" style="grid-column:span 2">
+        <label>Occupation cible an 5 (%)</label>
+        <div class="slider-wrap">
+          <input type="range" min="5" max="95" step="5" value="${sp.occupation}"
+            oninput="updateSpaceSlider(${sp.id},'occupation',+this.value,'tv_occ_${sp.id}','%')">
+          <span class="sv" id="tv_occ_${sp.id}">${sp.occupation}%</span>
+        </div>
+      </div>
+    </div>
+    <div style="margin-top:.6rem;font-size:11px;color:#aaa" id="sc_rev_${sp.id}"></div>
+  `;
+  container.appendChild(div);
+}
+
+function removeSpace(id, type){
+  spaces = spaces.filter(s=>s.id!==id);
+  const el = document.getElementById('sc-'+id);
+  if(el) el.remove();
+  recalc();
+}
+
+function updateSpaceField(id, field, value){
+  const sp = spaces.find(s=>s.id===id);
+  if(!sp) return;
+  sp[field] = value;
+  recalc();
+}
+
+function updateSpaceSlider(id, field, value, displayId, suffix){
+  const sp = spaces.find(s=>s.id===id);
+  if(!sp) return;
+  sp[field] = value;
+  const disp = suffix === '%' ? value+'%' : value.toFixed(2)+suffix;
+  document.getElementById(displayId).textContent = disp;
+  recalc();
+}
+
+function updateSpaceTarifMode(id, mode){
+  const sp = spaces.find(s=>s.id===id);
+  if(!sp) return;
+  sp.tarifMode = mode;
+  sp.tarif = mode==='daily' ? 1.5 : 200;
+  // re-render
+  const el = document.getElementById('sc-'+id);
+  if(el) el.remove();
+  renderSpaceById(id);
+  recalc();
+}
+
+function renderSpaceById(id){
+  const sp = spaces.find(s=>s.id===id);
+  if(!sp) return;
+  const container = document.getElementById('list-'+sp.type);
+  renderSpaceInContainer(sp, container);
+}
+
+function renderSpaceInContainer(sp, container){
+  const isStudio = sp.type==='studio';
+  const isDaily = sp.tarifMode==='daily';
+  const div = document.createElement('div');
+  div.className = `space-card type-${sp.type}`;
+  div.id = `sc-${sp.id}`;
+  const tarifMin = isDaily ? 0.5 : 50;
+  const tarifMax = isDaily ? 3.0 : 600;
+  const tarifStep = isDaily ? 0.05 : 10;
+  const tarifSuffix = isDaily ? ' CHF/m²/j' : ' CHF/m²/mois';
+  div.innerHTML = `
+    <div class="space-header">
+      <span class="type-tag tt-${sp.type}">${SPACE_LABELS[sp.type]}</span>
+      <input type="text" value="${sp.name}" onchange="updateSpaceField(${sp.id},'name',this.value)" placeholder="Nom de l'espace">
+      <button class="del-btn" onclick="removeSpace(${sp.id},'${sp.type}')">Supprimer</button>
+    </div>
+    <div class="space-grid">
+      <div class="sp-field"><label>Surface (m²)</label>
+        <input type="number" value="${sp.surface}" min="10" step="10" onchange="updateSpaceField(${sp.id},'surface',+this.value)">
+      </div>
+      ${isStudio ? `<div class="sp-field"><label>Type de studio</label>
+        <select onchange="updateSpaceField(${sp.id},'studioType',this.value)">
+          ${Object.entries(STUDIO_TYPES).map(([k,v])=>`<option value="${k}" ${sp.studioType===k?'selected':''}>${v}</option>`).join('')}
+        </select></div>` :
+        `<div class="sp-field"><label>Mode facturation</label>
+        <select onchange="updateSpaceTarifMode(${sp.id},this.value)">
+          <option value="daily" ${sp.tarifMode==='daily'?'selected':''}>Journalier (m²/j)</option>
+          <option value="monthly" ${sp.tarifMode==='monthly'?'selected':''}>Mensuel (m²/mois)</option>
+        </select></div>`}
+      <div class="slider-row" style="grid-column:span 2"><label>Tarif${tarifSuffix.replace(' CHF','')}</label>
+        <div class="slider-wrap">
+          <input type="range" min="${tarifMin}" max="${tarifMax}" step="${tarifStep}" value="${sp.tarif}"
+            oninput="updateSpaceSlider(${sp.id},'tarif',+this.value,'tv_tarif_${sp.id}','${tarifSuffix}')">
+          <span class="sv" id="tv_tarif_${sp.id}">${sp.tarif.toFixed(2)}${tarifSuffix}</span>
+        </div>
+      </div>
+      <div class="slider-row" style="grid-column:span 2"><label>Occupation cible an 5 (%)</label>
+        <div class="slider-wrap">
+          <input type="range" min="5" max="95" step="5" value="${sp.occupation}"
+            oninput="updateSpaceSlider(${sp.id},'occupation',+this.value,'tv_occ_${sp.id}','%')">
+          <span class="sv" id="tv_occ_${sp.id}">${sp.occupation}%</span>
+        </div>
+      </div>
+    </div>
+    <div style="margin-top:.6rem;font-size:11px;color:#aaa" id="sc_rev_${sp.id}"></div>
+  `;
+  container.appendChild(div);
+}
+
+// ============================================================
+// PERSONNEL
+// ============================================================
+function addPersonnel(defaults={}){
+  const id = ++persId;
+  const p = {
+    id,
+    role: defaults.role || 'Nouveau poste',
+    ept: defaults.ept !== undefined ? defaults.ept : 1,
+    salaire: defaults.salaire || 80000
+  };
+  personnel.push(p);
+  renderPers(p);
+  recalc();
+}
+
+function renderPers(p){
+  const list = document.getElementById('pers-list');
+  const div = document.createElement('div');
+  div.className = 'pers-row';
+  div.id = 'pr-'+p.id;
+  const cout = Math.round(p.ept * p.salaire * 1.14);
+  div.innerHTML = `
+    <input type="text" value="${p.role}" onchange="updatePers(${p.id},'role',this.value)" placeholder="Rôle / poste">
+    <input type="number" value="${p.ept}" min="0" max="10" step="0.1" onchange="updatePers(${p.id},'ept',+this.value)" style="text-align:center">
+    <input type="number" value="${p.salaire}" min="0" step="1000" onchange="updatePers(${p.id},'salaire',+this.value)" style="text-align:right">
+    <span class="pers-computed" id="pc-${p.id}">${fmt(cout)} CHF</span>
+    <button class="del-btn" onclick="removePers(${p.id})">×</button>
+  `;
+  list.appendChild(div);
+}
+
+function removePers(id){
+  personnel = personnel.filter(p=>p.id!==id);
+  document.getElementById('pr-'+id)?.remove();
+  recalc();
+}
+
+function updatePers(id, field, value){
+  const p = personnel.find(x=>x.id===id);
+  if(!p) return;
+  p[field] = value;
+  const cout = Math.round(p.ept * p.salaire * 1.14);
+  const el = document.getElementById('pc-'+id);
+  if(el) el.textContent = fmt(cout)+' CHF';
+  recalc();
+}
+
+// ============================================================
+// HELPERS
+// ============================================================
+function fmt(n){if(n===undefined||n===null||isNaN(n))return'—';return Math.round(n).toLocaleString('fr-CH')}
+function fmtM(n){if(n===undefined||isNaN(n))return'—';const a=Math.abs(n),s=n<0?'−':'';if(a>=1e6)return s+((Math.round(a/1e5))/10).toFixed(1)+' M';if(a>=1000)return s+(Math.round(a/100)/10).toFixed(0)+' k';return s+fmt(a)}
+function fmtCHF(n){return fmtM(n)+' CHF'}
+
+function updateChargeSlider(inputId, displayId, formatter){
+  const v = +document.getElementById(inputId).value;
+  document.getElementById(displayId).textContent = formatter(v);
+  recalc();
+}
+
+function updateCoutStd(v){
+  coutStd = +v;
+  document.getElementById('cout_std_display').textContent = fmt(coutStd)+' CHF/m²';
+  recalc();
+}
+
+function showTab(id, el){
+  document.querySelectorAll('.pane').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('pane-'+id).classList.add('active');
+  el.classList.add('active');
+}
+
+function mensualite(montant, tauxAnnuel, dureeAns){
+  if(montant<=0) return 0;
+  const tm = tauxAnnuel/100/12;
+  const n = dureeAns*12;
+  if(tm===0) return montant/n;
+  return montant * tm / (1 - Math.pow(1+tm, -n));
+}
+
+function updateFinSlider(){
+  const ids = ['fondation','public','mecenat','propres'];
+  ids.forEach(k=>{
+    const v = +document.getElementById('f_'+k).value;
+    document.getElementById('fv_'+k).textContent = v===0 ? '0 CHF' : fmtM(v)+' CHF';
+  });
+  const mt = +document.getElementById('f_pret_mt').value;
+  const tx = +document.getElementById('f_pret_tx').value;
+  const dur = +document.getElementById('f_pret_dur').value;
+  document.getElementById('fv_pret_mt').textContent = mt===0 ? '0 CHF' : fmtM(mt)+' CHF';
+  document.getElementById('fv_pret_tx').textContent = tx.toFixed(2)+'%';
+  document.getElementById('fv_pret_dur').textContent = dur+' ans';
+
+  // Prêt calc
+  const m = mensualite(mt, tx, dur);
+  const annuite = m*12;
+  const cout_total = m*dur*12 - mt;
+  const pr = document.getElementById('pret_result');
+  if(mt>0){
+    pr.innerHTML = `
+      <div class="pret-cell"><div class="pc-lbl">Mensualité</div><div class="pc-val">${fmt(m)} CHF</div></div>
+      <div class="pret-cell"><div class="pc-lbl">Annuité</div><div class="pc-val">${fmtM(annuite)} CHF</div></div>
+      <div class="pret-cell"><div class="pc-lbl">Coût total intérêts</div><div class="pc-val">${fmtM(cout_total)} CHF</div></div>
+    `;
+  } else {
+    pr.innerHTML = `<div class="pret-cell" style="grid-column:span 3;text-align:center;color:#aaa">Aucun prêt configuré</div>`;
+  }
+  recalc();
+}
+
+// ============================================================
+// CAPEX
+// ============================================================
+function computeCapex(){
+  let sub = 0;
+  spaces.forEach(sp=>{
+    const mult = sp.type==='studio' ? (CAPEX_MULT[sp.studioType]||1.5) : 1.0;
+    sub += sp.surface * coutStd * mult;
+  });
+  const infra = sub * 0.15;
+  return Math.round(sub + infra);
+}
+
+function totalSurface(){
+  return spaces.reduce((a,s)=>a+s.surface,0);
+}
+
+// ============================================================
+// REVENUE for one space, one year
+// ============================================================
+function spaceRevenue(sp, yearFactor){
+  // yearFactor: 0→1 multiplier on occupation
+  const occ = sp.occupation/100 * yearFactor;
+  if(sp.tarifMode==='daily'){
+    return sp.surface * sp.tarif * 360 * occ;
+  } else {
+    // monthly
+    return sp.surface * sp.tarif * 12 * occ;
+  }
+}
+
+function getRampFactor(year, spaceType){
+  // year: 1-5
+  // rampStart: % of target at year 1
+  // reaches 100% at year 5
+  const rampStudios = +document.getElementById('ramp_studio').value/100;
+  const rampAnnexe = +document.getElementById('ramp_annexe').value/100;
+  const rampBail = +document.getElementById('ramp_bail').value/100;
+
+  let startRamp;
+  if(spaceType==='studio') startRamp = rampStudios;
+  else if(spaceType==='ecole'||spaceType==='atelier') startRamp = rampBail;
+  else startRamp = rampAnnexe;
+
+  // linear from startRamp (year 1) to 1.0 (year 5)
+  return startRamp + (1 - startRamp) * (year-1)/4;
+}
+
+// ============================================================
+// MAIN CALC
+// ============================================================
+function recalc(){
+  const capex = computeCapex();
+  const surf = totalSurface();
+
+  // Personnel
+  const masse_sal = personnel.reduce((a,p)=>a + p.ept*p.salaire*1.14, 0);
+  document.getElementById('total_masse_sal').textContent = fmt(masse_sal)+' CHF/an';
+
+  // Charges fixes
+  const c_maint_pct = +document.getElementById('c_maint').value/100;
+  const c_loyer = +document.getElementById('c_loyer').value;
+  const c_elec = +document.getElementById('c_elec').value;
+  const c_eau = +document.getElementById('c_eau').value;
+  const c_assur = +document.getElementById('c_assur').value;
+  const c_mkt_pct = +document.getElementById('c_mkt').value/100;
+  const c_honor = +document.getElementById('c_honor').value;
+  const c_admin = +document.getElementById('c_admin').value;
+
+  const maintenance = capex * c_maint_pct;
+  const utilities = surf * (c_elec + c_eau);
+  const charges_fixes_hors_masse = maintenance + c_loyer + utilities + c_assur + c_honor + c_admin;
+
+  // Prêt
+  const f_pret_mt = +document.getElementById('f_pret_mt').value;
+  const f_pret_tx = +document.getElementById('f_pret_tx').value;
+  const f_pret_dur = +document.getElementById('f_pret_dur').value;
+  const annuite_pret = mensualite(f_pret_mt, f_pret_tx, f_pret_dur)*12;
+
+  // Projection 5 ans
+  const years = [1,2,3,4,5];
+  const caByYear = years.map(yr=>{
+    let ca = 0;
+    spaces.forEach(sp=>{
+      const rf = getRampFactor(yr, sp.type);
+      ca += spaceRevenue(sp, rf);
+    });
+    return ca;
+  });
+
+  const chargesHorsMarketingByYear = years.map(yr=>{
+    return Math.round(masse_sal + charges_fixes_hors_masse + annuite_pret);
+  });
+
+  const totalChargesByYear = years.map((yr,i)=>{
+    const mkt = caByYear[i] * c_mkt_pct;
+    return chargesHorsMarketingByYear[i] + mkt;
+  });
+
+  const resultsByYear = years.map((yr,i)=>caByYear[i]-totalChargesByYear[i]);
+
+  const ca5 = caByYear[4];
+  const charges5 = totalChargesByYear[4];
+  const result5 = resultsByYear[4];
+
+  // Financement
+  const f_fondation = +document.getElementById('f_fondation').value;
+  const f_public = +document.getElementById('f_public').value;
+  const f_mecenat = +document.getElementById('f_mecenat').value;
+  const f_propres = +document.getElementById('f_propres').value;
+  const totalFin = f_fondation+f_public+f_mecenat+f_propres+f_pret_mt;
+  const gap = capex - totalFin;
+
+  // Update header badges
+  document.getElementById('hb_capex').textContent = 'CAPEX '+fmtCHF(capex);
+  document.getElementById('hb_ca5').textContent = 'CA an 5 '+fmtCHF(ca5);
+
+  // Update space mini-previews
+  spaces.forEach(sp=>{
+    const el = document.getElementById('sc_rev_'+sp.id);
+    if(!el) return;
+    const rev5 = spaceRevenue(sp, 1.0);
+    const rev1 = spaceRevenue(sp, getRampFactor(1, sp.type));
+    const capexSp = sp.type==='studio' ? Math.round(sp.surface * coutStd * (CAPEX_MULT[sp.studioType]||1.5)) : Math.round(sp.surface * coutStd);
+    el.textContent = `CAPEX estimé : ~${fmtM(capexSp)} CHF · CA an 1 : ~${fmtM(rev1)} CHF · CA an 5 : ~${fmtM(rev5)} CHF`;
+  });
+
+  // Financement bar
+  const barMax = Math.max(capex, totalFin, 10000000);
+  const barPct = Math.min(totalFin/barMax*100,100);
+  document.getElementById('fin_bar').style.width = barPct+'%';
+  document.getElementById('fin_bar').style.background = gap<=0 ? '#1d9e75' : '#a32d2d';
+  document.getElementById('fin_bar_mid').textContent = fmtM(barMax/2)+' CHF';
+  document.getElementById('fin_bar_max').textContent = fmtM(barMax)+' CHF';
+  document.getElementById('fin_pct_txt').innerHTML = gap<=0
+    ? `<span class="badge b-go">Couvert — solde : ${fmtM(-gap)} CHF</span>`
+    : `<span class="badge b-bad">Déficit : ${fmtM(gap)} CHF</span>`;
+
+  const finBilan = document.getElementById('fin_bilan');
+  finBilan.innerHTML = `
+    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;font-size:13px">
+      <div class="card"><div class="lbl">CAPEX total</div><div class="val-sm">${fmtCHF(capex)}</div></div>
+      <div class="card"><div class="lbl">Financement total</div><div class="val-sm ${gap<=0?'good':'bad'}">${fmtCHF(totalFin)}</div></div>
+      <div class="card"><div class="lbl">${gap<=0?'Excédent':'Déficit de financement'}</div><div class="val-sm ${gap<=0?'good':'bad'}">${fmtCHF(Math.abs(gap))}</div></div>
+    </div>
+  `;
+
+  // RESULTS TAB
+  // KPIs
+  const kpiGrid = document.getElementById('res_kpis');
+  const seuil5 = charges5 / (1 - c_mkt_pct); // approx
+  kpiGrid.innerHTML = `
+    <div class="res-card"><div class="rc-lbl">CAPEX estimé</div><div class="rc-val">${fmtCHF(capex)}</div><div class="rc-sub">Construction + infra</div></div>
+    <div class="res-card"><div class="rc-lbl">CA an 1</div><div class="rc-val ${caByYear[0]>0?'neutral':'bad'}">${fmtCHF(caByYear[0])}</div><div class="rc-sub">Première année</div></div>
+    <div class="res-card highlight"><div class="rc-lbl">CA an 5</div><div class="rc-val good">${fmtCHF(ca5)}</div><div class="rc-sub">Régime de croisière</div></div>
+    <div class="res-card"><div class="rc-lbl">Résultat an 5</div><div class="rc-val ${result5>=0?'good':'bad'}">${result5>=0?'+':''}${fmtCHF(result5)}</div><div class="rc-sub">Avant impôts</div></div>
+    <div class="res-card"><div class="rc-lbl">Annuité prêt</div><div class="rc-val ${annuite_pret>0?'warn':'neutral'}">${annuite_pret>0?fmtCHF(annuite_pret):'—'}</div><div class="rc-sub">${f_pret_mt>0?f_pret_dur+' ans @ '+f_pret_tx+'%':'Pas de dette'}</div></div>
+  `;
+
+  // Verdict
+  let verdict='', vcls='';
+  if(gap>0){
+    verdict=`Le financement est incomplet — il manque <strong>${fmtCHF(gap)}</strong> pour couvrir le CAPEX. Ajustez les sources dans l'onglet Financement.`;vcls='bad';
+  } else if(result5>100000){
+    verdict=`Configuration financièrement viable. CA an 5 : <strong>${fmtCHF(ca5)}</strong> pour des charges de <strong>${fmtCHF(charges5)}</strong>. Résultat positif de <strong>${fmtCHF(result5)}</strong>.`;vcls='go';
+  } else if(result5>-500000){
+    verdict=`Configuration sous tension mais défendable. Résultat an 5 : <strong>${result5>=0?'+':''}${fmtCHF(result5)}</strong>. Des ajustements sur les tarifs ou l'occupation peuvent faire basculer l'équilibre.`;vcls='warn';
+  } else {
+    verdict=`Configuration déficitaire à ce niveau de charges. Résultat an 5 : <strong>${fmtCHF(result5)}</strong>. Augmentez les tarifs, l'occupation, ou réduisez les charges (masse salariale / maintenance).`;vcls='bad';
+  }
+  document.getElementById('verdict_block').innerHTML = `<div class="verdict ${vcls}">${verdict}</div>`;
+
+  // Projection table
+  const tbody = document.getElementById('proj_tbody');
+  const rows = [
+    {label:'Chiffre d\'affaires', vals:caByYear, cls:v=>v>0?'good':'bad'},
+    {label:'dont marketing ('+Math.round(c_mkt_pct*100)+'%)', vals:caByYear.map(v=>v*c_mkt_pct), cls:()=>'neutral'},
+    {label:'Masse salariale', vals:years.map(()=>masse_sal), cls:()=>'neutral'},
+    {label:'Maintenance & infrastructure', vals:years.map(()=>Math.round(maintenance+utilities)), cls:()=>'neutral'},
+    {label:'Frais fixes (assur, admin, honor, loyer)', vals:years.map(()=>Math.round(c_assur+c_honor+c_admin+c_loyer)), cls:()=>'neutral'},
+    {label:'Annuité prêt', vals:years.map(()=>Math.round(annuite_pret)), cls:()=>annuite_pret>0?'warn':'neutral'},
+    {label:'Total charges', vals:totalChargesByYear, cls:()=>'neutral'},
+    {label:'Résultat', vals:resultsByYear, cls:v=>v>=0?'good':'bad', bold:true},
+  ];
+  tbody.innerHTML = rows.map(r=>`<tr class="${r.bold?'total':''}">
+    <td>${r.label}</td>
+    ${r.vals.map((v,i)=>`<td class="${r.cls(v)}">${v===0&&r.label.includes('prêt')?'—':(v>=0&&r.bold?'+':'')+fmt(v)}</td>`).join('')}
+  </tr>`).join('');
+
+  // Charts
+  const labels5 = ['An 1','An 2','An 3','An 4','An 5'];
+
+  if(charts.ca){charts.ca.data.datasets[0].data=caByYear;charts.ca.data.datasets[1].data=totalChargesByYear;charts.ca.update();}
+  else charts.ca=new Chart(document.getElementById('chartCA'),{type:'line',data:{labels:labels5,datasets:[
+    {label:'CA',data:caByYear,borderColor:'#1a1a1a',backgroundColor:'rgba(26,26,26,.07)',tension:.3,fill:true},
+    {label:'Charges',data:totalChargesByYear,borderColor:'#f0a47f',backgroundColor:'transparent',borderDash:[5,3],tension:.1}
+  ]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{ticks:{callback:v=>fmtM(v)}}}}});
+
+  // Donut — CA an 5 par espace
+  const donutData = spaces.map(sp=>Math.round(spaceRevenue(sp,1.0)));
+  const donutLabels = spaces.map(sp=>sp.name.substring(0,20));
+  const donutColors = spaces.map(sp=>({studio:'#1a1a1a',ecole:'#1d9e75',atelier:'#f0a47f',loueur:'#378add',bureau:'#9b7fdb'}[sp.type]||'#888'));
+  if(charts.donut){charts.donut.data.datasets[0].data=donutData;charts.donut.data.labels=donutLabels;charts.donut.data.datasets[0].backgroundColor=donutColors;charts.donut.update();}
+  else charts.donut=new Chart(document.getElementById('chartDonut'),{type:'doughnut',data:{labels:donutLabels,datasets:[{data:donutData,backgroundColor:donutColors,borderWidth:0}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{font:{size:11},boxWidth:12}}}}});
+
+  // Charges breakdown
+  const chargesLabels = ['Masse salariale','Maintenance','Utilités','Assurances','Marketing','Honoraires/Admin','Loyer/DDP','Annuité prêt'];
+  const chargesData = [
+    Math.round(masse_sal),
+    Math.round(maintenance),
+    Math.round(utilities),
+    Math.round(c_assur),
+    Math.round(ca5*c_mkt_pct),
+    Math.round(c_honor+c_admin),
+    Math.round(c_loyer),
+    Math.round(annuite_pret)
+  ].filter((_,i)=>![false,false,false,false,false,false,false,annuite_pret===0][i]||true);
+  const chargesColors=['#1a1a1a','#555','#888','#aaa','#378add','#9b7fdb','#f0a47f','#a32d2d'];
+  if(charts.charges){charts.charges.data.datasets[0].data=chargesData;charts.charges.update();}
+  else charts.charges=new Chart(document.getElementById('chartCharges'),{type:'doughnut',data:{labels:chargesLabels,datasets:[{data:chargesData,backgroundColor:chargesColors,borderWidth:0}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{font:{size:10},boxWidth:10}}}}});
+
+  // KPI detail
+  const totalSurf = surf;
+  const studioSurf = spaces.filter(s=>s.type==='studio').reduce((a,s)=>a+s.surface,0);
+  const caPerStudioM2 = studioSurf>0 ? ca5/studioSurf : 0;
+  const capexPerM2 = totalSurf>0 ? capex/totalSurf : 0;
+  const payback = result5>0 ? (capex/result5).toFixed(1)+' ans' : '> 50 ans';
+  document.getElementById('kpi_detail').innerHTML = `
+    <div>Surface totale construite : <strong>${fmt(totalSurf)} m²</strong></div>
+    <div>dont studios (plateaux nets) : <strong>${fmt(studioSurf)} m²</strong></div>
+    <div>CAPEX / m² total : <strong>${fmt(capexPerM2)} CHF/m²</strong></div>
+    <div>CA an 5 / m² studios : <strong>${fmt(caPerStudioM2)} CHF/m²/an</strong></div>
+    <div>Seuil de rentabilité : <strong>${fmtM(charges5)} CHF/an</strong></div>
+    <div>Retour sur investissement : <strong>${payback}</strong></div>
+    <div>Financement capital : <strong class="${gap<=0?'good':'bad'}">${gap<=0?'Couvert':'Déficit '+fmtM(gap)+' CHF'}</strong></div>
+  `;
+}
+
+// ============================================================
+// SENSIBILITE TABLE
+// ============================================================
+function buildSensibTable(){
+  const tarifs = [0.5,0.75,1.0,1.5,2.0,2.5,3.0];
+  const occs = [0.15,0.30,0.45,0.55,0.70];
+  const surf = 8560; // référence
+  const tbody = document.getElementById('sensib_tbody');
+  if(!tbody) return;
+  tbody.innerHTML = tarifs.map(t=>`<tr>
+    <td><strong>${t.toFixed(2)} CHF/m²/j</strong>${t<=0.5?'&nbsp;<span class="badge b-warn">BP ProFilms</span>':t>=1.5?'&nbsp;<span class="badge b-go">standard EU</span>':''}</td>
+    ${occs.map(o=>`<td class="r">${fmtM(surf*t*360*o)} CHF</td>`).join('')}
+  </tr>`).join('');
+}
+
+init();
+</script>
+</body>
+</html>

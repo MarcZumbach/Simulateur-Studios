@@ -1,0 +1,697 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>La Fabrique du Film — Simulateur v3</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif;background:#f5f5f2;color:#1a1a1a;font-size:14px;line-height:1.5}
+.header{background:#1a1a1a;color:#fff;padding:1.2rem 2rem;display:flex;align-items:center;justify-content:space-between}
+.logo{font-size:20px;font-weight:700;letter-spacing:.05em}
+.header-sub{font-size:12px;color:#aaa;margin-top:2px}
+.tabs-wrap{background:#fff;border-bottom:1px solid #e0e0db;padding:0 2rem}
+.tabs{display:flex;gap:0}
+.tab{padding:.7rem 1.4rem;font-size:13px;border:none;background:none;cursor:pointer;color:#888;border-bottom:2px solid transparent;font-weight:500;transition:.15s}
+.tab.active{color:#1a1a1a;border-bottom-color:#1a1a1a}
+.page{max-width:1140px;margin:0 auto;padding:1.5rem 1.5rem 3rem}
+.pane{display:none}.pane.active{display:block}
+.section-title{font-size:16px;font-weight:600;margin:1.5rem 0 .8rem;padding-bottom:.4rem;border-bottom:2px solid #1a1a1a}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+.grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.card{background:#fff;border:1px solid #e0e0db;border-radius:10px;padding:1.1rem 1.25rem}
+.lbl{font-size:11px;color:#888;margin-bottom:4px;text-transform:uppercase;letter-spacing:.04em}
+.val{font-size:22px;font-weight:600}
+.sub{font-size:11px;color:#aaa;margin-top:2px}
+.good{color:#0f6e56}.warn{color:#854f0b}.bad{color:#a32d2d}
+.badge{display:inline-block;font-size:11px;padding:2px 9px;border-radius:5px;font-weight:500}
+.b-go{background:#e1f5ee;color:#085041}
+.b-warn{background:#faeeda;color:#633806}
+.b-bad{background:#fcebeb;color:#791f1f}
+.b-blue{background:#e6f1fb;color:#0c447c}
+.b-purple{background:#eeedfe;color:#3c3489}
+.note{background:#f4f4f0;border-left:3px solid #aaa;padding:10px 14px;font-size:12px;color:#666;border-radius:0 6px 6px 0;line-height:1.7}
+.note.note-warn{border-left-color:#ba7517;background:#faeeda;color:#4d2e08}
+.chart-wrap{background:#fff;border:1px solid #e0e0db;border-radius:10px;padding:1.2rem}
+.chart-title{font-size:13px;font-weight:600;margin-bottom:.8rem}
+.legend{display:flex;gap:16px;margin-bottom:.6rem;flex-wrap:wrap}
+.legend span{display:flex;align-items:center;gap:5px;font-size:12px;color:#555}
+.legend-dot{width:12px;height:12px;border-radius:3px}
+.modules-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:1.2rem}
+.module{border:1.5px solid #e0e0db;border-radius:10px;padding:.9rem 1rem;cursor:pointer;transition:.15s;background:#fff;position:relative}
+.module.active{border-color:#1a1a1a;background:#f9f9f7}
+.module.disabled{opacity:.4;cursor:not-allowed;pointer-events:none}
+.module-name{font-size:13px;font-weight:600;margin-bottom:3px}
+.module-tag{font-size:10px;padding:1px 7px;border-radius:4px;font-weight:500;display:inline-block;margin-bottom:5px}
+.module-rows{font-size:11px;color:#777;line-height:1.8}
+.module-check{position:absolute;top:.7rem;right:.7rem;width:18px;height:18px;border-radius:50%;border:1.5px solid #ccc;display:flex;align-items:center;justify-content:center;font-size:10px;color:#fff;transition:.15s}
+.module.active .module-check{background:#1a1a1a;border-color:#1a1a1a}
+.module-check::after{content:'✓';display:none}
+.module.active .module-check::after{display:block}
+.budget-bar-wrap{background:#fff;border:1px solid #e0e0db;border-radius:10px;padding:1.2rem;margin-bottom:1.2rem}
+.budget-bar-title{font-size:13px;font-weight:600;margin-bottom:.8rem;display:flex;justify-content:space-between;align-items:center}
+.bar-track{height:18px;background:#f0f0ec;border-radius:9px;overflow:hidden;position:relative;margin-bottom:5px}
+.bar-fill{height:100%;border-radius:9px;transition:width .25s;position:absolute}
+.bar-labels{display:flex;justify-content:space-between;font-size:11px;color:#aaa}
+.sr{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.sr label{font-size:13px;color:#555;flex:1;min-width:0}
+.sr input[type=range]{width:160px;flex-shrink:0;accent-color:#1a1a1a}
+.sr .ro{font-size:13px;font-weight:600;min-width:100px;text-align:right}
+.table-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{background:#1a1a1a;color:#fff;padding:8px 12px;text-align:left;font-weight:500}
+th.r,td.r{text-align:right}
+tr:nth-child(even) td{background:#f9f9f7}
+td{padding:7px 12px;border-bottom:1px solid #ebebeb}
+.total-row td{font-weight:600;background:#f0f0ec!important}
+.phase-head td{background:#1a1a1a!important;color:#fff;font-weight:600;padding:6px 12px}
+.verdict{padding:12px 16px;border-radius:8px;font-size:13px;line-height:1.6;border-left:4px solid}
+.verdict.go{background:#e1f5ee;border-color:#1d9e75;color:#064a38}
+.verdict.warn{background:#faeeda;border-color:#ba7517;color:#4d2e08}
+.verdict.bad{background:#fcebeb;border-color:#a32d2d;color:#501313}
+.timeline{display:flex;gap:0;margin:1rem 0}
+.tl-step{flex:1;padding:.7rem .8rem;border:1px solid #e0e0db;border-right:none;font-size:12px;background:#fff}
+.tl-step:first-child{border-radius:8px 0 0 8px}
+.tl-step:last-child{border-right:1px solid #e0e0db;border-radius:0 8px 8px 0}
+.tl-step.active-phase{background:#1a1a1a;color:#fff;border-color:#1a1a1a}
+.tl-step.active-phase .tl-lbl{color:#aaa}
+.tl-lbl{font-size:10px;color:#888;margin-bottom:2px;text-transform:uppercase}
+.tl-val{font-weight:600;font-size:13px}
+.capex-ref{display:inline-block;padding:4px 10px;background:#f0f0ec;border-radius:5px;font-size:12px;color:#666;margin-top:4px}
+@media(max-width:700px){.modules-grid{grid-template-columns:1fr 1fr}.grid4{grid-template-columns:1fr 1fr}}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div>
+    <div class="logo">PROFILMS · La Fabrique du Film</div>
+    <div class="header-sub">Simulateur de dimensionnement · The Hive, Meyrin · v3.0 — Curseurs libres, données BP du 13.02.2026</div>
+  </div>
+  <div style="font-size:11px;color:#666;text-align:right">Données architecturales CCHE Lausanne<br>Prévisionnel ProFilms · Mars 2026</div>
+</div>
+
+<div class="tabs-wrap">
+  <div class="tabs">
+    <button class="tab active" onclick="showTab('phase',this)">Dimensionnement par financement</button>
+    <button class="tab" onclick="showTab('modules',this)">Modules & viabilité</button>
+    <button class="tab" onclick="showTab('bp',this)">Prévisionnel complet</button>
+    <button class="tab" onclick="showTab('bench',this)">Benchmarks</button>
+  </div>
+</div>
+
+<!-- ===== TAB 1 ===== -->
+<div id="pane-phase" class="pane active">
+<div class="page">
+  <div class="section-title">Quelle Fabrique du Film pour quel financement ?</div>
+  <p style="font-size:13px;color:#555;margin-bottom:.5rem">Partez du financement réellement mobilisable — chaque curseur peut couvrir jusqu'à 100% du CAPEX pour tester tous les scénarios, y compris un mécène unique. Le simulateur calcule ce qui peut être construit et si c'est viable.</p>
+  <div class="capex-ref">Référence CAPEX projet complet (ProFilms/CCHE) : <strong>186 M CHF</strong></div>
+
+  <div class="grid2" style="margin-top:1.2rem;margin-bottom:1.2rem">
+    <div class="card">
+      <div class="lbl" style="margin-bottom:.8rem">Financement disponible — curseurs libres jusqu'à 200 M CHF</div>
+      <div class="sr"><label>Fonds propres Fondation(s)</label><input type="range" id="f_fondation" min="0" max="200000000" step="1000000" value="30000000"><span class="ro" id="r_f_fondation">30 M CHF</span></div>
+      <div class="sr"><label>Subventions publiques (Canton, Ville)</label><input type="range" id="f_public" min="0" max="200000000" step="1000000" value="20000000"><span class="ro" id="r_f_public">20 M CHF</span></div>
+      <div class="sr"><label>Mécénat / Fondations privées</label><input type="range" id="f_mecenat" min="0" max="200000000" step="1000000" value="15000000"><span class="ro" id="r_f_mecenat">15 M CHF</span></div>
+      <div class="sr"><label>Dette bancaire (si applicable)</label><input type="range" id="f_dette" min="0" max="200000000" step="1000000" value="0"><span class="ro" id="r_f_dette">0 CHF</span></div>
+      <div style="margin-top:10px;padding:10px;background:#f4f4f0;border-radius:6px;display:flex;justify-content:space-between;align-items:center">
+        <span style="font-size:13px;color:#555">Total disponible</span>
+        <span style="font-size:18px;font-weight:700" id="r_total_fund">65 M CHF</span>
+      </div>
+    </div>
+    <div class="card">
+      <div class="lbl" style="margin-bottom:.8rem">Paramètres de construction</div>
+      <div class="sr"><label>Coût construction bureaux/services (CHF/m²)</label><input type="range" id="c_std" min="4000" max="10000" step="200" value="6500"><span class="ro" id="r_c_std">6 500</span></div>
+      <div class="sr"><label>Surcoût studios (isolation son/hauteur)</label><input type="range" id="c_studio" min="1.2" max="2.5" step="0.1" value="1.8"><span class="ro" id="r_c_studio">×1.8</span></div>
+      <div class="sr"><label>Infrastructure partagée (SS, réseaux)</label><input type="range" id="c_infra" min="5000000" max="30000000" step="1000000" value="15000000"><span class="ro" id="r_c_infra">15 M CHF</span></div>
+      <div style="margin-top:8px;padding:8px;background:#f4f4f0;border-radius:6px;font-size:12px;color:#888">
+        Base CCHE validée : 186 M CHF / 21 410 m² SPB ≈ 8 690 CHF/m² moyen · Studios ×1.5–2 vs bureaux · Lancement activité : janvier 2031
+      </div>
+    </div>
+  </div>
+
+  <div class="budget-bar-wrap">
+    <div class="budget-bar-title">
+      <span>Allocation du budget disponible vs CAPEX sélectionné</span>
+      <span id="budget_pct_txt" style="font-size:13px;font-weight:400"></span>
+    </div>
+    <div class="bar-track">
+      <div class="bar-fill" id="budget_bar" style="background:#1d9e75;width:35%"></div>
+    </div>
+    <div class="bar-labels">
+      <span>0</span><span id="budget_mid"></span><span id="budget_max"></span>
+    </div>
+  </div>
+
+  <div class="section-title">Modules architecturaux — sélectionnez votre programme</div>
+  <p style="font-size:12px;color:#888;margin-bottom:.8rem">Cliquez pour inclure/exclure. Le CAPEX disponible détermine les modules finançables.</p>
+
+  <div class="modules-grid" id="modules_grid"></div>
+  <div id="budget_alert" style="margin-bottom:1rem"></div>
+
+  <div class="section-title">Résultats pour la configuration sélectionnée</div>
+  <div class="grid4" style="margin-bottom:1.2rem">
+    <div class="card"><div class="lbl">CAPEX total sélectionné</div><div class="val" id="res_capex">—</div><div class="sub">CHF</div></div>
+    <div class="card"><div class="lbl">Surface studios nette</div><div class="val" id="res_surf">—</div><div class="sub">m² de plateau</div></div>
+    <div class="card"><div class="lbl">CA an 5 (scénario réaliste)</div><div class="val" id="res_ca5">—</div><div class="sub">CHF</div></div>
+    <div class="card"><div class="lbl">Résultat an 5</div><div class="val" id="res_result">—</div><div class="sub">CHF</div></div>
+  </div>
+
+  <div id="phase_verdict" style="margin-bottom:1.2rem"></div>
+
+  <div class="section-title">Montée en puissance — 5 ans après ouverture (janvier 2031)</div>
+  <div class="timeline" id="timeline_row"></div>
+
+  <div class="grid2" style="margin-top:1.2rem">
+    <div class="chart-wrap">
+      <div class="chart-title">Revenus simulés par source (an 5)</div>
+      <div style="position:relative;height:220px"><canvas id="chartDonut"></canvas></div>
+    </div>
+    <div class="chart-wrap">
+      <div class="chart-title">CA vs charges — progression 5 ans</div>
+      <div class="legend">
+        <span><div class="legend-dot" style="background:#1a1a1a"></div>CA</span>
+        <span><div class="legend-dot" style="background:#f0a47f"></div>Charges</span>
+      </div>
+      <div style="position:relative;height:195px"><canvas id="chartEvol"></canvas></div>
+    </div>
+  </div>
+
+  <div class="note" style="margin-top:1.2rem">
+    <strong>Hypothèses du modèle (prévisionnel ProFilms du 13.02.2026)</strong> · Tarif plateaux : 0.50 CHF/m²/jour · Tarif annexes : 0.30 CHF/m²/jour · Baux long terme : 0.30 CHF/m²/jour · Montée en charge : scénario réaliste = 15%/50%/60% → 35%/40%/80% → 50%/60%/90% · Baux stables dès l'an 1 à 21% → 50% an 5 · DDP superficie (site The Hive) : 202 900 CHF/an · Charges fixes proportionnelles à la surface construite (base : 1.36 M CHF/an pour 21 410 m²).
+  </div>
+</div>
+</div>
+
+<!-- ===== TAB 2 ===== -->
+<div id="pane-modules" class="pane">
+<div class="page">
+  <div class="section-title">Détail des modules — surfaces et coûts CCHE</div>
+
+  <div class="table-wrap card" style="margin-bottom:1.2rem">
+    <table>
+      <thead>
+        <tr>
+          <th>Module</th>
+          <th>Programme</th>
+          <th class="r">Studios/Plateaux</th>
+          <th class="r">Services/Admin</th>
+          <th class="r">Autres</th>
+          <th class="r">Total m²</th>
+          <th class="r">CAPEX estimé</th>
+          <th class="r">CA potentiel an5</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="phase-head"><td colspan="8">STUDIOS DE PRODUCTION (zone sécurisée)</td></tr>
+        <tr><td><strong>Studios 3/4</strong></td><td>2 grands plateaux + restaurant</td><td class="r good">3 570 m²</td><td class="r">2 370 m²</td><td class="r">630 m² restau.</td><td class="r">6 570 m²</td><td class="r">~48 M CHF</td><td class="r good">~380 k CHF</td></tr>
+        <tr><td><strong>Studio 5</strong></td><td>Grand plateau + centre créatif</td><td class="r good">3 051 m²</td><td class="r">2 506 m²</td><td class="r">—</td><td class="r">5 557 m²</td><td class="r">~40 M CHF</td><td class="r good">~325 k CHF</td></tr>
+        <tr><td><strong>Studio 6 + Loueurs</strong></td><td>Petit studio + espaces loueurs</td><td class="r warn">630 m²</td><td class="r">830 m² dépôts</td><td class="r">1 530 m² loueurs</td><td class="r">2 990 m²</td><td class="r">~18 M CHF</td><td class="r warn">~230 k CHF</td></tr>
+        <tr class="phase-head"><td colspan="8">CRÉATION & SERVICES COMPLÉMENTAIRES</td></tr>
+        <tr><td><strong>Ateliers décors</strong></td><td>Menuiserie, peinture, moulage</td><td class="r">—</td><td class="r">320 m²</td><td class="r">2 870 m² ateliers/dépôts</td><td class="r">3 190 m²</td><td class="r">~17 M CHF</td><td class="r warn">~95 k CHF</td></tr>
+        <tr><td><strong>École / Semi-public</strong></td><td>École cinéma, studio TV, loueurs</td><td class="r warn">1 313 m²</td><td class="r">—</td><td class="r">1 340 m² école</td><td class="r">2 653 m²</td><td class="r">~20 M CHF</td><td class="r good">~280 k CHF</td></tr>
+        <tr><td><strong>Pavillon d'accueil</strong></td><td>Accueil public, expo, café</td><td class="r">—</td><td class="r">—</td><td class="r">450 m² public</td><td class="r">450 m²</td><td class="r">~4 M CHF</td><td class="r">~30 k CHF</td></tr>
+        <tr class="phase-head"><td colspan="8">INFRASTRUCTURE PARTAGÉE</td></tr>
+        <tr><td><strong>Sous-sol P2</strong></td><td>Galerie, parkings, locaux tech.</td><td class="r">—</td><td class="r">—</td><td class="r">7 352 m²</td><td class="r">7 352 m²</td><td class="r">~25–35 M CHF</td><td class="r">—</td></tr>
+        <tr class="total-row"><td colspan="2">Total projet complet (CCHE)</td><td class="r">8 564 m²</td><td class="r">6 026 m²</td><td class="r">~14 162 m²</td><td class="r">21 410 m²</td><td class="r"><strong>186 M CHF</strong></td><td class="r good">~1.3 M CHF</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="note">
+    <strong>CAPEX validé</strong> · Le prévisionnel ProFilms confirme 186 036 000 CHF d'investissement total (constructions 183.8 M + logiciels 2 M + équipements 185 k + mobilier 50 k + fournitures 30 k) + frais de lancement 500 k + loyer pré-op 180 k = 189.1 M flux d'investissement total. Le ratio moyen ressort à ≈8 690 CHF/m² sur 21 410 m² SPB.
+  </div>
+
+  <div class="section-title" style="margin-top:1.5rem">Combinaisons viables — analyse de phase</div>
+  <div class="grid3">
+    <div class="card">
+      <div style="font-size:13px;font-weight:600;margin-bottom:4px">Phase 1 minimum</div>
+      <div class="badge b-warn" style="margin-bottom:.6rem">~45–55 M CHF</div>
+      <div style="font-size:12px;line-height:1.9;color:#555">
+        ✓ Studio 5 (grand plateau)<br>
+        ✓ École / Studio TV<br>
+        ✓ Pavillon d'accueil<br>
+        ✓ Sous-sol partiel<br>
+        <span style="color:#aaa">✗ Studios 3/4 (phase 2)</span><br>
+        <span style="color:#aaa">✗ Ateliers décors (phase 2)</span>
+      </div>
+      <div style="margin-top:.8rem;padding:6px;background:#f4f4f0;border-radius:5px;font-size:12px">
+        CA an 5 estimé : <strong>~700–900 k CHF</strong><br>
+        Viabilité : sous tension si baux école sécurisés
+      </div>
+    </div>
+    <div class="card" style="border-color:#1a1a1a;border-width:1.5px">
+      <div style="font-size:13px;font-weight:600;margin-bottom:4px">Phase 1+ recommandée</div>
+      <div class="badge b-go" style="margin-bottom:.6rem">~70–90 M CHF</div>
+      <div style="font-size:12px;line-height:1.9;color:#555">
+        ✓ Studios 3/4<br>
+        ✓ Studio 5<br>
+        ✓ École / Studio TV<br>
+        ✓ Ateliers décors<br>
+        ✓ Pavillon d'accueil<br>
+        ✓ Sous-sol complet<br>
+        <span style="color:#aaa">✗ Studio 6 (phase 2)</span>
+      </div>
+      <div style="margin-top:.8rem;padding:6px;background:#e1f5ee;border-radius:5px;font-size:12px">
+        CA an 5 estimé : <strong>~1.5–2 M CHF</strong><br>
+        Modèle CNA Luxembourg — tient sans subventions récurrentes
+      </div>
+    </div>
+    <div class="card">
+      <div style="font-size:13px;font-weight:600;margin-bottom:4px">Projet complet ProFilms/CCHE</div>
+      <div class="badge b-blue" style="margin-bottom:.6rem">186 M CHF</div>
+      <div style="font-size:12px;line-height:1.9;color:#555">
+        ✓ Tous modules<br>
+        ✓ Studio 6 + Loueurs<br>
+        ✓ Toitures open air<br>
+        ✓ Sous-sol complet<br>
+        ✓ Studios Open Air
+      </div>
+      <div style="margin-top:.8rem;padding:6px;background:#e6f1fb;border-radius:5px;font-size:12px">
+        CA an 5 : <strong>3.68–4.00 M CHF</strong><br>
+        Prévisionnel ProFilms validé — quasi-équilibre an 5 (scén. conservateur : −13k, réaliste : +9k)
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<!-- ===== TAB 3 : BP ===== -->
+<div id="pane-bp" class="pane">
+<div class="page">
+  <div class="section-title">Prévisionnel BP complet — ProFilms, 13.02.2026</div>
+  <div style="margin-bottom:1rem;font-size:13px;color:#555">Données extraites du prévisionnel ProFilms. Lancement activité : <strong>Janvier 2031</strong>. CAPEX : <strong>186 036 000 CHF</strong>.</div>
+
+  <div class="grid2" style="margin-bottom:1.2rem">
+    <div class="chart-wrap">
+      <div class="chart-title">Chiffre d'affaires (CHF)</div>
+      <div class="legend">
+        <span><div class="legend-dot" style="background:#378add"></div>Conservateur</span>
+        <span><div class="legend-dot" style="background:#1d9e75"></div>Réaliste</span>
+      </div>
+      <div style="position:relative;height:220px"><canvas id="chartCA2"></canvas></div>
+    </div>
+    <div class="chart-wrap">
+      <div class="chart-title">Résultat courant avant impôts (CHF)</div>
+      <div class="legend">
+        <span><div class="legend-dot" style="background:#378add"></div>Conservateur</span>
+        <span><div class="legend-dot" style="background:#1d9e75"></div>Réaliste</span>
+      </div>
+      <div style="position:relative;height:220px"><canvas id="chartRes2"></canvas></div>
+    </div>
+  </div>
+
+  <div class="table-wrap card" style="margin-bottom:1.2rem">
+    <table>
+      <thead><tr><th>Indicateur</th><th class="r">An 1 (2031)</th><th class="r">An 2 (2032)</th><th class="r">An 3 (2033)</th><th class="r">An 4 (2034)</th><th class="r">An 5 (2035)</th></tr></thead>
+      <tbody>
+        <tr class="phase-head"><td colspan="6">SCÉNARIO CONSERVATEUR — taux d'occupation an 1 : 10%/15%/30%</td></tr>
+        <tr><td>Chiffre d'affaires</td><td class="r">1 836 184</td><td class="r">2 269 688</td><td class="r">2 672 233</td><td class="r">3 182 962</td><td class="r">3 676 893</td></tr>
+        <tr><td>Charges totales</td><td class="r">3 021 218</td><td class="r">3 155 998</td><td class="r">3 359 818</td><td class="r">3 544 555</td><td class="r">3 690 052</td></tr>
+        <tr><td>Résultat courant</td><td class="r bad">−1 185 035</td><td class="r bad">−886 310</td><td class="r bad">−687 585</td><td class="r bad">−361 594</td><td class="r bad">−13 159</td></tr>
+        <tr><td>Seuil de rentabilité</td><td class="r">2 054 783</td><td class="r">2 189 562</td><td class="r">2 408 382</td><td class="r">2 596 453</td><td class="r">2 741 949</td></tr>
+        <tr><td>Balance de trésorerie</td><td class="r good">123 489</td><td class="r good">189 338</td><td class="r good">422 671</td><td class="r good">978 662</td><td class="r good">1 878 055</td></tr>
+        <tr class="phase-head"><td colspan="6">SCÉNARIO RÉALISTE — taux d'occupation an 1 : 15%/20%/70%</td></tr>
+        <tr><td>Chiffre d'affaires</td><td class="r">2 453 380</td><td class="r">2 813 868</td><td class="r">3 151 128</td><td class="r">3 576 134</td><td class="r">4 004 657</td></tr>
+        <tr><td>Charges totales</td><td class="r">3 125 073</td><td class="r">3 279 459</td><td class="r">3 536 568</td><td class="r">3 837 753</td><td class="r">3 995 546</td></tr>
+        <tr><td>Résultat courant</td><td class="r bad">−671 693</td><td class="r bad">−465 591</td><td class="r bad">−385 440</td><td class="r bad">−261 619</td><td class="r good">+9 111</td></tr>
+        <tr><td>Seuil de rentabilité</td><td class="r">2 158 637</td><td class="r">2 313 023</td><td class="r">2 585 132</td><td class="r">2 889 651</td><td class="r">3 047 444</td></tr>
+        <tr class="total-row"><td>Balance de trésorerie</td><td class="r good">269 449</td><td class="r good">749 476</td><td class="r good">1 290 903</td><td class="r good">1 952 818</td><td class="r good">2 872 147</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="table-wrap card" style="margin-bottom:1.2rem">
+    <table>
+      <thead><tr><th colspan="6">Détail charges — scénario conservateur (CHF)</th></tr>
+        <tr><th>Poste</th><th class="r">An 1</th><th class="r">An 2</th><th class="r">An 3</th><th class="r">An 4</th><th class="r">An 5</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>DDP Droit de Superficie (The Hive, Meyrin)</td><td class="r">202 900</td><td class="r">202 900</td><td class="r">202 900</td><td class="r">202 900</td><td class="r">202 900</td></tr>
+        <tr><td>Maintenance et réparations</td><td class="r">447 949</td><td class="r">491 475</td><td class="r">535 000</td><td class="r">578 525</td><td class="r">622 051</td></tr>
+        <tr><td>Utilités</td><td class="r">247 013</td><td class="r">271 014</td><td class="r">295 015</td><td class="r">319 016</td><td class="r">343 017</td></tr>
+        <tr><td>Salaires bruts (équipe)</td><td class="r">557 000</td><td class="r">557 000</td><td class="r">633 333</td><td class="r">673 000</td><td class="r">673 000</td></tr>
+        <tr><td>Marketing</td><td class="r">209 322</td><td class="r">229 661</td><td class="r">250 000</td><td class="r">270 339</td><td class="r">290 678</td></tr>
+        <tr><td>Frais admin + assurances + honoraires</td><td class="r">~193 000</td><td class="r">~208 000</td><td class="r">~222 000</td><td class="r">~237 000</td><td class="r">~252 000</td></tr>
+        <tr class="total-row"><td>Total charges</td><td class="r">3 021 218</td><td class="r">3 155 998</td><td class="r">3 359 818</td><td class="r">3 544 555</td><td class="r">3 690 052</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="note note-warn">
+    <strong>Point critique sur la viabilité</strong> · Le prévisionnel ProFilms suppose 186 M CHF de CAPEX entièrement financés en capital non remboursable (apport fondateur 182 M + apports extérieurs 7.2 M). La structure de financement est 100% en fonds propres — aucune dette bancaire. Le CA de 1.8–2.5 M CHF en an 1 est structurellement insuffisant pour rembourser un emprunt de cette échelle. La viabilité repose donc entièrement sur des apports en capital sans retour financier, c'est-à-dire une fondation d'utilité publique. C'est précisément ce que la mission EY doit valider et structurer.
+  </div>
+
+  <div class="section-title" style="margin-top:1.5rem">Taux d'occupation hypothèses — différence entre scénarios</div>
+  <div class="table-wrap card">
+    <table>
+      <thead><tr><th>Source de revenu</th><th class="r">Conservateur an 1</th><th class="r">Réaliste an 1</th><th class="r">Conservateur an 5</th><th class="r">Réaliste an 5</th></tr></thead>
+      <tbody>
+        <tr><td>Location plateaux studios</td><td class="r">3% (→15%)</td><td class="r">4.5% (→15%)</td><td class="r">15%</td><td class="r">15%</td></tr>
+        <tr><td>Location annexes/bureaux/HMC</td><td class="r">4.5% (→17%)</td><td class="r">6% (→18%)</td><td class="r">17%</td><td class="r">18%</td></tr>
+        <tr><td>Baux long terme (écoles, ateliers)</td><td class="r">15% (→24%)</td><td class="r">21% (→27%)</td><td class="r">24%</td><td class="r">27%</td></tr>
+        <tr class="total-row"><td>Impact sur CA an 1</td><td class="r">1 836 184 CHF</td><td class="r">2 453 380 CHF</td><td class="r">3 676 893 CHF</td><td class="r">4 004 657 CHF</td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+</div>
+
+<!-- ===== TAB 4 : BENCHMARKS ===== -->
+<div id="pane-bench" class="pane">
+<div class="page">
+  <div class="section-title">Benchmarks européens — studios comparables</div>
+
+  <div class="note note-warn" style="margin-bottom:1.2rem">
+    <strong>Note méthodologique importante</strong> · Les surfaces publiées par les studios étrangers correspondent à leur surface totale construite (ou empreinte globale du complexe), sans distinction entre plateaux purs et espaces de services, bureaux, stationnements. Cette métrique n'est pas directement comparable aux 8 560 m² de plateaux nets ou aux 21 410 m² construits de la Fabrique. La comparaison de surface est donc retirée des fiches. Seuls les indicateurs financiers et tarifaires — effectivement comparables — sont conservés.
+  </div>
+
+  <div class="grid3" style="margin-bottom:.8rem">
+    <div style="border:1px solid #e0e0db;border-radius:10px;padding:1rem;background:#fff">
+      <div style="font-size:13px;font-weight:600;margin-bottom:3px">MBS Studios Vienne <span class="badge b-blue">alpin</span></div>
+      <div style="font-size:11px;color:#888;margin-bottom:8px">Autriche · Privé</div>
+      <div style="font-size:12px;line-height:2.1;border-top:1px solid #f0f0ec;padding-top:6px">
+        <div style="display:flex;justify-content:space-between"><span style="color:#888">Tarif plateau</span><span>2–4 €/m²/j</span></div>
+        <div style="display:flex;justify-content:space-between"><span style="color:#888">Occupation</span><span>60–70%</span></div>
+        <div style="display:flex;justify-content:space-between"><span style="color:#888">CA estimé</span><span>~40 M€/an</span></div>
+        <div style="display:flex;justify-content:space-between"><span style="color:#888">CAPEX initial</span><span>~150–200 M€</span></div>
+      </div>
+    </div>
+    <div style="border:1.5px solid #1a1a1a;border-radius:10px;padding:1rem;background:#f9f9f7">
+      <div style="font-size:13px;font-weight:600;margin-bottom:3px">CNA Luxembourg <span class="badge b-go">modèle cible</span></div>
+      <div style="font-size:11px;color:#888;margin-bottom:8px">Luxembourg · Fondation publique</div>
+      <div style="font-size:12px;line-height:2.1;border-top:1px solid #f0f0ec;padding-top:6px">
+        <div style="display:flex;justify-content:space-between"><span style="color:#888">Tarif plateau</span><span>1.5–2.5 €/m²/j</span></div>
+        <div style="display:flex;justify-content:space-between"><span style="color:#888">Occupation</span><span>45–55%</span></div>
+        <div style="display:flex;justify-content:space-between"><span style="color:#888">CA estimé</span><span>~5 M€/an</span></div>
+        <div style="display:flex;justify-content:space-between"><span style="color:#888">Structure</span><span>Fondation non lucrative</span></div>
+      </div>
+    </div>
+    <div style="border:1px solid #e0e0db;border-radius:10px;padding:1rem;background:#fff">
+      <div style="font-size:13px;font-weight:600;margin-bottom:3px">Cité du Cinéma Paris</div>
+      <div style="font-size:11px;color:#888;margin-bottom:8px">France · Privé</div>
+      <div style="font-size:12px;line-height:2.1;border-top:1px solid #f0f0ec;padding-top:6px">
+        <div style="display:flex;justify-content:space-between"><span style="color:#888">Tarif plateau</span><span>2–5 €/m²/j</span></div>
+        <div style="display:flex;justify-content:space-between"><span style="color:#888">Occupation</span><span>50–60%</span></div>
+        <div style="display:flex;justify-content:space-between"><span style="color:#888">CA estimé</span><span>~30 M€/an</span></div>
+        <div style="display:flex;justify-content:space-between"><span style="color:#888">CAPEX</span><span>~200 M€</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- La Fabrique card séparée pour clarté -->
+  <div style="border:2px solid #1a1a1a;border-radius:10px;padding:1rem 1.4rem;background:#f9f9f7;margin-bottom:1.2rem">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:.6rem">
+      <div>
+        <span style="font-size:14px;font-weight:700">La Fabrique du Film</span>
+        <span class="badge b-blue" style="margin-left:8px">Ce projet · Suisse · Fondation</span>
+      </div>
+      <span style="font-size:11px;color:#888">Prévisionnel ProFilms · 13.02.2026</span>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;font-size:12px">
+      <div style="background:#fff;border-radius:6px;padding:8px 10px">
+        <div style="color:#888;margin-bottom:2px">Tarif plateau (BP)</div>
+        <div style="font-weight:600">0.50 CHF/m²/j</div>
+        <div style="color:#a32d2d;font-size:11px">Factor 3–5× en dessous CNA</div>
+      </div>
+      <div style="background:#fff;border-radius:6px;padding:8px 10px">
+        <div style="color:#888;margin-bottom:2px">Occupation an 5 (réaliste)</div>
+        <div style="font-weight:600">15% plateaux</div>
+        <div style="color:#a32d2d;font-size:11px">vs 45–55% CNA Luxembourg</div>
+      </div>
+      <div style="background:#fff;border-radius:6px;padding:8px 10px">
+        <div style="color:#888;margin-bottom:2px">Surface plateaux nets</div>
+        <div style="font-weight:600">8 560 m²</div>
+        <div style="color:#888;font-size:11px">sur 21 410 m² construits</div>
+      </div>
+      <div style="background:#fff;border-radius:6px;padding:8px 10px">
+        <div style="color:#888;margin-bottom:2px">CA an 5 (réaliste)</div>
+        <div style="font-weight:600;color:#0f6e56">4.0 M CHF</div>
+        <div style="color:#888;font-size:11px">CAPEX : 186 M CHF</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="note">
+    <strong>Le point crucial sur le tarif</strong> · La Fabrique du Film est positionnée à <strong>0.50 CHF/m²/jour</strong> dans le prévisionnel ProFilms. Le CNA Luxembourg (modèle le plus comparable : taille, structure non lucrative, petit État à rayonnement international) est à <strong>1.5–2.5 €/m²/jour</strong> — soit un facteur 3–5×. L'occupation réelle (15% pour les plateaux en an 5) est également très conservatrice — le CNA tourne à 45–55%. Ces deux paramètres sont le levier clé qu'EY doit instruire : quel tarif et quelle occupation Genève peut-elle supporter ? Même à 0.75 CHF/m²/j avec 25% d'occupation, le CA an 5 doublerait.
+  </div>
+
+  <div class="section-title" style="margin-top:1.5rem">Sensibilité du modèle — impact d'un changement de tarif</div>
+  <div class="table-wrap card">
+    <table>
+      <thead><tr><th>Tarif plateau (CHF/m²/j)</th><th class="r">Occupation 15%</th><th class="r">Occupation 25%</th><th class="r">Occupation 40%</th><th class="r">Occupation 55%</th></tr></thead>
+      <tbody>
+        <tr><td>0.50 CHF (BP actuel)</td><td class="r">~383 k CHF/an</td><td class="r">~638 k CHF/an</td><td class="r">~1.02 M CHF/an</td><td class="r">~1.40 M CHF/an</td></tr>
+        <tr><td>0.75 CHF</td><td class="r">~574 k CHF/an</td><td class="r">~957 k CHF/an</td><td class="r">~1.53 M CHF/an</td><td class="r">~2.10 M CHF/an</td></tr>
+        <tr><td>1.00 CHF</td><td class="r">~766 k CHF/an</td><td class="r">~1.28 M CHF/an</td><td class="r">~2.04 M CHF/an</td><td class="r">~2.81 M CHF/an</td></tr>
+        <tr class="total-row"><td>1.50 CHF (CNA niveau bas)</td><td class="r">~1.15 M CHF/an</td><td class="r">~1.91 M CHF/an</td><td class="r">~3.07 M CHF/an</td><td class="r">~4.21 M CHF/an</td></tr>
+      </tbody>
+    </table>
+    <div style="font-size:11px;color:#888;padding:8px 12px">Calcul basé sur 6 124 m² de plateaux (Studios 3/4/5/École). Hors annexes et baux long terme.</div>
+  </div>
+</div>
+</div>
+
+<div style="background:#f0f0ec;border-top:1px solid #e0e0db;padding:.8rem 2rem;font-size:11px;color:#888;display:flex;justify-content:space-between">
+  <span>Association ProFilms · La Fabrique du Film · The Hive Meyrin · Simulateur v3.0 · Données BP 13.02.2026</span>
+  <span id="foot_date"></span>
+</div>
+
+<script>
+document.getElementById('foot_date').textContent = new Date().toLocaleDateString('fr-CH',{day:'2-digit',month:'long',year:'numeric'});
+function fmt(n){return Math.round(n).toLocaleString('fr-CH')}
+function fmtM(n){const a=Math.abs(n),s=n<0?'−':'';if(a>=1000000)return s+((Math.round(a/100000))/10).toFixed(1)+' M';if(a>=1000)return s+(Math.round(a/100)/10).toFixed(0)+' k';return s+fmt(a)}
+
+function showTab(id,el){
+  document.querySelectorAll('.pane').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('pane-'+id).classList.add('active');
+  el.classList.add('active');
+}
+
+const CAPEX_TOTAL_REF = 186036000; // from ProFilms BP
+
+const MODULES = [
+  {id:'s34', name:'Studios 3/4', tag:'Studio', tagCls:'b-blue',
+   studios:3570, services:2370, autres:630, total:6570,
+   capex_base:48000000,
+   desc:'2 grands plateaux + restaurant',
+   rev_studio:3570, rev_bail:0, rev_school:0, rev_loueurs:0, priority:1},
+  {id:'s5', name:'Studio 5', tag:'Studio', tagCls:'b-blue',
+   studios:3051, services:2506, autres:0, total:5557,
+   capex_base:40000000,
+   desc:'Grand plateau, centre créatif',
+   rev_studio:3051, rev_bail:0, rev_school:0, rev_loueurs:0, priority:2},
+  {id:'s6', name:'Studio 6 + Loueurs', tag:'Studio+', tagCls:'b-purple',
+   studios:630, services:830, autres:1530, total:2990,
+   capex_base:18000000,
+   desc:'Petit studio, 1 530 m² espace loueurs',
+   rev_studio:630, rev_bail:0, rev_school:0, rev_loueurs:1530, priority:3},
+  {id:'atelier', name:'Ateliers décors', tag:'Création', tagCls:'b-warn',
+   studios:0, services:320, autres:2870, total:3190,
+   capex_base:17000000,
+   desc:'Menuiserie, peinture, moulage, dépôts',
+   rev_studio:0, rev_bail:2870, rev_school:0, rev_loueurs:0, priority:4},
+  {id:'ecole', name:'École / Semi-public', tag:'Formation', tagCls:'b-go',
+   studios:1313, services:0, autres:1340, total:2653,
+   capex_base:20000000,
+   desc:'École cinéma, studio TV, loueurs',
+   rev_studio:1313, rev_bail:0, rev_school:1340, rev_loueurs:0, priority:5},
+  {id:'pavillon', name:'Pavillon d\'accueil', tag:'Public', tagCls:'',
+   studios:0, services:0, autres:450, total:450,
+   capex_base:4000000,
+   desc:'Accueil, exposition, café, terrasse',
+   rev_studio:0, rev_bail:450, rev_school:0, rev_loueurs:0, priority:6},
+];
+
+let selectedModules = new Set(['s34','s5','ecole','atelier','pavillon']);
+let donutChart=null, evolChart=null;
+
+function buildModuleCards(){
+  const grid = document.getElementById('modules_grid');
+  grid.innerHTML = '';
+  MODULES.forEach(m => {
+    const cost = getModuleCost(m);
+    const div = document.createElement('div');
+    div.className = 'module' + (selectedModules.has(m.id) ? ' active' : '');
+    div.id = 'mod_'+m.id;
+    div.innerHTML = `
+      <div class="module-check"></div>
+      <div class="module-tag badge ${m.tagCls}">${m.tag}</div>
+      <div class="module-name">${m.name}</div>
+      <div class="module-rows" style="font-size:11px;color:#777;line-height:1.9">
+        <div>${m.desc}</div>
+        <div><span style="min-width:90px;display:inline-block">Surface totale</span><strong>${fmt(m.total)} m²</strong></div>
+        <div><span style="min-width:90px;display:inline-block">Plateaux nets</span><strong>${m.studios > 0 ? fmt(m.studios)+' m²' : '—'}</strong></div>
+        <div><span style="min-width:90px;display:inline-block">CAPEX estimé</span><strong>~${fmtM(cost)} CHF</strong></div>
+      </div>`;
+    div.onclick = () => { toggleModule(m.id); };
+    grid.appendChild(div);
+  });
+}
+
+function getModuleCost(m){
+  const c_std = +document.getElementById('c_std').value;
+  const c_mult = +document.getElementById('c_studio').value;
+  return Math.round(m.studios * c_std * c_mult + (m.total - m.studios) * c_std);
+}
+
+function toggleModule(id){
+  if(selectedModules.has(id)) selectedModules.delete(id);
+  else selectedModules.add(id);
+  updateAll();
+}
+
+function updateAll(){
+  const f1 = +document.getElementById('f_fondation').value;
+  const f2 = +document.getElementById('f_public').value;
+  const f3 = +document.getElementById('f_mecenat').value;
+  const f4 = +document.getElementById('f_dette').value;
+  const c_std = +document.getElementById('c_std').value;
+  const c_mult = +document.getElementById('c_studio').value;
+  const c_infra = +document.getElementById('c_infra').value;
+  const totalFund = f1+f2+f3+f4;
+
+  function fmtSlider(v){
+    if(v===0) return '0 CHF';
+    if(v>=1000000) return fmtM(v)+' CHF';
+    return fmt(v)+' CHF';
+  }
+
+  document.getElementById('r_f_fondation').textContent = fmtSlider(f1);
+  document.getElementById('r_f_public').textContent = fmtSlider(f2);
+  document.getElementById('r_f_mecenat').textContent = fmtSlider(f3);
+  document.getElementById('r_f_dette').textContent = fmtSlider(f4);
+  document.getElementById('r_total_fund').textContent = fmtM(totalFund)+' CHF';
+  document.getElementById('r_c_std').textContent = fmt(c_std);
+  document.getElementById('r_c_studio').textContent = '×'+c_mult.toFixed(1);
+  document.getElementById('r_c_infra').textContent = fmtM(c_infra)+' CHF';
+
+  let totalCapex = c_infra;
+  let totalSurface = 0, studioSurface = 0;
+  let rev_studio=0, rev_bail=0, rev_school=0, rev_loueurs=0;
+
+  MODULES.forEach(m => {
+    const cost = getModuleCost(m);
+    if(selectedModules.has(m.id)){
+      totalCapex += cost;
+      totalSurface += m.total;
+      studioSurface += m.studios;
+      rev_studio += m.rev_studio;
+      rev_bail += m.rev_bail;
+      rev_school += m.rev_school;
+      rev_loueurs += m.rev_loueurs;
+    }
+  });
+
+  MODULES.forEach(m => {
+    const el = document.getElementById('mod_'+m.id);
+    if(!el) return;
+    el.className = 'module' + (selectedModules.has(m.id) ? ' active' : '');
+  });
+
+  // Budget bar — max shown is max(totalFund, totalCapex, 200M)
+  const barMax = Math.max(totalFund, totalCapex, 50000000);
+  const fundOK = totalCapex <= totalFund;
+  const barPct = Math.min(totalCapex / barMax * 100, 100);
+  const barEl = document.getElementById('budget_bar');
+  barEl.style.width = barPct+'%';
+  barEl.style.background = fundOK ? '#1d9e75' : '#a32d2d';
+
+  const pct = totalFund > 0 ? Math.round(totalCapex/totalFund*100) : 0;
+  document.getElementById('budget_pct_txt').innerHTML = totalFund === 0
+    ? '<span class="badge b-bad">Aucun financement saisi</span>'
+    : fundOK
+      ? `<span class="badge b-go">${pct}% du budget utilisé · Solde : ${fmtM(totalFund-totalCapex)} CHF</span>`
+      : `<span class="badge b-bad">DÉPASSEMENT : ${fmtM(totalCapex-totalFund)} CHF au-dessus du financement disponible</span>`;
+  document.getElementById('budget_mid').textContent = fmtM(barMax/2)+' CHF';
+  document.getElementById('budget_max').textContent = fmtM(barMax)+' CHF';
+
+  let alertHtml = '';
+  if(!fundOK && totalFund > 0){
+    alertHtml = `<div class="verdict bad">Le programme sélectionné dépasse le financement disponible de <strong>${fmtM(totalCapex-totalFund)} CHF</strong>. Désélectionnez des modules ou augmentez le financement.</div>`;
+  }
+  document.getElementById('budget_alert').innerHTML = alertHtml;
+
+  // Revenue model (réaliste an 5 — taux issus du prévisionnel ProFilms)
+  // Plateaux : 0.50 CHF/m²/j · occupation 15% an5 (réaliste)
+  // Annexes : 0.30 CHF/m²/j · occupation 18% an5
+  // Baux long terme : 0.30 CHF/m²/j · occupation 27% an5
+  // École : tarif mensuel ~400 CHF/m² (proxy baux)
+  const ca_studio_5 = Math.round(rev_studio * 0.50 * 360 * 0.15);
+  const ca_annexes_5 = Math.round((rev_bail + rev_loueurs*0.5) * 0.30 * 360 * 0.27);
+  const ca_school_5 = Math.round(rev_school * 0.30 * 360 * 0.27);
+  const ca_5 = ca_studio_5 + ca_annexes_5 + ca_school_5;
+
+  // Charges fixes proportionnelles (base ProFilms an 5 conservateur = 3 690 052 CHF pour 21 410 m²)
+  const ratio = totalSurface / 21410;
+  // Ajouter DDP proportionnel
+  const ddp = Math.round(ratio * 202900);
+  const charges_fixes = Math.round(ratio * 3690052);
+  const result_5 = ca_5 - charges_fixes;
+
+  document.getElementById('res_capex').textContent = fmtM(totalCapex);
+  document.getElementById('res_surf').textContent = fmt(studioSurface)+' m²';
+  document.getElementById('res_ca5').textContent = fmtM(ca_5);
+  const rEl = document.getElementById('res_result');
+  rEl.textContent = (result_5>=0?'+':'')+fmtM(result_5);
+  rEl.className = 'val '+(result_5>50000?'good':result_5>-400000?'warn':'bad');
+
+  let verdict='', vcls='';
+  if(!fundOK && totalFund > 0){
+    verdict='Programme non finançable avec les ressources actuelles. Réduire le périmètre ou trouver des financements complémentaires.';vcls='bad';
+  } else if(result_5>100000){
+    verdict=`Configuration viable en régime de croisière. CA an 5 estimé à ${fmtM(ca_5)} CHF pour des charges de ~${fmtM(charges_fixes)} CHF, soit un résultat positif de ${fmtM(result_5)} CHF. Ce programme peut s'autofinancer (hypothèses ProFilms, scénario réaliste).`;vcls='go';
+  } else if(result_5>-500000){
+    verdict=`Configuration sous tension mais défendable. Résultat an 5 : ${fmtM(result_5)} CHF. Comparable au modèle CNA Luxembourg en phase de lancement. Des revenus complémentaires (baux école sécurisés, subventions culturelles) permettent d'équilibrer. C'est précisément ce que la mission EY doit valider.`;vcls='warn';
+  } else {
+    verdict=`Configuration structurellement déficitaire avec ces hypothèses. Soit augmenter le programme (plus de surface génératrice de revenus), soit réévaluer les tarifs — actuellement 0.50 CHF/m²/j contre 1.5–2.5 €/m²/j pour le CNA Luxembourg, le seul benchmark structurellement comparable.`;vcls='bad';
+  }
+  document.getElementById('phase_verdict').innerHTML = `<div class="verdict ${vcls}">${verdict}</div>`;
+
+  // Timeline (rampe réaliste : 30%/50%/65%/82%/100% du CA an 5)
+  const ramp = [0.28, 0.47, 0.64, 0.81, 1.0];
+  const tl = document.getElementById('timeline_row');
+  tl.innerHTML = '';
+  ['An 1 (2031)','An 2 (2032)','An 3 (2033)','An 4 (2034)','An 5 (2035)'].forEach((y,i)=>{
+    const ca_y = Math.round(ca_5 * ramp[i]);
+    const res_y = ca_y - charges_fixes;
+    const active = i === 4;
+    tl.innerHTML += `<div class="tl-step ${active?'active-phase':''}">
+      <div class="tl-lbl">${y}</div>
+      <div class="tl-val">${fmtM(ca_y)}</div>
+      <div style="font-size:10px;color:${active?'#aaa':res_y>=0?'#1d9e75':'#a32d2d'}">${res_y>=0?'+':''} ${fmtM(res_y)}</div>
+    </div>`;
+  });
+
+  // Charts
+  const donutData = [ca_studio_5, ca_annexes_5, ca_school_5].filter(v=>v>0);
+  const donutLabels = ['Plateaux studios','Baux & loueurs','École / formation'].filter((_,i)=>[ca_studio_5,ca_annexes_5,ca_school_5][i]>0);
+  if(donutChart){donutChart.data.datasets[0].data=donutData;donutChart.data.labels=donutLabels;donutChart.update();}
+  else donutChart=new Chart(document.getElementById('chartDonut'),{type:'doughnut',data:{labels:donutLabels,datasets:[{data:donutData,backgroundColor:['#1a1a1a','#378add','#1d9e75'],borderWidth:0}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{font:{size:11}}}}}});
+
+  const caYears = ramp.map(r=>Math.round(ca_5*r));
+  if(evolChart){evolChart.data.datasets[0].data=caYears;evolChart.data.datasets[1].data=ramp.map(()=>charges_fixes);evolChart.update();}
+  else evolChart=new Chart(document.getElementById('chartEvol'),{type:'line',data:{labels:['An 1','An 2','An 3','An 4','An 5'],datasets:[
+    {label:'CA',data:caYears,borderColor:'#1a1a1a',backgroundColor:'rgba(26,26,26,.06)',tension:.3,fill:true},
+    {label:'Charges',data:ramp.map(()=>charges_fixes),borderColor:'#f0a47f',backgroundColor:'transparent',borderDash:[4,3],tension:.1}
+  ]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{ticks:{callback:v=>fmtM(v)}}}}});
+}
+
+// BP charts (données exactes prévisionnel ProFilms 13.02.2026)
+const years_bp=['An 1 (2031)','An 2 (2032)','An 3 (2033)','An 4 (2034)','An 5 (2035)'];
+const caC=[1836184,2269688,2672233,3182962,3676893];
+const caR=[2453380,2813868,3151128,3576134,4004657];
+const resC=[-1185035,-886310,-687585,-361594,-13159];
+const resR=[-671693,-465591,-385440,-261619,9111];
+new Chart(document.getElementById('chartCA2'),{type:'bar',data:{labels:years_bp,datasets:[{label:'Conservateur',data:caC,backgroundColor:'#b5d4f4'},{label:'Réaliste',data:caR,backgroundColor:'#9fe1cb'}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{ticks:{callback:v=>fmtM(v)}}}}});
+new Chart(document.getElementById('chartRes2'),{type:'bar',data:{labels:years_bp,datasets:[{label:'Conservateur',data:resC,backgroundColor:resC.map(v=>v<0?'#f09595':'#5dcaa5')},{label:'Réaliste',data:resR,backgroundColor:resR.map(v=>v<0?'#f5c4b3':'#1d9e75')}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{ticks:{callback:v=>fmtM(v)}}}}});
+
+['f_fondation','f_public','f_mecenat','f_dette','c_std','c_studio','c_infra'].forEach(id=>document.getElementById(id).addEventListener('input',()=>{buildModuleCards();updateAll();}));
+buildModuleCards();
+updateAll();
+</script>
+</body>
+</html>
