@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>La Fabrique du Film — Simulateur v3</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif;background:#f5f5f2;color:#1a1a1a;font-size:14px;line-height:1.5}
@@ -81,6 +82,18 @@ td{padding:7px 12px;border-bottom:1px solid #ebebeb}
 .tl-val{font-weight:600;font-size:13px}
 .capex-ref{display:inline-block;padding:4px 10px;background:#f0f0ec;border-radius:5px;font-size:12px;color:#666;margin-top:4px}
 @media(max-width:700px){.modules-grid{grid-template-columns:1fr 1fr}.grid4{grid-template-columns:1fr 1fr}}
+
+.expbar{display:flex;gap:10px;margin:0 0 1.2rem;flex-wrap:wrap}
+.bexp{display:inline-flex;align-items:center;gap:6px;border:1.5px solid #1a1a1a;border-radius:7px;background:#fff;color:#1a1a1a;padding:.5rem 1.1rem;font-size:13px;font-weight:600;cursor:pointer;transition:.15s}
+.bexp:hover{background:#1a1a1a;color:#fff}
+.bexp.xl{border-color:#1d6f42;color:#1d6f42}
+.bexp.xl:hover{background:#1d6f42;color:#fff}
+@media print{
+  .home-bar-wrap,.header,.tabs-wrap,.expbar,button,footer{display:none!important}
+  .pane{display:block!important}
+  body{background:white;font-size:12px}
+  .card,.chart-wrap{break-inside:avoid;border:1px solid #ccc}
+}
 </style>
 </head>
 <body>
@@ -283,6 +296,10 @@ td{padding:7px 12px;border-bottom:1px solid #ebebeb}
 <!-- ===== TAB 3 : BP ===== -->
 <div id="pane-bp" class="pane">
 <div class="page">
+  <div class="expbar">
+    <button class="bexp" onclick="window.print()">⬇ Exporter en PDF</button>
+    <button class="bexp xl" onclick="exportExcelHive()">⬇ Exporter en Excel</button>
+  </div>
   <div class="section-title">Prévisionnel BP complet — ProFilms, 13.02.2026</div>
   <div style="margin-bottom:1rem;font-size:13px;color:#555">Données extraites du prévisionnel ProFilms. Lancement activité : <strong>Janvier 2031</strong>. CAPEX : <strong>186 036 000 CHF</strong>.</div>
 
@@ -694,6 +711,94 @@ new Chart(document.getElementById('chartRes2'),{type:'bar',data:{labels:years_bp
 ['f_fondation','f_public','f_mecenat','f_dette','c_std','c_studio','c_infra'].forEach(id=>document.getElementById(id).addEventListener('input',()=>{buildModuleCards();updateAll();}));
 buildModuleCards();
 updateAll();
+
+// ===== EXPORT EXCEL HIVE =====
+function exportExcelHive(){
+  var wb = XLSX.utils.book_new();
+
+  // Sheet 1 - BP conservateur (données statiques ProFilms 13.02.2026)
+  var p1 = [
+    ['ProFilms - Simulateur HIVE - La Fabrique du Film - ' + new Date().toLocaleDateString('fr-CH')],
+    ['Source : Prévisionnel ProFilms 13.02.2026 / Architecture CCHE Lausanne'],
+    [],
+    ['SCÉNARIO CONSERVATEUR (CHF)', 'An 1', 'An 2', 'An 3', 'An 4', 'An 5'],
+    ["Chiffre d'affaires", 1836184, 2269688, 2672233, 3182962, 3676893],
+    ['Charges totales', 3021218, 3155998, 3359818, 3544555, 3690052],
+    ['Résultat courant', -1185035, -886310, -687585, -361594, -13159],
+    ['Balance trésorerie', null, null, null, null, 1878055],
+    [],
+    ['SCÉNARIO RÉALISTE (CHF)', 'An 1', 'An 2', 'An 3', 'An 4', 'An 5'],
+    ["Chiffre d'affaires", 2453380, 2813868, 3151128, 3576134, 4004657],
+    ['Charges totales', 3125073, 3279459, 3536568, 3837753, 3995546],
+    ['Résultat courant', -671693, -465591, -385440, -261619, 9111],
+    ['Balance trésorerie', null, null, null, null, 2872147],
+    [],
+    ['DÉTAIL CHARGES AN 5 (conservateur)', 'CHF/an'],
+    ['DDP Droit de Superficie', 202900],
+    ['Maintenance & réparations', 622051],
+    ['Utilités (énergie, eau)', 343017],
+    ['Masse salariale', 673000],
+    ['Marketing & communication', 290678],
+    ['Honoraires & admin', 95000],
+    ['Autres charges', 463406],
+    ['Total charges an 5', 3690052],
+  ];
+  var ws1 = XLSX.utils.aoa_to_sheet(p1);
+  ws1['!cols'] = [{wch:38},{wch:14},{wch:14},{wch:14},{wch:14},{wch:14}];
+  XLSX.utils.book_append_sheet(wb, ws1, 'Previsionnel BP');
+
+  // Sheet 2 - Programme CCHE
+  var p2 = [
+    ['PROGRAMME ARCHITECTURAL - CCHE LAUSANNE'],
+    [],
+    ['Module', 'Surface plateaux (m²)', 'Surface totale (m²)', 'CAPEX estimé (CHF)'],
+    ['Studios 3/4 (2 grands plateaux)', 6570, 8200, 71600000],
+    ['Studio 5 (grand plateau)', 5557, 6900, 60500000],
+    ['Studio 6 + Loueurs', 2990, 4200, 32400000],
+    ['Ateliers décors & costumes', 0, 5800, 10200000],
+    ['École / Formation (incl. Studio TV)', 0, 3900, 6500000],
+    ['Pavillon public', 0, 2400, 4800000],
+    [],
+    ['TOTAL', 8560, 21410, 186036000],
+    [],
+    ['Lancement activité', 'Janvier 2031'],
+    ['CAPEX total', 186036000, 'CHF'],
+    ['Ratio moyen', 8690, 'CHF/m² SPB'],
+  ];
+  var ws2 = XLSX.utils.aoa_to_sheet(p2);
+  ws2['!cols'] = [{wch:36},{wch:22},{wch:22},{wch:20}];
+  XLSX.utils.book_append_sheet(wb, ws2, 'Programme CCHE');
+
+  // Sheet 3 - Hypothèses tarifaires
+  var p3 = [
+    ['HYPOTHESES TARIFAIRES & TAUX D OCCUPATION'],
+    [],
+    ['Tarifs (BP ProFilms)', 'Valeur', 'Unité'],
+    ['Tarif plateaux studios', 0.50, 'CHF/m²/jour'],
+    ['Tarif annexes/bureaux', 0.30, 'CHF/m²/jour'],
+    ['Baux long terme (école, ateliers)', 30, 'CHF/m²/mois'],
+    [],
+    ['Taux occupation - Scenario conservateur', 'An 1', 'An 3', 'An 5'],
+    ['Studios', '10%', '30%', '40%'],
+    ['Annexes', '15%', '35%', '50%'],
+    ['Baux stables', '21%', '40%', '50%'],
+    [],
+    ['Taux occupation - Scenario realiste', 'An 1', 'An 3', 'An 5'],
+    ['Studios', '15%', '40%', '60%'],
+    ['Annexes', '20%', '50%', '70%'],
+    ['Baux stables', '70%', '80%', '90%'],
+    [],
+    ['Benchmarks européens', 'Tarif plateau', 'Occupation moy.'],
+    ['CNA Luxembourg (fondation)', '1.50-2.50 EUR/m²/j', '45-55%'],
+    ['MBS Vienna (privé)', '2.00-4.00 EUR/m²/j', '60-70%'],
+    ['Cité du Cinéma Paris (privé)', '2.00-5.00 EUR/m²/j', '50-60%'],
+  ];
+  var ws3 = XLSX.utils.aoa_to_sheet(p3);
+  ws3['!cols'] = [{wch:38},{wch:20},{wch:20}];
+  XLSX.utils.book_append_sheet(wb, ws3, 'Hypotheses');
+
+  XLSX.writeFile(wb, 'ProFilms_Simulateur_HIVE_' + new Date().toISOString().slice(0,10) + '.xlsx');
+}
 </script>
 </body>
 </html>
