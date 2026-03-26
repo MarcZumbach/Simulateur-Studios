@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>ProFilms · Simulateur Studio Custom</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
 :root{--black:#1a1a1a;--white:#fff;--bg:#f4f4f1;--border:#e0e0db;--mid:#888;--light:#f9f9f7;--green:#0f6e56;--green-bg:#e1f5ee;--warn:#854f0b;--warn-bg:#faeeda;--red:#a32d2d;--red-bg:#fcebeb;--blue:#0c447c;--blue-bg:#e6f1fb;--purple:#3c3489;--purple-bg:#eeedfe;}
@@ -106,7 +107,22 @@ td{padding:6px 11px;border-bottom:1px solid var(--border)}
 .bl{display:flex;justify-content:space-between;font-size:11px;color:#aaa}
 .cg{color:var(--green)}.cr{color:var(--red)}.cwa{color:var(--warn)}
 .bn{background:var(--black);color:var(--white);border:none;padding:.6rem 1.4rem;border-radius:7px;cursor:pointer;font-size:13px;font-weight:600}
+@media print{
+  .home-bar,.tabs-wrap,.bn,.addbtn,.btnrm,.tog,.hdr-badge button,.hdr-badge select{display:none!important}
+  .hdr{background:#1a1a1a!important;-webkit-print-color-adjust:exact;print-color-adjust:exact}
+  .pane{display:block!important}
+  .sec{page-break-after:avoid}
+  .card,.fb,.sb,.cw{break-inside:avoid}
+  body{background:white}
+  .page{padding:.5rem 1rem 1rem}
+}
 @media(max-width:760px){.g2,.g4{grid-template-columns:1fr}.sctrls{grid-template-columns:1fr 1fr}}
+.expbar{display:flex;gap:10px;margin-bottom:1.2rem;flex-wrap:wrap}
+.bexp{display:inline-flex;align-items:center;gap:6px;border:1.5px solid var(--black);border-radius:7px;background:var(--white);color:var(--black);padding:.5rem 1.1rem;font-size:13px;font-weight:600;cursor:pointer;transition:.15s}
+.bexp:hover{background:var(--black);color:var(--white)}
+.bexp.xl{border-color:#1d6f42;color:#1d6f42}
+.bexp.xl:hover{background:#1d6f42;color:var(--white)}
+@media print{.home-bar,.hdr,.tabs-wrap,.expbar,.bn,footer{display:none!important}.pane{display:block!important}body{background:white;font-size:12px}.card,.cw,.fb{break-inside:avoid;border:1px solid #ccc}.sec{border-bottom:2px solid #333}}
 </style>
 </head>
 <body>
@@ -114,7 +130,14 @@ td{padding:6px 11px;border-bottom:1px solid var(--border)}
 <div class="hdr">
   <div><div class="hdr-logo">PROFILMS · Simulateur Studio Custom</div>
   <div class="hdr-sub">Configurateur libre · Benchmarks européens · v2.0</div></div>
-  <div class="hdr-badge" id="hdr-capex">CAPEX : —</div>
+  <div style="display:flex;gap:8px;align-items:center">
+    <div class="hdr-badge" id="hdr-capex">CAPEX : —</div>
+    <button onclick="saveScenario()" style="background:#2a2a2a;border:1px solid #555;color:#ccc;border-radius:6px;padding:4px 12px;font-size:11px;cursor:pointer" title="Sauvegarder le scénario en cours">💾 Sauvegarder</button>
+    <select id="scenario-select" onchange="loadScenario(this.value)" style="background:#2a2a2a;border:1px solid #555;color:#ccc;border-radius:6px;padding:4px 8px;font-size:11px;cursor:pointer">
+      <option value="">— Charger un scénario —</option>
+    </select>
+    <button onclick="exportPDF()" style="background:#2a2a2a;border:1px solid #555;color:#ccc;border-radius:6px;padding:4px 12px;font-size:11px;cursor:pointer" title="Exporter en PDF">⬇ Export PDF</button>
+  </div>
 </div>
 <div class="tabs-wrap"><div class="tabs">
   <button class="tab active" onclick="goTab('prog',this)"><span class="tnum">1</span>Programme</button>
@@ -322,6 +345,10 @@ td{padding:6px 11px;border-bottom:1px solid var(--border)}
 
 <!-- TAB 5 -->
 <div id="pane-results" class="pane"><div class="page">
+  <div class="expbar">
+    <button class="bexp" onclick="window.print()">⬇ Exporter en PDF</button>
+    <button class="bexp xl" onclick="exportExcel()">⬇ Exporter en Excel</button>
+  </div>
   <div id="verdict-box" style="margin-bottom:1.2rem"></div>
   <div class="g4" style="margin-bottom:1.2rem">
     <div class="card"><div class="kl">CAPEX estimé</div><div class="kv" id="r-cap">—</div><div class="ks">CHF</div></div>
@@ -615,10 +642,175 @@ function update(){
   }
 }
 
-renderEPT();
-addStudio('Studio 1',1500,'grand');
-addStudio('Studio 2',800,'standard');
-update();
+// ===== SAVE / LOAD =====
+function getAllValues(){
+  var data={studios:studios.map(function(s){return{id:s.id,name:s.name,surf:s.surf,type:s.type};}),sid:sid,ids:{}};
+  document.querySelectorAll('input[type=range],input[type=number],input[type=checkbox],select').forEach(function(e){
+    if(e.id)data.ids[e.id]=e.type==='checkbox'?e.checked:e.value;
+  });
+  return data;
+}
+
+function applyValues(data){
+  if(data.studios){
+    studios=data.studios;sid=data.sid||studios.length;
+    renderStudios();
+  }
+  if(data.ids){
+    Object.keys(data.ids).forEach(function(id){
+      var e=document.getElementById(id);
+      if(!e)return;
+      if(e.type==='checkbox')e.checked=data.ids[id];
+      else e.value=data.ids[id];
+    });
+  }
+  update();
+}
+
+function saveScenario(){
+  var name=prompt('Nom du scénario :','Scénario '+new Date().toLocaleString('fr-CH',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'}));
+  if(!name)return;
+  var all=JSON.parse(localStorage.getItem('profilms-scenarios')||'{}');
+  all[name]=getAllValues();
+  localStorage.setItem('profilms-scenarios',JSON.stringify(all));
+  refreshScenarioList();
+  alert('Scénario "'+name+'" sauvegardé.');
+}
+
+function loadScenario(name){
+  if(!name)return;
+  var all=JSON.parse(localStorage.getItem('profilms-scenarios')||'{}');
+  if(all[name]){applyValues(all[name]);alert('Scénario "'+name+'" chargé.');}
+  document.getElementById('scenario-select').value='';
+}
+
+function refreshScenarioList(){
+  var sel=document.getElementById('scenario-select');
+  var all=JSON.parse(localStorage.getItem('profilms-scenarios')||'{}');
+  var keys=Object.keys(all);
+  sel.innerHTML='<option value="">— Charger un scénario —</option>';
+  keys.forEach(function(k){
+    var opt=document.createElement('option');opt.value=k;opt.textContent=k;
+    sel.appendChild(opt);
+  });
+  // Add delete option
+  if(keys.length>0){
+    var del=document.createElement('option');del.value='__delete__';del.textContent='🗑 Supprimer un scénario…';
+    sel.appendChild(del);
+  }
+}
+
+// Override loadScenario to handle delete
+var _loadScenario=loadScenario;
+loadScenario=function(name){
+  if(name==='__delete__'){
+    var all=JSON.parse(localStorage.getItem('profilms-scenarios')||'{}');
+    var keys=Object.keys(all);
+    if(keys.length===0){alert('Aucun scénario sauvegardé.');return;}
+    var toDel=prompt('Nom du scénario à supprimer :\n'+keys.join('\n'));
+    if(toDel&&all[toDel]){delete all[toDel];localStorage.setItem('profilms-scenarios',JSON.stringify(all));refreshScenarioList();alert('"'+toDel+'" supprimé.');}
+    document.getElementById('scenario-select').value='';
+    return;
+  }
+  _loadScenario(name);
+};
+
+// ===== EXPORT PDF =====
+function exportPDF(){
+  // Switch to results tab first
+  goTab('results',document.querySelectorAll('.tab')[4]);
+  setTimeout(function(){window.print();},400);
+}
+
+refreshScenarioList();
+
+// ===== EXPORT EXCEL =====
+function exportExcel(){
+  var wb=XLSX.utils.book_new();
+  var cStd=g('c-std'),cMS=g('c-ms'),cMB=g('c-mb');
+  var tS=g('t-s'),tB=g('t-b'),tBail=g('t-bail'),tL=g('t-l');
+  var sEc=el('ecole-on').checked?g('ecole-surf'):0;
+  var sAt=el('atelier-on').checked?g('atelier-surf'):0;
+  var sDp=el('depot-on').checked?g('depot-surf'):0;
+  var sLo=el('loueur-on').checked?g('loueur-surf'):0;
+  var sBu=el('bureau-on').checked?g('bureau-surf'):0;
+  var sPu=el('public-on').checked?g('public-surf'):0;
+  var surfS=0;studios.forEach(function(s){surfS+=s.surf;});
+  var sTotal=Math.round((surfS+sEc+sAt+sDp+sLo+sBu+sPu)*1.40);
+  var oS=[g('os1'),(g('os1')+g('os3'))/2,g('os3'),(g('os3')+g('os5'))/2,g('os5')];
+  var oB=[g('ob1'),(g('ob1')+g('ob3'))/2,g('ob3'),(g('ob3')+g('ob5'))/2,g('ob5')];
+  var oBL=[g('obl1'),(g('obl1')+g('obl3'))/2,g('obl3'),(g('obl3')+g('obl5'))/2,g('obl5')];
+  var oL=[g('ol1'),(g('ol1')+g('ol3'))/2,g('ol3'),(g('ol3')+g('ol5'))/2,g('ol5')];
+  var caS=oS.map(function(o){return Math.round(surfS*tS*360*o/100);});
+  var caB=oB.map(function(o){return Math.round(sBu*tB*360*o/100);});
+  var caBL=oBL.map(function(o){return Math.round((sEc+sAt+sDp)*tBail*o/100);});
+  var caL=oL.map(function(o){return Math.round(sLo*tL*o/100);});
+  var caArr=caS.map(function(_,i){return caS[i]+caB[i]+caBL[i]+caL[i];});
+  var masseS=0;ROLES.forEach(function(r){masseS+=Math.round(g('ept-'+r.k)*g('sal-'+r.k)*1.14);});
+  var cEn=Math.round(sTotal*g('c-en')),cMa=Math.round(sTotal*g('c-ma'));
+  var fixHV=masseS+cEn+cMa+g('c-as')+g('c-mk')+g('c-ho')+g('c-ad')+g('c-dd');
+  var pret=g('fpt'),taux=g('ftx')/100,duree=g('fdu'),ann=0;
+  if(pret>0&&taux>0&&duree>0){var tm=taux/12,n=duree*12;ann=Math.round(pret*tm*Math.pow(1+tm,n)/(Math.pow(1+tm,n)-1))*12;}
+  else if(pret>0&&duree>0){ann=Math.round(pret/duree);}
+  var chArr=caArr.map(function(ca,i){return Math.round(fixHV*(1+i*0.025)+ca*g('c-va')/100+ann);});
+  var resArr=caArr.map(function(ca,i){return ca-chArr[i];});
+
+  // Feuille 1 - Prévisionnel
+  var d=new Date().toLocaleDateString('fr-CH');
+  var p1=[
+    ['ProFilms - Simulateur Studio Custom - '+d],[],
+    ['PRÉVISIONNEL FINANCIER (CHF)','An 1','An 2','An 3','An 4','An 5'],
+    ["Chiffre d'affaires"].concat(caArr),
+    ['  dont CA Studios'].concat(caS),
+    ['  dont CA Bureaux'].concat(caB),
+    ['  dont CA Baux stables'].concat(caBL),
+    ['  dont CA Loueurs'].concat(caL),[],
+    ['Charges totales'].concat(chArr),
+    ['  dont Masse salariale'].concat(chArr.map(function(_,i){return Math.round(masseS*(1+i*0.025));})),
+    ['  dont Energie + Maintenance'].concat(chArr.map(function(){return cEn+cMa;})),
+    ['  dont Annuite pret'].concat(chArr.map(function(){return ann;})),[],
+    ['RÉSULTAT COURANT'].concat(resArr),[],
+    ['Taux occupation studios (%)'].concat(oS.map(function(o){return Math.round(o)/100;})),
+    ['Taux occupation bureaux (%)'].concat(oB.map(function(o){return Math.round(o)/100;})),
+    ['Taux occupation baux (%)'].concat(oBL.map(function(o){return Math.round(o)/100;})),
+  ];
+  var ws1=XLSX.utils.aoa_to_sheet(p1);
+  ws1['!cols']=[{wch:38},{wch:14},{wch:14},{wch:14},{wch:14},{wch:14}];
+  XLSX.utils.book_append_sheet(wb,ws1,'Previsionnel');
+
+  // Feuille 2 - Programme
+  var p2=[['PROGRAMME & CAPEX'],[],['Studios'],['Nom','Surface m2','Type','CAPEX CHF']];
+  studios.forEach(function(s){p2.push([s.name,s.surf,s.type==='grand'?'Grand plateau':'Standard',Math.round(s.surf*cStd*(s.type==='grand'?cMB:cMS))]);});
+  p2.push([]);p2.push(['Espaces','Surface m2','Tarif CHF/m2/an']);
+  if(sEc>0)p2.push(['Ecole / Formation',sEc,tBail]);
+  if(sAt>0)p2.push(['Ateliers actifs',sAt,tBail]);
+  if(sDp>0)p2.push(['Depots stockage',sDp,tBail]);
+  if(sLo>0)p2.push(['Loueurs / Boutiques',sLo,tL]);
+  if(sBu>0)p2.push(['Bureaux de production',sBu,tB*360+' CHF/m2/an (journalier x360)']);
+  p2.push([]);p2.push(['Charges annuelles fixes','CHF/an']);
+  p2.push(['Masse salariale',masseS]);p2.push(['Energie',cEn]);p2.push(['Maintenance',cMa]);
+  p2.push(['Assurances',g('c-as')]);p2.push(['Marketing',g('c-mk')]);
+  p2.push(['Honoraires/Admin',g('c-ho')+g('c-ad')]);p2.push(['DDP/Loyer',g('c-dd')]);
+  var ws2=XLSX.utils.aoa_to_sheet(p2);
+  ws2['!cols']=[{wch:34},{wch:14},{wch:28}];
+  XLSX.utils.book_append_sheet(wb,ws2,'Programme');
+
+  // Feuille 3 - Financement
+  var p3=[['FINANCEMENT'],[],['Source','Montant CHF']];
+  p3.push(['Fondation principale',g('ff1')]);p3.push(['Fondation secondaire',g('ff2')]);p3.push(['Mecenat prive',g('ffm')]);
+  p3.push(['Sous-total Fondations',g('ff1')+g('ff2')+g('ffm')]);p3.push([]);
+  p3.push(['Canton de Geneve',g('fca')]);p3.push(['Commune',g('fco')]);p3.push(['Confederation/OFC',g('fcf')]);
+  p3.push(['Sous-total Subventions',g('fca')+g('fco')+g('fcf')]);p3.push([]);
+  p3.push(['Apport ProFilms',g('fpr')]);p3.push(['Crowdfunding',g('fcr')]);
+  p3.push(['Sous-total Fonds propres',g('fpr')+g('fcr')]);p3.push([]);
+  p3.push(['Pret bancaire',pret]);p3.push(['Taux annuel %',g('ftx')]);p3.push(['Duree annees',duree]);p3.push(['Annuite CHF/an',ann]);p3.push([]);
+  p3.push(['TOTAL FINANCEMENT',g('ff1')+g('ff2')+g('ffm')+g('fca')+g('fco')+g('fcf')+g('fpr')+g('fcr')+pret]);
+  var ws3=XLSX.utils.aoa_to_sheet(p3);
+  ws3['!cols']=[{wch:30},{wch:18}];
+  XLSX.utils.book_append_sheet(wb,ws3,'Financement');
+
+  XLSX.writeFile(wb,'ProFilms_Simulateur_'+new Date().toISOString().slice(0,10)+'.xlsx');
+}
 </script>
 </body>
 </html>
