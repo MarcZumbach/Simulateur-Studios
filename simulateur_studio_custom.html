@@ -7,1020 +7,617 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
-:root{
-  --black:#1a1a1a;--white:#fff;--bg:#f4f4f1;
-  --border:#e0e0db;--mid:#888;--light:#f9f9f7;
-  --green:#0f6e56;--green-bg:#e1f5ee;--green-light:#9fe1cb;
-  --warn:#854f0b;--warn-bg:#faeeda;
-  --red:#a32d2d;--red-bg:#fcebeb;
-  --blue:#0c447c;--blue-bg:#e6f1fb;
-  --purple:#3c3489;--purple-bg:#eeedfe;
-}
+:root{--black:#1a1a1a;--white:#fff;--bg:#f4f4f1;--border:#e0e0db;--mid:#888;--light:#f9f9f7;--green:#0f6e56;--green-bg:#e1f5ee;--warn:#854f0b;--warn-bg:#faeeda;--red:#a32d2d;--red-bg:#fcebeb;--blue:#0c447c;--blue-bg:#e6f1fb;--purple:#3c3489;--purple-bg:#eeedfe;}
 body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif;background:var(--bg);color:var(--black);font-size:14px;line-height:1.5}
-
-/* HEADER */
-.header{background:var(--black);color:var(--white);padding:1rem 2rem;display:flex;align-items:center;justify-content:space-between;gap:1rem}
-.header-logo{font-size:18px;font-weight:700;letter-spacing:.05em}
-.header-sub{font-size:11px;color:#aaa;margin-top:2px}
-.header-badge{background:#333;border:1px solid #555;border-radius:6px;padding:4px 12px;font-size:11px;color:#ccc}
-
-/* TABS */
+.home-bar{background:#f0f0ec;border-bottom:1px solid var(--border);padding:.4rem 2rem}
+.home-bar a{font-size:12px;color:#888;text-decoration:none}
+.home-bar a:hover{color:var(--black)}
+.hdr{background:var(--black);color:var(--white);padding:1rem 2rem;display:flex;align-items:center;justify-content:space-between;gap:1rem}
+.hdr-logo{font-size:18px;font-weight:700;letter-spacing:.05em}
+.hdr-sub{font-size:11px;color:#aaa;margin-top:2px}
+.hdr-badge{background:#333;border:1px solid #555;border-radius:6px;padding:4px 12px;font-size:11px;color:#ccc}
 .tabs-wrap{background:var(--white);border-bottom:2px solid var(--border);padding:0 2rem;position:sticky;top:0;z-index:100}
-.tabs{display:flex;gap:0;overflow-x:auto}
+.tabs{display:flex;overflow-x:auto}
 .tab{padding:.65rem 1.2rem;font-size:13px;border:none;background:none;cursor:pointer;color:var(--mid);border-bottom:2.5px solid transparent;font-weight:500;transition:.15s;white-space:nowrap;margin-bottom:-2px}
 .tab.active{color:var(--black);border-bottom-color:var(--black)}
-.tab .tab-num{display:inline-block;width:18px;height:18px;border-radius:50%;background:var(--border);color:var(--mid);font-size:10px;line-height:18px;text-align:center;margin-right:5px;font-weight:600}
-.tab.active .tab-num{background:var(--black);color:var(--white)}
-
-/* LAYOUT */
+.tnum{display:inline-block;width:18px;height:18px;border-radius:50%;background:var(--border);color:var(--mid);font-size:10px;line-height:18px;text-align:center;margin-right:5px;font-weight:600}
+.tab.active .tnum{background:var(--black);color:var(--white)}
 .page{max-width:1160px;margin:0 auto;padding:1.5rem 1.5rem 4rem}
 .pane{display:none}.pane.active{display:block}
-.section-title{font-size:15px;font-weight:700;margin:1.8rem 0 .9rem;padding-bottom:.4rem;border-bottom:2px solid var(--black)}
-.section-title:first-child{margin-top:0}
-.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
-.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
-.grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
-
-/* CARDS */
+.sec{font-size:15px;font-weight:700;margin:1.8rem 0 .9rem;padding-bottom:.4rem;border-bottom:2px solid var(--black)}
+.sec:first-child{margin-top:0}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
 .card{background:var(--white);border:1px solid var(--border);border-radius:10px;padding:1.1rem 1.25rem}
-.card-title{font-size:13px;font-weight:600;margin-bottom:.8rem;display:flex;justify-content:space-between;align-items:center}
-.kpi-label{font-size:11px;color:var(--mid);text-transform:uppercase;letter-spacing:.04em;margin-bottom:3px}
-.kpi-val{font-size:22px;font-weight:700}
-.kpi-sub{font-size:11px;color:#aaa;margin-top:1px}
-
-/* BADGES */
+.kl{font-size:11px;color:var(--mid);text-transform:uppercase;letter-spacing:.04em;margin-bottom:3px}
+.kv{font-size:22px;font-weight:700}
+.ks{font-size:11px;color:#aaa;margin-top:1px}
 .badge{display:inline-block;font-size:11px;padding:2px 9px;border-radius:5px;font-weight:500;line-height:1.6}
-.b-green{background:var(--green-bg);color:#064a38}
-.b-warn{background:var(--warn-bg);color:#4d2e08}
-.b-red{background:var(--red-bg);color:#501313}
-.b-blue{background:var(--blue-bg);color:var(--blue)}
-.b-purple{background:var(--purple-bg);color:var(--purple)}
-.b-gray{background:#f0f0ec;color:#555}
-
-/* SLIDERS */
+.bg{background:var(--green-bg);color:#064a38}
+.bw{background:var(--warn-bg);color:#4d2e08}
+.bb{background:var(--blue-bg);color:var(--blue)}
+.bp{background:var(--purple-bg);color:var(--purple)}
+.bz{background:#f0f0ec;color:#555}
 .sr{display:flex;align-items:center;gap:8px;margin-bottom:7px}
 .sr label{font-size:12.5px;color:#444;flex:1;min-width:0;line-height:1.3}
 .sr input[type=range]{width:140px;flex-shrink:0;accent-color:var(--black);cursor:pointer}
-.sr .ro{font-size:12.5px;font-weight:700;min-width:85px;text-align:right;color:var(--black)}
-.sr-group{background:var(--light);border-radius:8px;padding:.8rem 1rem;margin-bottom:.8rem}
-.sr-group-title{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--mid);margin-bottom:.6rem}
-
-/* STUDIO BUILDER */
-.studio-list{display:flex;flex-direction:column;gap:10px;margin-bottom:1rem}
-.studio-item{background:var(--white);border:1.5px solid var(--border);border-radius:10px;padding:.9rem 1.1rem}
-.studio-item.highlight{border-color:var(--black)}
-.studio-header{display:flex;align-items:center;gap:10px;margin-bottom:.6rem}
-.studio-name-input{border:1px solid var(--border);border-radius:5px;padding:3px 8px;font-size:13px;font-weight:600;width:140px;background:var(--white)}
-.studio-badge{font-size:10px;padding:2px 7px;border-radius:4px;background:var(--blue-bg);color:var(--blue);font-weight:600}
-.studio-controls{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
-.studio-ctrl label{font-size:11px;color:var(--mid);margin-bottom:2px;display:block}
-.studio-ctrl input[type=range]{width:100%;accent-color:var(--black)}
-.studio-ctrl .val{font-size:12px;font-weight:600;margin-top:1px}
-.studio-remove{background:none;border:1px solid #ddd;border-radius:5px;cursor:pointer;color:#999;font-size:12px;padding:2px 8px;margin-left:auto}
-.studio-remove:hover{border-color:var(--red);color:var(--red)}
-.add-btn{display:flex;align-items:center;gap:6px;border:1.5px dashed var(--border);border-radius:8px;background:none;cursor:pointer;color:var(--mid);font-size:13px;padding:.7rem 1rem;width:100%;justify-content:center;transition:.15s}
-.add-btn:hover{border-color:var(--black);color:var(--black)}
-
-/* SPACE BLOCKS */
-.space-block{background:var(--white);border:1.5px solid var(--border);border-radius:10px;padding:.9rem 1.1rem;margin-bottom:.8rem}
-.space-block-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:.6rem}
-.space-block-title{font-size:13px;font-weight:600}
-.space-toggle{display:flex;align-items:center;gap:8px}
-.toggle-switch{position:relative;width:36px;height:20px;cursor:pointer}
-.toggle-switch input{opacity:0;width:0;height:0}
-.toggle-slider{position:absolute;inset:0;background:#ccc;border-radius:10px;transition:.2s}
-.toggle-slider::before{content:'';position:absolute;width:14px;height:14px;left:3px;top:3px;background:white;border-radius:50%;transition:.2s}
-.toggle-switch input:checked + .toggle-slider{background:var(--black)}
-.toggle-switch input:checked + .toggle-slider::before{transform:translateX(16px)}
-
-/* PERSONNEL */
-.ept-row{display:flex;align-items:center;gap:10px;padding:.5rem 0;border-bottom:1px solid var(--border)}
-.ept-row:last-child{border-bottom:none}
-.ept-label{font-size:13px;flex:1}
-.ept-role{font-size:11px;color:var(--mid);margin-top:1px}
-.ept-input{width:55px;border:1px solid var(--border);border-radius:5px;padding:3px 6px;font-size:13px;font-weight:600;text-align:center}
-.ept-salary{width:90px;border:1px solid var(--border);border-radius:5px;padding:3px 6px;font-size:12px;text-align:right}
-.ept-cost{font-size:12px;font-weight:600;min-width:80px;text-align:right;color:var(--mid)}
-
-/* FINANCEMENT */
-.fin-block{background:var(--white);border:1px solid var(--border);border-radius:10px;padding:1rem 1.2rem;margin-bottom:.8rem}
-.fin-block-title{font-size:13px;font-weight:600;margin-bottom:.7rem;display:flex;justify-content:space-between;align-items:center}
-.fin-input-group{display:flex;align-items:center;gap:10px;margin-bottom:6px}
-.fin-input-group label{font-size:12px;color:#555;flex:1}
-.fin-input{width:110px;border:1px solid var(--border);border-radius:5px;padding:4px 8px;font-size:13px;font-weight:600;text-align:right}
-.fin-total{background:var(--black);color:var(--white);border-radius:8px;padding:.9rem 1.2rem;display:flex;justify-content:space-between;align-items:center;margin-top:1rem}
-
-/* VERDICTS */
-.verdict{padding:12px 16px;border-radius:8px;font-size:13px;line-height:1.7;border-left:4px solid}
-.verdict.go{background:var(--green-bg);border-color:#1d9e75;color:#064a38}
-.verdict.warn{background:var(--warn-bg);border-color:#ba7517;color:#4d2e08}
-.verdict.bad{background:var(--red-bg);border-color:var(--red);color:#501313}
-
-/* NOTE */
+.ro{font-size:12.5px;font-weight:700;min-width:85px;text-align:right;color:var(--black)}
+.slist{display:flex;flex-direction:column;gap:10px;margin-bottom:1rem}
+.sitem{background:var(--white);border:1.5px solid var(--border);border-radius:10px;padding:.9rem 1.1rem}
+.shdr{display:flex;align-items:center;gap:10px;margin-bottom:.6rem}
+.sname{border:1px solid var(--border);border-radius:5px;padding:3px 8px;font-size:13px;font-weight:600;width:140px}
+.sbadge{font-size:10px;padding:2px 7px;border-radius:4px;background:var(--blue-bg);color:var(--blue);font-weight:600}
+.sctrls{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+.sctrl label{font-size:11px;color:var(--mid);margin-bottom:2px;display:block}
+.sctrl input[type=range]{width:100%;accent-color:var(--black)}
+.sctrl .val{font-size:12px;font-weight:600;margin-top:1px}
+.btnrm{background:none;border:1px solid #ddd;border-radius:5px;cursor:pointer;color:#999;font-size:12px;padding:2px 8px;margin-left:auto}
+.btnrm:hover{border-color:var(--red);color:var(--red)}
+.addbtn{display:flex;align-items:center;gap:6px;border:1.5px dashed var(--border);border-radius:8px;background:none;cursor:pointer;color:var(--mid);font-size:13px;padding:.7rem 1rem;width:100%;justify-content:center;transition:.15s}
+.addbtn:hover{border-color:var(--black);color:var(--black)}
+.sb{background:var(--white);border:1.5px solid var(--border);border-radius:10px;padding:.9rem 1.1rem;margin-bottom:.8rem}
+.sbh{display:flex;align-items:center;justify-content:space-between;margin-bottom:.6rem}
+.sbt{font-size:13px;font-weight:600}
+.tog{position:relative;width:36px;height:20px;cursor:pointer}
+.tog input{opacity:0;width:0;height:0}
+.togsl{position:absolute;inset:0;background:#ccc;border-radius:10px;transition:.2s}
+.togsl::before{content:'';position:absolute;width:14px;height:14px;left:3px;top:3px;background:white;border-radius:50%;transition:.2s}
+.tog input:checked + .togsl{background:var(--black)}
+.tog input:checked + .togsl::before{transform:translateX(16px)}
+.erow{display:flex;align-items:center;gap:10px;padding:.5rem 0;border-bottom:1px solid var(--border)}
+.erow:last-child{border-bottom:none}
+.einput{width:55px;border:1px solid var(--border);border-radius:5px;padding:3px 6px;font-size:13px;font-weight:600;text-align:center}
+.esal{width:90px;border:1px solid var(--border);border-radius:5px;padding:3px 6px;font-size:12px;text-align:right}
+.ecost{font-size:12px;font-weight:600;min-width:90px;text-align:right;color:var(--mid)}
+.fb{background:var(--white);border:1px solid var(--border);border-radius:10px;padding:1rem 1.2rem;margin-bottom:.8rem}
+.fbt{font-size:13px;font-weight:600;margin-bottom:.7rem;display:flex;justify-content:space-between;align-items:center}
+.fr{display:flex;align-items:center;gap:10px;margin-bottom:6px}
+.fr label{font-size:12px;color:#555;flex:1}
+.fi{width:120px;border:1px solid var(--border);border-radius:5px;padding:4px 8px;font-size:13px;font-weight:600;text-align:right}
+.fst{display:flex;justify-content:space-between;padding:6px 0 0;margin-top:6px;border-top:1px solid var(--border);font-size:13px;font-weight:700}
+.ftbar{background:var(--black);color:var(--white);border-radius:8px;padding:.9rem 1.2rem;display:flex;justify-content:space-between;align-items:center;margin-top:1rem}
+.verd{padding:12px 16px;border-radius:8px;font-size:13px;line-height:1.7;border-left:4px solid}
+.vgo{background:var(--green-bg);border-color:#1d9e75;color:#064a38}
+.vwarn{background:var(--warn-bg);border-color:#ba7517;color:#4d2e08}
+.vbad{background:var(--red-bg);border-color:var(--red);color:#501313}
 .note{background:var(--light);border-left:3px solid #ccc;padding:10px 14px;font-size:12px;color:#555;border-radius:0 6px 6px 0;line-height:1.7}
-.note.note-warn{border-left-color:#ba7517;background:var(--warn-bg);color:#4d2e08}
-.note.note-blue{border-left-color:#378add;background:var(--blue-bg);color:var(--blue)}
-
-/* CHARTS */
-.chart-wrap{background:var(--white);border:1px solid var(--border);border-radius:10px;padding:1.1rem}
-.chart-title{font-size:13px;font-weight:600;margin-bottom:.7rem}
-.legend{display:flex;gap:14px;margin-bottom:.5rem;flex-wrap:wrap}
-.legend span{display:flex;align-items:center;gap:5px;font-size:12px;color:#555}
+.nw{border-left-color:#ba7517!important;background:var(--warn-bg)!important;color:#4d2e08!important}
+.nb{border-left-color:#378add!important;background:var(--blue-bg)!important;color:var(--blue)!important}
+.cw{background:var(--white);border:1px solid var(--border);border-radius:10px;padding:1.1rem}
+.ct{font-size:13px;font-weight:600;margin-bottom:.7rem}
+.leg{display:flex;gap:14px;margin-bottom:.5rem;flex-wrap:wrap}
+.leg span{display:flex;align-items:center;gap:5px;font-size:12px;color:#555}
 .ld{width:12px;height:12px;border-radius:3px}
-
-/* TIMELINE */
 .tl{display:flex;margin:1rem 0}
-.tl-step{flex:1;padding:.6rem .8rem;border:1px solid var(--border);border-right:none;font-size:11px;background:var(--white)}
-.tl-step:first-child{border-radius:8px 0 0 8px}
-.tl-step:last-child{border-right:1px solid var(--border);border-radius:0 8px 8px 0}
-.tl-step.ok{background:#f0faf6;border-color:#9fe1cb}
-.tl-step.ko{background:#fdf0f0;border-color:#f5bcbc}
-.tl-step.neutral{background:#f9f9f7}
-.tl-lbl{font-size:10px;color:var(--mid);text-transform:uppercase;margin-bottom:2px}
-.tl-ca{font-weight:700;font-size:12px}
-.tl-res{font-size:11px;margin-top:1px}
-
-/* TABLE */
-.table-wrap{overflow-x:auto}
+.tls{flex:1;padding:.6rem .8rem;border:1px solid var(--border);border-right:none;font-size:11px;background:var(--white)}
+.tls:first-child{border-radius:8px 0 0 8px}
+.tls:last-child{border-right:1px solid var(--border);border-radius:0 8px 8px 0}
+.tok{background:#f0faf6;border-color:#9fe1cb}
+.tko{background:#fdf0f0;border-color:#f5bcbc}
+.tl-l{font-size:10px;color:var(--mid);text-transform:uppercase;margin-bottom:2px}
+.tl-v{font-weight:700;font-size:12px}
 table{width:100%;border-collapse:collapse;font-size:13px}
 th{background:var(--black);color:var(--white);padding:7px 11px;text-align:left;font-weight:500}
 th.r,td.r{text-align:right}
 tr:nth-child(even) td{background:var(--light)}
 td{padding:6px 11px;border-bottom:1px solid var(--border)}
-.tr-total td{font-weight:700;background:#f0f0ec!important}
-.tr-head td{background:var(--black)!important;color:var(--white);font-weight:600;font-size:12px;padding:5px 11px}
-
-/* COLORS */
-.green{color:var(--green)}.warn{color:var(--warn)}.red{color:var(--red)}
-
-/* CAPEX BAR */
-.capex-bar-wrap{margin:1rem 0}
-.capex-bar-track{height:20px;background:#f0f0ec;border-radius:10px;overflow:hidden;position:relative}
-.capex-bar-fill{height:100%;border-radius:10px;transition:width .3s}
-.capex-bar-labels{display:flex;justify-content:space-between;font-size:11px;color:#aaa;margin-top:3px}
-
-@media(max-width:760px){.grid2,.grid3,.grid4{grid-template-columns:1fr}.studio-controls{grid-template-columns:1fr 1fr}}
+.bt{height:18px;background:#f0f0ec;border-radius:9px;overflow:hidden;margin-bottom:4px}
+.bf{height:100%;border-radius:9px;transition:width .3s}
+.bl{display:flex;justify-content:space-between;font-size:11px;color:#aaa}
+.cg{color:var(--green)}.cr{color:var(--red)}.cwa{color:var(--warn)}
+.bn{background:var(--black);color:var(--white);border:none;padding:.6rem 1.4rem;border-radius:7px;cursor:pointer;font-size:13px;font-weight:600}
+@media(max-width:760px){.g2,.g4{grid-template-columns:1fr}.sctrls{grid-template-columns:1fr 1fr}}
 </style>
 </head>
 <body>
-
-<div class="header">
-  <div>
-    <div class="header-logo">PROFILMS · Simulateur Studio Custom</div>
-    <div class="header-sub">Outil de dimensionnement sur mesure · Tarifs benchmark européens · v1.0</div>
-  </div>
-  <div class="header-badge" id="hdr-capex">CAPEX estimé : —</div>
+<div class="home-bar"><a href="index.html">← Retour à l'accueil</a></div>
+<div class="hdr">
+  <div><div class="hdr-logo">PROFILMS · Simulateur Studio Custom</div>
+  <div class="hdr-sub">Configurateur libre · Benchmarks européens · v2.0</div></div>
+  <div class="hdr-badge" id="hdr-capex">CAPEX : —</div>
 </div>
+<div class="tabs-wrap"><div class="tabs">
+  <button class="tab active" onclick="goTab('prog',this)"><span class="tnum">1</span>Programme</button>
+  <button class="tab" onclick="goTab('tarifs',this)"><span class="tnum">2</span>Tarifs & Occupation</button>
+  <button class="tab" onclick="goTab('charges',this)"><span class="tnum">3</span>Charges & Personnel</button>
+  <button class="tab" onclick="goTab('fin',this)"><span class="tnum">4</span>Financement</button>
+  <button class="tab" onclick="goTab('results',this)"><span class="tnum">5</span>Résultats</button>
+</div></div>
 
-<div style="background:#f4f4f1;border-bottom:1px solid var(--border);padding:.4rem 2rem"><a href="index.html" style="font-size:12px;color:#888;text-decoration:none;display:inline-flex;align-items:center;gap:5px;transition:.15s" onmouseover="this.style.color='#1a1a1a'" onmouseout="this.style.color='#888'">← Retour à l'accueil</a></div>
-<div class="tabs-wrap">
-  <div class="tabs">
-    <button class="tab active" onclick="showTab('prog',this)"><span class="tab-num">1</span>Programme</button>
-    <button class="tab" onclick="showTab('tarifs',this)"><span class="tab-num">2</span>Tarifs & Occupation</button>
-    <button class="tab" onclick="showTab('charges',this)"><span class="tab-num">3</span>Charges & Personnel</button>
-    <button class="tab" onclick="showTab('fin',this)"><span class="tab-num">4</span>Financement</button>
-    <button class="tab" onclick="showTab('results',this)"><span class="tab-num">5</span>Résultats</button>
-  </div>
-</div>
+<!-- TAB 1 -->
+<div id="pane-prog" class="pane active"><div class="page">
+  <div class="sec">Studios de production</div>
+  <div class="slist" id="slist"></div>
+  <button class="addbtn" onclick="addStudio()">+ Ajouter un studio</button>
+  <div class="sec">Espaces complémentaires</div>
 
-<!-- ===== TAB 1 : PROGRAMME ===== -->
-<div id="pane-prog" class="pane active">
-<div class="page">
-  <div class="section-title">Studios de production</div>
-  <p style="font-size:12px;color:var(--mid);margin-bottom:.9rem">Ajoutez autant de studios que souhaité. Pour chacun, définissez la surface de plateau net et le type (standard / grand plateau).</p>
-
-  <div class="studio-list" id="studio-list"></div>
-  <button class="add-btn" onclick="addStudio()">+ Ajouter un studio</button>
-
-  <div class="section-title">Espaces complémentaires</div>
-
-  <!-- École / Formation -->
-  <div class="space-block">
-    <div class="space-block-header">
-      <div>
-        <div class="space-block-title">École / Formation <span class="badge b-green">Baux stables</span></div>
-        <div style="font-size:11px;color:var(--mid);margin-top:2px">Salles de cours, studio TV pédagogique, espaces de travail</div>
-      </div>
-      <label class="toggle-switch"><input type="checkbox" id="ecole-on" checked onchange="update()"><span class="toggle-slider"></span></label>
-    </div>
-    <div id="ecole-ctrl">
-      <div class="sr"><label>Surface totale m²</label><input type="range" id="ecole-surf" min="100" max="5000" step="50" value="1340" oninput="update()"><span class="ro" id="r-ecole-surf">1 340 m²</span></div>
-      <div class="sr"><label>Part studio TV (% de la surface)</label><input type="range" id="ecole-tv-pct" min="0" max="50" step="5" value="20" oninput="update()"><span class="ro" id="r-ecole-tv-pct">20%</span></div>
-      <div class="note" style="font-size:11px;margin-top:4px">Le studio TV est construit comme un vrai plateau (isolation phonique, hauteur). Sa part est facturée au coût studios, le reste au coût standard.</div>
-    </div>
+  <div class="sb"><div class="sbh"><div><div class="sbt">École / Formation <span class="badge bg">Baux stables</span></div>
+    <div style="font-size:11px;color:var(--mid);margin-top:2px">Salles de cours, studio TV pédagogique, espaces de travail</div></div>
+    <label class="tog"><input type="checkbox" id="ecole-on" checked onchange="update()"><span class="togsl"></span></label></div>
+    <div class="sr"><label>Surface totale (m²)</label><input type="range" id="ecole-surf" min="100" max="5000" step="50" value="1340" oninput="update()"><span class="ro" id="r-ecole-surf">1 340 m²</span></div>
+    <div class="sr"><label>Part studio TV (%)</label><input type="range" id="ecole-tv" min="0" max="50" step="5" value="20" oninput="update()"><span class="ro" id="r-ecole-tv">20%</span></div>
+    <div class="note" style="font-size:11px;margin-top:4px">La part studio TV applique le coefficient studios (isolation, hauteur). Le reste est au coût standard.</div>
   </div>
 
-  <!-- Ateliers -->
-  <div class="space-block">
-    <div class="space-block-header">
-      <div>
-        <div class="space-block-title">Ateliers actifs <span class="badge b-warn">Baux stables</span></div>
-        <div style="font-size:11px;color:var(--mid);margin-top:2px">Menuiserie, peinture, moulage, atelier costumes — espaces de fabrication actifs</div>
-      </div>
-      <label class="toggle-switch"><input type="checkbox" id="atelier-on" checked onchange="update()"><span class="toggle-slider"></span></label>
-    </div>
-    <div id="atelier-ctrl">
-      <div class="sr"><label>Surface m²</label><input type="range" id="atelier-surf" min="100" max="3000" step="50" value="1550" oninput="update()"><span class="ro" id="r-atelier-surf">1 550 m²</span></div>
-      <div class="note" style="font-size:11px">Coût de construction standard — ventilation renforcée, sols industriels.</div>
-    </div>
+  <div class="sb"><div class="sbh"><div><div class="sbt">Ateliers actifs <span class="badge bw">Baux stables</span></div>
+    <div style="font-size:11px;color:var(--mid);margin-top:2px">Menuiserie, peinture, moulage, costumes</div></div>
+    <label class="tog"><input type="checkbox" id="atelier-on" checked onchange="update()"><span class="togsl"></span></label></div>
+    <div class="sr"><label>Surface (m²)</label><input type="range" id="atelier-surf" min="100" max="3000" step="50" value="1550" oninput="update()"><span class="ro" id="r-atelier-surf">1 550 m²</span></div>
+    <div class="note" style="font-size:11px">Coût de construction standard.</div>
   </div>
 
-  <!-- Dépôts -->
-  <div class="space-block">
-    <div class="space-block-header">
-      <div>
-        <div class="space-block-title">Dépôts & stockage <span class="badge b-warn">Baux stables</span></div>
-        <div style="font-size:11px;color:var(--mid);margin-top:2px">Dépôts décors, mobilier, costumes, accessoires — espaces de stockage simple</div>
-      </div>
-      <label class="toggle-switch"><input type="checkbox" id="depot-on" checked onchange="update()"><span class="toggle-slider"></span></label>
-    </div>
-    <div id="depot-ctrl">
-      <div class="sr"><label>Surface m²</label><input type="range" id="depot-surf" min="100" max="3000" step="50" value="1320" oninput="update()"><span class="ro" id="r-depot-surf">1 320 m²</span></div>
-      <div class="note" style="font-size:11px">Coût de construction réduit (×0.60) — structure simple, pas de finitions, grandes hauteurs libre.</div>
-    </div>
+  <div class="sb"><div class="sbh"><div><div class="sbt">Dépôts & stockage <span class="badge bw">Baux stables</span></div>
+    <div style="font-size:11px;color:var(--mid);margin-top:2px">Décors, mobilier, costumes — stockage simple</div></div>
+    <label class="tog"><input type="checkbox" id="depot-on" checked onchange="update()"><span class="togsl"></span></label></div>
+    <div class="sr"><label>Surface (m²)</label><input type="range" id="depot-surf" min="100" max="3000" step="50" value="1320" oninput="update()"><span class="ro" id="r-depot-surf">1 320 m²</span></div>
+    <div class="note" style="font-size:11px">Coût réduit ×0.60 — structure simple, pas de finitions spécifiques.</div>
   </div>
 
-  <!-- Loueurs / Boutiques -->
-  <div class="space-block">
-    <div class="space-block-header">
-      <div>
-        <div class="space-block-title">Loueurs / Boutiques <span class="badge b-blue">Baux stables</span></div>
-        <div style="font-size:11px;color:var(--mid);margin-top:2px">Location costumes, matériel, espaces commerciaux</div>
-      </div>
-      <label class="toggle-switch"><input type="checkbox" id="loueur-on" checked onchange="update()"><span class="toggle-slider"></span></label>
-    </div>
-    <div id="loueur-ctrl">
-      <div class="sr"><label>Surface m²</label><input type="range" id="loueur-surf" min="100" max="3000" step="50" value="1530" oninput="update()"><span class="ro" id="r-loueur-surf">1 530 m²</span></div>
-    </div>
+  <div class="sb"><div class="sbh"><div><div class="sbt">Loueurs / Boutiques <span class="badge bb">Baux stables</span></div>
+    <div style="font-size:11px;color:var(--mid);margin-top:2px">Location matériel, espaces commerciaux</div></div>
+    <label class="tog"><input type="checkbox" id="loueur-on" checked onchange="update()"><span class="togsl"></span></label></div>
+    <div class="sr"><label>Surface (m²)</label><input type="range" id="loueur-surf" min="100" max="3000" step="50" value="1530" oninput="update()"><span class="ro" id="r-loueur-surf">1 530 m²</span></div>
   </div>
 
-  <!-- Bureaux de production -->
-  <div class="space-block">
-    <div class="space-block-header">
-      <div>
-        <div class="space-block-title">Bureaux de production <span class="badge b-purple">Location court/moyen terme</span></div>
-        <div style="font-size:11px;color:var(--mid);margin-top:2px">Open space, salles de réunion, loges, régies</div>
-      </div>
-      <label class="toggle-switch"><input type="checkbox" id="bureau-on" checked onchange="update()"><span class="toggle-slider"></span></label>
-    </div>
-    <div id="bureau-ctrl">
-      <div class="sr"><label>Surface m²</label><input type="range" id="bureau-surf" min="100" max="5000" step="50" value="2000" oninput="update()"><span class="ro" id="r-bureau-surf">2 000 m²</span></div>
-    </div>
+  <div class="sb"><div class="sbh"><div><div class="sbt">Bureaux de production <span class="badge bp">Court/moyen terme</span></div>
+    <div style="font-size:11px;color:var(--mid);margin-top:2px">Open space, salles de réunion, loges, régies</div></div>
+    <label class="tog"><input type="checkbox" id="bureau-on" checked onchange="update()"><span class="togsl"></span></label></div>
+    <div class="sr"><label>Surface (m²)</label><input type="range" id="bureau-surf" min="100" max="5000" step="50" value="2000" oninput="update()"><span class="ro" id="r-bureau-surf">2 000 m²</span></div>
   </div>
 
-  <!-- Accueil / Public -->
-  <div class="space-block">
-    <div class="space-block-header">
-      <div>
-        <div class="space-block-title">Espace public / Pavillon <span class="badge b-gray">Non générateur de revenus directs</span></div>
-        <div style="font-size:11px;color:var(--mid);margin-top:2px">Accueil, café, exposition, terrasse</div>
-      </div>
-      <label class="toggle-switch"><input type="checkbox" id="public-on" checked onchange="update()"><span class="toggle-slider"></span></label>
-    </div>
-    <div id="public-ctrl">
-      <div class="sr"><label>Surface m²</label><input type="range" id="public-surf" min="100" max="2000" step="50" value="450" oninput="update()"><span class="ro" id="r-public-surf">450 m²</span></div>
-    </div>
+  <div class="sb"><div class="sbh"><div><div class="sbt">Espace public / Pavillon <span class="badge bz">Non générateur direct</span></div>
+    <div style="font-size:11px;color:var(--mid);margin-top:2px">Accueil, café, exposition, terrasse</div></div>
+    <label class="tog"><input type="checkbox" id="public-on" checked onchange="update()"><span class="togsl"></span></label></div>
+    <div class="sr"><label>Surface (m²)</label><input type="range" id="public-surf" min="100" max="2000" step="50" value="450" oninput="update()"><span class="ro" id="r-public-surf">450 m²</span></div>
   </div>
 
-  <!-- Services / Admin -->
-  <div class="note note-blue" style="margin-top:1rem">
-    <strong>Services, admin & circulations</strong> · Calculés automatiquement à 40% de la surface productive totale (lobbies, couloirs, locaux techniques, HMC, vestiaires). Hypothèse issue des ratios CCHE Lausanne.
+  <div class="note nb" style="margin-top:1rem"><strong>Services & circulations</strong> · Calculés à 40% de la surface productive (lobbies, couloirs, locaux techniques) — ratios CCHE Lausanne.</div>
+
+  <div class="sec">Résumé du programme</div>
+  <div class="g4">
+    <div class="card"><div class="kl">Plateaux nets</div><div class="kv" id="sum-s">—</div><div class="ks">m²</div></div>
+    <div class="card"><div class="kl">Annexes</div><div class="kv" id="sum-a">—</div><div class="ks">m²</div></div>
+    <div class="card"><div class="kl">Total SPB estimé</div><div class="kv" id="sum-t">—</div><div class="ks">m²</div></div>
+    <div class="card"><div class="kl">CAPEX estimé</div><div class="kv" id="sum-c">—</div><div class="ks">CHF</div></div>
   </div>
 
-  <!-- Résumé programme -->
-  <div class="section-title">Résumé du programme</div>
-  <div class="grid4">
-    <div class="card"><div class="kpi-label">Surface plateaux</div><div class="kpi-val" id="sum-studios">—</div><div class="kpi-sub">m² nets</div></div>
-    <div class="card"><div class="kpi-label">Surface espaces annexes</div><div class="kpi-val" id="sum-annexes">—</div><div class="kpi-sub">m²</div></div>
-    <div class="card"><div class="kpi-label">Surface totale construite</div><div class="kpi-val" id="sum-total">—</div><div class="kpi-sub">m² SPB estimée</div></div>
-    <div class="card"><div class="kpi-label">CAPEX estimé</div><div class="kpi-val" id="sum-capex">—</div><div class="kpi-sub">CHF</div></div>
-  </div>
-
-  <div class="section-title">Paramètres de construction</div>
+  <div class="sec">Paramètres de construction</div>
   <div class="card">
-    <div class="sr"><label>Coût de base bureaux/annexes (CHF/m²)</label><input type="range" id="c-std" min="3000" max="10000" step="200" value="6500" oninput="update()"><span class="ro" id="r-c-std">6 500</span></div>
-    <div class="sr"><label>Surcoût studios standard (isolation, hauteur 6–9m)</label><input type="range" id="c-mult-std" min="1.2" max="2.5" step="0.1" value="1.6" oninput="update()"><span class="ro" id="r-c-mult-std">×1.6</span></div>
-    <div class="sr"><label>Surcoût grands plateaux (hauteur 12–16m, structure)</label><input type="range" id="c-mult-big" min="1.5" max="3.0" step="0.1" value="2.0" oninput="update()"><span class="ro" id="r-c-mult-big">×2.0</span></div>
-    <div class="sr"><label>Infrastructure partagée (SS, réseaux, VRD)</label><input type="range" id="c-infra" min="2000000" max="40000000" step="500000" value="15000000" oninput="update()"><span class="ro" id="r-c-infra">15.0 M</span></div>
+    <div class="sr"><label>Coût de base bureaux/annexes (CHF/m²)</label><input type="range" id="c-std" min="3000" max="10000" step="200" value="6500" oninput="update()"><span class="ro" id="r-std">6 500</span></div>
+    <div class="sr"><label>Surcoût studios standard (H 6–9m)</label><input type="range" id="c-ms" min="1.2" max="2.5" step="0.1" value="1.6" oninput="update()"><span class="ro" id="r-ms">×1.6</span></div>
+    <div class="sr"><label>Surcoût grands plateaux (H 12–16m)</label><input type="range" id="c-mb" min="1.5" max="3.0" step="0.1" value="2.0" oninput="update()"><span class="ro" id="r-mb">×2.0</span></div>
+    <div class="sr"><label>Infrastructure partagée (SS, réseaux, VRD)</label><input type="range" id="c-infra" min="2000000" max="40000000" step="500000" value="15000000" oninput="update()"><span class="ro" id="r-infra">15.0 M CHF</span></div>
+  </div>
+  <div style="text-align:right;margin-top:1rem"><button class="bn" onclick="goTab('tarifs',document.querySelectorAll('.tab')[1])">Tarifs & Occupation →</button></div>
+</div></div>
+
+<!-- TAB 2 -->
+<div id="pane-tarifs" class="pane"><div class="page">
+  <div class="note nb" style="margin-bottom:1.2rem"><strong>Benchmarks européens</strong> · CNA Luxembourg : 1.50–2.50 €/m²/j · MBS Vienna : 2.00–4.00 €/m²/j · BP ProFilms : 0.50 CHF/m²/j à 15% d'occupation (très conservateur).</div>
+  <div class="sec">Tarifs de location</div>
+  <div class="g2">
+    <div class="card"><div style="font-size:13px;font-weight:600;margin-bottom:.8rem">Plateaux studios (CHF/m²/jour)</div>
+      <div class="sr"><label>Tarif journalier</label><input type="range" id="t-s" min="0.50" max="3.00" step="0.05" value="1.50" oninput="update()"><span class="ro" id="r-ts">1.50</span></div>
+      <div class="note" style="font-size:11px">CNA Lux. : 1.50–2.50 · BP ProFilms : 0.50</div></div>
+    <div class="card"><div style="font-size:13px;font-weight:600;margin-bottom:.8rem">Bureaux de production (CHF/m²/jour)</div>
+      <div class="sr"><label>Tarif journalier</label><input type="range" id="t-b" min="0.20" max="2.50" step="0.05" value="0.80" oninput="update()"><span class="ro" id="r-tb">0.80</span></div></div>
+    <div class="card"><div style="font-size:13px;font-weight:600;margin-bottom:.8rem">Baux long terme — École & Ateliers (CHF/m²/AN)</div>
+      <div class="sr"><label>Tarif annuel</label><input type="range" id="t-bail" min="60" max="960" step="10" value="360" oninput="update()"><span class="ro" id="r-tbail">360</span></div>
+      <div class="note" style="font-size:11px">BP ProFilms : 360 CHF/m²/an</div></div>
+    <div class="card"><div style="font-size:13px;font-weight:600;margin-bottom:.8rem">Loueurs / Boutiques (CHF/m²/AN)</div>
+      <div class="sr"><label>Tarif annuel</label><input type="range" id="t-l" min="60" max="1200" step="10" value="480" oninput="update()"><span class="ro" id="r-tl">480</span></div>
+      <div class="note" style="font-size:11px">BP ProFilms : 480 CHF/m²/an</div></div>
   </div>
 
-  <div style="text-align:right;margin-top:1rem">
-    <button onclick="showTab('tarifs', document.querySelectorAll('.tab')[1])" style="background:var(--black);color:var(--white);border:none;padding:.6rem 1.4rem;border-radius:7px;cursor:pointer;font-size:13px;font-weight:600">Étape suivante : Tarifs & Occupation →</button>
+  <div class="sec">Taux d'occupation — indépendant par type</div>
+  <div class="note nw" style="margin-bottom:1rem">Le taux d'occupation est le facteur le plus déterminant. An 1 = lancement, An 5 = croisière. An 2 et 4 sont interpolés.</div>
+  <div class="g2">
+    <div class="card"><div style="font-size:13px;font-weight:600;margin-bottom:.8rem">Plateaux studios</div>
+      <div class="sr"><label>An 1</label><input type="range" id="os1" min="2" max="80" step="1" value="20" oninput="update()"><span class="ro" id="r-os1">20%</span></div>
+      <div class="sr"><label>An 3</label><input type="range" id="os3" min="5" max="90" step="1" value="35" oninput="update()"><span class="ro" id="r-os3">35%</span></div>
+      <div class="sr"><label>An 5</label><input type="range" id="os5" min="10" max="90" step="1" value="50" oninput="update()"><span class="ro" id="r-os5">50%</span></div></div>
+    <div class="card"><div style="font-size:13px;font-weight:600;margin-bottom:.8rem">Bureaux de production</div>
+      <div class="sr"><label>An 1</label><input type="range" id="ob1" min="2" max="80" step="1" value="25" oninput="update()"><span class="ro" id="r-ob1">25%</span></div>
+      <div class="sr"><label>An 3</label><input type="range" id="ob3" min="5" max="90" step="1" value="45" oninput="update()"><span class="ro" id="r-ob3">45%</span></div>
+      <div class="sr"><label>An 5</label><input type="range" id="ob5" min="10" max="95" step="1" value="60" oninput="update()"><span class="ro" id="r-ob5">60%</span></div></div>
+    <div class="card"><div style="font-size:13px;font-weight:600;margin-bottom:.8rem">Baux long terme</div>
+      <div class="sr"><label>An 1</label><input type="range" id="obl1" min="10" max="95" step="1" value="60" oninput="update()"><span class="ro" id="r-obl1">60%</span></div>
+      <div class="sr"><label>An 3</label><input type="range" id="obl3" min="20" max="100" step="1" value="80" oninput="update()"><span class="ro" id="r-obl3">80%</span></div>
+      <div class="sr"><label>An 5</label><input type="range" id="obl5" min="30" max="100" step="1" value="90" oninput="update()"><span class="ro" id="r-obl5">90%</span></div></div>
+    <div class="card"><div style="font-size:13px;font-weight:600;margin-bottom:.8rem">Loueurs / Boutiques</div>
+      <div class="sr"><label>An 1</label><input type="range" id="ol1" min="10" max="95" step="1" value="50" oninput="update()"><span class="ro" id="r-ol1">50%</span></div>
+      <div class="sr"><label>An 3</label><input type="range" id="ol3" min="20" max="100" step="1" value="70" oninput="update()"><span class="ro" id="r-ol3">70%</span></div>
+      <div class="sr"><label>An 5</label><input type="range" id="ol5" min="30" max="100" step="1" value="85" oninput="update()"><span class="ro" id="r-ol5">85%</span></div></div>
   </div>
-</div>
-</div>
+  <div class="sec">CA projeté par source — An 5</div>
+  <div class="g4" id="ca-prev"></div>
+  <div style="text-align:right;margin-top:1rem"><button class="bn" onclick="goTab('charges',document.querySelectorAll('.tab')[2])">Charges & Personnel →</button></div>
+</div></div>
 
-<!-- ===== TAB 2 : TARIFS & OCCUPATION ===== -->
-<div id="pane-tarifs" class="pane">
-<div class="page">
-  <div class="note note-blue" style="margin-bottom:1.2rem">
-    <strong>Benchmarks européens de référence</strong> · CNA Luxembourg (fondation) : 1.50–2.50 €/m²/j · MBS Vienna (privé) : 2.00–4.00 €/m²/j · Cité du Cinéma Paris (privé) : 2.00–5.00 €/m²/j · Occupation moyenne constatée : 40–60% pour plateaux, 70–85% pour baux stables. Le BP ProFilms utilise 0.50 CHF/m²/j à 15% d'occupation — très conservateur.
-  </div>
-
-  <div class="section-title">Tarifs de location</div>
-  <div class="grid2">
-    <div class="card">
-      <div class="card-title">Plateaux studios</div>
-      <div class="sr"><label>Tarif journalier (CHF/m²/jour)</label><input type="range" id="t-studio" min="0.50" max="3.00" step="0.05" value="1.50" oninput="update()"><span class="ro" id="r-t-studio">1.50</span></div>
-      <div class="note" style="font-size:11px">CNA Lux. : 1.50–2.50 · BP ProFilms : 0.50</div>
-    </div>
-    <div class="card">
-      <div class="card-title">Bureaux de production / Annexes</div>
-      <div class="sr"><label>Tarif journalier (CHF/m²/jour)</label><input type="range" id="t-bureau" min="0.20" max="2.50" step="0.05" value="0.80" oninput="update()"><span class="ro" id="r-t-bureau">0.80</span></div>
-      <div class="note" style="font-size:11px">Bureaux de prod / loges / salles de réunion</div>
-    </div>
-    <div class="card">
-      <div class="card-title">Baux long terme — École & Ateliers (CHF/m²/an)</div>
-      <div class="sr"><label>Tarif annuel (CHF/m²/an)</label><input type="range" id="t-bail" min="60" max="960" step="10" value="360" oninput="update()"><span class="ro" id="r-t-bail">360</span></div>
-      <div class="note" style="font-size:11px">Baux stables — école, ateliers, prestataires · BP ProFilms : ~360 CHF/m²/an (soit 30/mois)</div>
-    </div>
-    <div class="card">
-      <div class="card-title">Loueurs / Boutiques (CHF/m²/an)</div>
-      <div class="sr"><label>Tarif annuel (CHF/m²/an)</label><input type="range" id="t-loueur" min="60" max="1200" step="10" value="480" oninput="update()"><span class="ro" id="r-t-loueur">480</span></div>
-      <div class="note" style="font-size:11px">Espaces commerciaux type boutique / loueur matériel · BP ProFilms : ~480 CHF/m²/an (soit 40/mois)</div>
-    </div>
-  </div>
-
-  <div class="section-title">Taux d'occupation — indépendant par type</div>
-  <div class="note note-warn" style="margin-bottom:1rem">Les taux d'occupation sont le facteur le plus déterminant du modèle. Ils s'appliquent sur 360 jours/an (ou 12 mois pour les baux). An 1 = phase lancement, An 5 = régime de croisière.</div>
-
-  <div class="grid2">
-    <div class="card">
-      <div class="card-title">Plateaux studios</div>
-      <div class="sr"><label>Occupation An 1</label><input type="range" id="occ-studio-1" min="2" max="80" step="1" value="20" oninput="update()"><span class="ro" id="r-occ-studio-1">20%</span></div>
-      <div class="sr"><label>Occupation An 3</label><input type="range" id="occ-studio-3" min="5" max="90" step="1" value="35" oninput="update()"><span class="ro" id="r-occ-studio-3">35%</span></div>
-      <div class="sr"><label>Occupation An 5</label><input type="range" id="occ-studio-5" min="10" max="90" step="1" value="50" oninput="update()"><span class="ro" id="r-occ-studio-5">50%</span></div>
-    </div>
-    <div class="card">
-      <div class="card-title">Bureaux de production / Annexes</div>
-      <div class="sr"><label>Occupation An 1</label><input type="range" id="occ-bureau-1" min="2" max="80" step="1" value="25" oninput="update()"><span class="ro" id="r-occ-bureau-1">25%</span></div>
-      <div class="sr"><label>Occupation An 3</label><input type="range" id="occ-bureau-3" min="5" max="90" step="1" value="45" oninput="update()"><span class="ro" id="r-occ-bureau-3">45%</span></div>
-      <div class="sr"><label>Occupation An 5</label><input type="range" id="occ-bureau-5" min="10" max="95" step="1" value="60" oninput="update()"><span class="ro" id="r-occ-bureau-5">60%</span></div>
-    </div>
-    <div class="card">
-      <div class="card-title">Baux long terme (École, Ateliers)</div>
-      <div class="sr"><label>Occupation An 1</label><input type="range" id="occ-bail-1" min="10" max="95" step="1" value="60" oninput="update()"><span class="ro" id="r-occ-bail-1">60%</span></div>
-      <div class="sr"><label>Occupation An 3</label><input type="range" id="occ-bail-3" min="20" max="100" step="1" value="80" oninput="update()"><span class="ro" id="r-occ-bail-3">80%</span></div>
-      <div class="sr"><label>Occupation An 5</label><input type="range" id="occ-bail-5" min="30" max="100" step="1" value="90" oninput="update()"><span class="ro" id="r-occ-bail-5">90%</span></div>
-    </div>
-    <div class="card">
-      <div class="card-title">Loueurs / Boutiques</div>
-      <div class="sr"><label>Occupation An 1</label><input type="range" id="occ-loueur-1" min="10" max="95" step="1" value="50" oninput="update()"><span class="ro" id="r-occ-loueur-1">50%</span></div>
-      <div class="sr"><label>Occupation An 3</label><input type="range" id="occ-loueur-3" min="20" max="100" step="1" value="70" oninput="update()"><span class="ro" id="r-occ-loueur-3">70%</span></div>
-      <div class="sr"><label>Occupation An 5</label><input type="range" id="occ-loueur-5" min="30" max="100" step="1" value="85" oninput="update()"><span class="ro" id="r-occ-loueur-5">85%</span></div>
-    </div>
-  </div>
-
-  <div class="section-title">Projection CA par source — An 5</div>
-  <div class="grid4" id="ca-preview"></div>
-
-  <div style="text-align:right;margin-top:1rem">
-    <button onclick="showTab('charges', document.querySelectorAll('.tab')[2])" style="background:var(--black);color:var(--white);border:none;padding:.6rem 1.4rem;border-radius:7px;cursor:pointer;font-size:13px;font-weight:600">Étape suivante : Charges & Personnel →</button>
-  </div>
-</div>
-</div>
-
-<!-- ===== TAB 3 : CHARGES & PERSONNEL ===== -->
-<div id="pane-charges" class="pane">
-<div class="page">
-
-  <div class="section-title">Équipe — Equivalents Plein Temps (EPT)</div>
-  <p style="font-size:12px;color:var(--mid);margin-bottom:.9rem">Définissez le nombre d'EPT et le salaire brut annuel moyen par catégorie. Les charges patronales (estimées à 14%) sont calculées automatiquement.</p>
-
+<!-- TAB 3 -->
+<div id="pane-charges" class="pane"><div class="page">
+  <div class="sec">Équipe — Equivalents Plein Temps (EPT)</div>
+  <p style="font-size:12px;color:var(--mid);margin-bottom:.9rem">Charges patronales calculées automatiquement à 14%.</p>
   <div class="card">
-    <div style="display:grid;grid-template-columns:1fr 70px 110px 90px;gap:8px;font-size:11px;font-weight:600;color:var(--mid);padding-bottom:6px;border-bottom:1px solid var(--border);margin-bottom:4px">
+    <div style="display:grid;grid-template-columns:1fr 70px 120px 100px;gap:8px;font-size:11px;font-weight:600;color:var(--mid);padding-bottom:6px;border-bottom:1px solid var(--border);margin-bottom:4px">
       <div>Poste</div><div style="text-align:center">EPT</div><div style="text-align:right">Salaire brut/an (CHF)</div><div style="text-align:right">Coût total/an</div>
     </div>
     <div id="ept-list"></div>
     <div style="display:flex;justify-content:space-between;align-items:center;margin-top:.8rem;padding-top:.8rem;border-top:1.5px solid var(--black)">
-      <div><strong>Total masse salariale (charges incluses)</strong></div>
+      <strong>Total masse salariale (charges incluses)</strong>
       <div style="font-size:17px;font-weight:700" id="ept-total">—</div>
     </div>
   </div>
 
-  <div class="section-title">Charges d'exploitation fixes</div>
-  <p style="font-size:12px;color:var(--mid);margin-bottom:.9rem">Les charges sont initialisées proportionnellement à la surface totale construite sur la base du BP ProFilms. Ajustables librement.</p>
-
-  <div class="grid2">
-    <div class="card">
-      <div class="card-title">Énergie & Utilités</div>
-      <div class="sr"><label>Électricité, chauffage, eau (CHF/m²/an)</label><input type="range" id="c-energie" min="5" max="60" step="1" value="18" oninput="update()"><span class="ro" id="r-c-energie">18</span></div>
-      <div class="note" style="font-size:11px">Base ProFilms : ~247 k CHF/an pour 21 410 m² ≈ 11.5 CHF/m²/an · Studios consomment 2–3× plus que bureaux</div>
-    </div>
-    <div class="card">
-      <div class="card-title">Maintenance & Réparations</div>
-      <div class="sr"><label>Maintenance (CHF/m²/an)</label><input type="range" id="c-maint" min="5" max="80" step="1" value="25" oninput="update()"><span class="ro" id="r-c-maint">25</span></div>
-      <div class="note" style="font-size:11px">Base ProFilms : ~448 k CHF/an ≈ 21 CHF/m²/an · Monte progressivement avec l'ancienneté</div>
-    </div>
-    <div class="card">
-      <div class="card-title">Assurances & Licences</div>
-      <div class="sr"><label>Assurances (CHF/an — forfait)</label><input type="range" id="c-assur" min="20000" max="500000" step="5000" value="100000" oninput="update()"><span class="ro" id="r-c-assur">100 k</span></div>
-    </div>
-    <div class="card">
-      <div class="card-title">Marketing & Communication</div>
-      <div class="sr"><label>Budget marketing (CHF/an)</label><input type="range" id="c-marketing" min="20000" max="500000" step="5000" value="150000" oninput="update()"><span class="ro" id="r-c-marketing">150 k</span></div>
-    </div>
-    <div class="card">
-      <div class="card-title">Honoraires, juridique, audit</div>
-      <div class="sr"><label>Honoraires (CHF/an)</label><input type="range" id="c-honor" min="10000" max="200000" step="5000" value="30000" oninput="update()"><span class="ro" id="r-c-honor">30 k</span></div>
-    </div>
-    <div class="card">
-      <div class="card-title">Frais administratifs divers</div>
-      <div class="sr"><label>Frais admin (CHF/an)</label><input type="range" id="c-admin" min="10000" max="200000" step="5000" value="65000" oninput="update()"><span class="ro" id="r-c-admin">65 k</span></div>
-    </div>
-    <div class="card">
-      <div class="card-title">Loyer / DDP (si applicable)</div>
-      <div class="sr"><label>Droit de superficie ou loyer (CHF/an)</label><input type="range" id="c-ddp" min="0" max="1000000" step="5000" value="202900" oninput="update()"><span class="ro" id="r-c-ddp">203 k</span></div>
-      <div class="note" style="font-size:11px">DDP The Hive Meyrin (ProFilms) : 202 900 CHF/an · Mettre 0 si le terrain est apporté en nature</div>
-    </div>
-    <div class="card">
-      <div class="card-title">Frais variables (% CA studios)</div>
-      <div class="sr"><label>Coûts variables — logistique, équipements loc. (%)</label><input type="range" id="c-var" min="0" max="30" step="0.5" value="4" oninput="update()"><span class="ro" id="r-c-var">4%</span></div>
-      <div class="note" style="font-size:11px">Transports, équipements supplémentaires loués, consommables · Base ProFilms : ~4% du CA studios</div>
-    </div>
+  <div class="sec">Charges d'exploitation</div>
+  <div class="g2">
+    <div class="card"><div style="font-size:13px;font-weight:600;margin-bottom:.8rem">Énergie & Utilités</div>
+      <div class="sr"><label>CHF/m²/an</label><input type="range" id="c-en" min="5" max="60" step="1" value="18" oninput="update()"><span class="ro" id="r-en">18</span></div>
+      <div class="note" style="font-size:11px">Base ProFilms : ~11.5 CHF/m²/an</div></div>
+    <div class="card"><div style="font-size:13px;font-weight:600;margin-bottom:.8rem">Maintenance & Réparations</div>
+      <div class="sr"><label>CHF/m²/an</label><input type="range" id="c-ma" min="5" max="80" step="1" value="25" oninput="update()"><span class="ro" id="r-ma">25</span></div>
+      <div class="note" style="font-size:11px">Base ProFilms : ~21 CHF/m²/an</div></div>
+    <div class="card"><div style="font-size:13px;font-weight:600;margin-bottom:.8rem">Assurances & Licences (CHF/an)</div>
+      <div class="sr"><label>Forfait</label><input type="range" id="c-as" min="20000" max="500000" step="5000" value="100000" oninput="update()"><span class="ro" id="r-as">100 k</span></div></div>
+    <div class="card"><div style="font-size:13px;font-weight:600;margin-bottom:.8rem">Marketing & Communication (CHF/an)</div>
+      <div class="sr"><label>Budget</label><input type="range" id="c-mk" min="20000" max="500000" step="5000" value="150000" oninput="update()"><span class="ro" id="r-mk">150 k</span></div></div>
+    <div class="card"><div style="font-size:13px;font-weight:600;margin-bottom:.8rem">Honoraires, juridique, audit (CHF/an)</div>
+      <div class="sr"><label>Forfait</label><input type="range" id="c-ho" min="10000" max="200000" step="5000" value="30000" oninput="update()"><span class="ro" id="r-ho">30 k</span></div></div>
+    <div class="card"><div style="font-size:13px;font-weight:600;margin-bottom:.8rem">Frais administratifs (CHF/an)</div>
+      <div class="sr"><label>Forfait</label><input type="range" id="c-ad" min="10000" max="200000" step="5000" value="65000" oninput="update()"><span class="ro" id="r-ad">65 k</span></div></div>
+    <div class="card"><div style="font-size:13px;font-weight:600;margin-bottom:.8rem">DDP / Loyer (CHF/an)</div>
+      <div class="sr"><label>Annuel</label><input type="range" id="c-dd" min="0" max="1000000" step="5000" value="202900" oninput="update()"><span class="ro" id="r-dd">202 900</span></div>
+      <div class="note" style="font-size:11px">DDP The Hive Meyrin : 202 900 CHF/an · 0 si terrain apporté en nature</div></div>
+    <div class="card"><div style="font-size:13px;font-weight:600;margin-bottom:.8rem">Frais variables (% CA studios)</div>
+      <div class="sr"><label>%</label><input type="range" id="c-va" min="0" max="30" step="0.5" value="4" oninput="update()"><span class="ro" id="r-va">4.0%</span></div>
+      <div class="note" style="font-size:11px">Logistique, équipements loués, consommables · Base ProFilms : ~4%</div></div>
   </div>
+  <div class="sec">Résumé charges An 5</div>
+  <div class="g4" id="ch-prev"></div>
+  <div style="text-align:right;margin-top:1rem"><button class="bn" onclick="goTab('fin',document.querySelectorAll('.tab')[3])">Financement →</button></div>
+</div></div>
 
-  <div class="section-title">Résumé charges annuelles (An 5)</div>
-  <div class="grid4" id="charges-preview"></div>
-
-  <div style="text-align:right;margin-top:1rem">
-    <button onclick="showTab('fin', document.querySelectorAll('.tab')[3])" style="background:var(--black);color:var(--white);border:none;padding:.6rem 1.4rem;border-radius:7px;cursor:pointer;font-size:13px;font-weight:600">Étape suivante : Financement →</button>
+<!-- TAB 4 -->
+<div id="pane-fin" class="pane"><div class="page">
+  <div class="note nb" style="margin-bottom:1.2rem"><strong>Rappel</strong> · CAPEX affiché en en-tête. L'écart entre financement total et CAPEX est affiché comme solde ou déficit.</div>
+  <div class="fb">
+    <div class="fbt">Fondations / Mécénat <span class="badge bg">Capital sans retour</span></div>
+    <div class="fr"><label>Fondation principale</label><input type="number" class="fi" id="ff1" value="0" oninput="update()" placeholder="CHF"></div>
+    <div class="fr"><label>Fondation secondaire</label><input type="number" class="fi" id="ff2" value="0" oninput="update()" placeholder="CHF"></div>
+    <div class="fr"><label>Mécénat privé</label><input type="number" class="fi" id="ffm" value="0" oninput="update()" placeholder="CHF"></div>
+    <div class="fst"><span>Sous-total</span><span id="sub-f">0.00 CHF</span></div>
   </div>
-</div>
-</div>
-
-<!-- ===== TAB 4 : FINANCEMENT ===== -->
-<div id="pane-fin" class="pane">
-<div class="page">
-  <div class="note note-blue" style="margin-bottom:1.2rem">
-    <strong>Rappel</strong> · Le CAPEX estimé figure en en-tête à droite. Chaque source de financement est indépendante — la somme n'a pas besoin d'être exactement égale au CAPEX pour simuler (écart = solde ou déficit de financement affiché dans les résultats).
+  <div class="fb">
+    <div class="fbt">Subventions publiques <span class="badge bb">Capital sans retour</span></div>
+    <div class="fr"><label>Canton de Genève</label><input type="number" class="fi" id="fca" value="0" oninput="update()" placeholder="CHF"></div>
+    <div class="fr"><label>Commune (Meyrin, Ville...)</label><input type="number" class="fi" id="fco" value="0" oninput="update()" placeholder="CHF"></div>
+    <div class="fr"><label>Confédération / OFC / autres</label><input type="number" class="fi" id="fcf" value="0" oninput="update()" placeholder="CHF"></div>
+    <div class="fst"><span>Sous-total</span><span id="sub-p">0.00 CHF</span></div>
   </div>
-
-  <!-- Fondations -->
-  <div class="fin-block">
-    <div class="fin-block-title">Fondations / Mécénat <span class="badge b-green">Capital sans retour financier</span></div>
-    <div class="fin-input-group"><label>Fondation principale (Wilsdorf, autre...)</label><input type="number" class="fin-input" id="fin-fond1" value="0" oninput="update()" placeholder="CHF"></div>
-    <div class="fin-input-group"><label>Fondation secondaire</label><input type="number" class="fin-input" id="fin-fond2" value="0" oninput="update()" placeholder="CHF"></div>
-    <div class="fin-input-group"><label>Mécénat privé (entreprises, particuliers)</label><input type="number" class="fin-input" id="fin-mecenat" value="0" oninput="update()" placeholder="CHF"></div>
-    <div style="display:flex;justify-content:space-between;padding-top:6px;margin-top:6px;border-top:1px solid var(--border);font-size:13px;font-weight:600">
-      <span>Sous-total</span><span id="sub-fondations">0 CHF</span>
-    </div>
+  <div class="fb">
+    <div class="fbt">Fonds propres / Crowdfunding <span class="badge bz">Capital sans retour</span></div>
+    <div class="fr"><label>Apport ProFilms / Fondation des studios</label><input type="number" class="fi" id="fpr" value="0" oninput="update()" placeholder="CHF"></div>
+    <div class="fr"><label>Crowdfunding</label><input type="number" class="fi" id="fcr" value="0" oninput="update()" placeholder="CHF"></div>
+    <div class="fst"><span>Sous-total</span><span id="sub-pr">0.00 CHF</span></div>
   </div>
-
-  <!-- Subventions publiques -->
-  <div class="fin-block">
-    <div class="fin-block-title">Subventions publiques <span class="badge b-blue">Capital sans retour financier</span></div>
-    <div class="fin-input-group"><label>Canton de Genève</label><input type="number" class="fin-input" id="fin-canton" value="0" oninput="update()" placeholder="CHF"></div>
-    <div class="fin-input-group"><label>Commune (Meyrin, Ville de Genève...)</label><input type="number" class="fin-input" id="fin-commune" value="0" oninput="update()" placeholder="CHF"></div>
-    <div class="fin-input-group"><label>Confédération / OFC / autres</label><input type="number" class="fin-input" id="fin-conf" value="0" oninput="update()" placeholder="CHF"></div>
-    <div style="display:flex;justify-content:space-between;padding-top:6px;margin-top:6px;border-top:1px solid var(--border);font-size:13px;font-weight:600">
-      <span>Sous-total</span><span id="sub-public">0 CHF</span>
-    </div>
+  <div class="fb">
+    <div class="fbt">Prêt bancaire <span class="badge bw">Remboursable</span></div>
+    <div class="fr"><label>Montant (CHF)</label><input type="number" class="fi" id="fpt" value="0" oninput="update()" placeholder="CHF"></div>
+    <div class="fr"><label>Taux annuel (%)</label><input type="number" class="fi" id="ftx" value="2.5" step="0.1" oninput="update()"></div>
+    <div class="fr"><label>Durée (années)</label><input type="number" class="fi" id="fdu" value="20" oninput="update()"></div>
+    <div style="margin:.5rem 0;padding:.5rem .8rem;background:var(--warn-bg);border-radius:6px;font-size:12px;color:#4d2e08">Annuité : <strong id="f-ann">—</strong> · Intérêts totaux : <strong id="f-int">—</strong></div>
+    <div class="fst"><span>Sous-total</span><span id="sub-pt">0.00 CHF</span></div>
   </div>
-
-  <!-- Fonds propres -->
-  <div class="fin-block">
-    <div class="fin-block-title">Fonds propres associatifs / Crowdfunding <span class="badge b-gray">Capital sans retour</span></div>
-    <div class="fin-input-group"><label>Apport ProFilms / Fondation des studios</label><input type="number" class="fin-input" id="fin-propres" value="0" oninput="update()" placeholder="CHF"></div>
-    <div class="fin-input-group"><label>Crowdfunding</label><input type="number" class="fin-input" id="fin-crowd" value="0" oninput="update()" placeholder="CHF"></div>
-    <div style="display:flex;justify-content:space-between;padding-top:6px;margin-top:6px;border-top:1px solid var(--border);font-size:13px;font-weight:600">
-      <span>Sous-total</span><span id="sub-propres">0 CHF</span>
-    </div>
+  <div class="ftbar">
+    <div><div style="font-size:11px;color:#aaa;margin-bottom:2px">TOTAL FINANCEMENT</div>
+    <div style="font-size:24px;font-weight:700" id="f-tot">0.00 CHF</div></div>
+    <div style="text-align:right"><div style="font-size:11px;color:#aaa;margin-bottom:2px">CAPEX ESTIMÉ</div>
+    <div style="font-size:17px;font-weight:600" id="f-cap">—</div>
+    <div style="font-size:12px;margin-top:3px" id="f-gap"></div></div>
   </div>
+  <div style="margin:.8rem 0"><div class="bt"><div class="bf" id="f-bar" style="background:#1d9e75;width:0%"></div></div>
+  <div class="bl"><span>0</span><span id="f-bm"></span><span id="f-bx"></span></div></div>
+  <div style="text-align:right;margin-top:1rem"><button class="bn" onclick="goTab('results',document.querySelectorAll('.tab')[4])">Voir les Résultats →</button></div>
+</div></div>
 
-  <!-- Prêt bancaire -->
-  <div class="fin-block">
-    <div class="fin-block-title">Prêt bancaire / Emprunt <span class="badge b-warn">Remboursable — impact sur charges annuelles</span></div>
-    <div class="fin-input-group"><label>Montant emprunté (CHF)</label><input type="number" class="fin-input" id="fin-pret" value="0" oninput="update()" placeholder="CHF"></div>
-    <div class="fin-input-group"><label>Taux d'intérêt annuel (%)</label><input type="number" class="fin-input" id="fin-taux" value="2.5" step="0.1" oninput="update()" placeholder="%"></div>
-    <div class="fin-input-group"><label>Durée (années)</label><input type="number" class="fin-input" id="fin-duree" value="20" oninput="update()" placeholder="ans"></div>
-    <div style="margin-top:.6rem;padding:.6rem .8rem;background:var(--warn-bg);border-radius:6px;font-size:12px;color:#4d2e08">
-      Annuité calculée : <strong id="fin-annuite">—</strong> · Total intérêts : <strong id="fin-interets">—</strong>
-    </div>
-    <div style="display:flex;justify-content:space-between;padding-top:6px;margin-top:6px;border-top:1px solid var(--border);font-size:13px;font-weight:600">
-      <span>Sous-total</span><span id="sub-pret">0 CHF</span>
-    </div>
+<!-- TAB 5 -->
+<div id="pane-results" class="pane"><div class="page">
+  <div id="verdict-box" style="margin-bottom:1.2rem"></div>
+  <div class="g4" style="margin-bottom:1.2rem">
+    <div class="card"><div class="kl">CAPEX estimé</div><div class="kv" id="r-cap">—</div><div class="ks">CHF</div></div>
+    <div class="card"><div class="kl">CA an 5</div><div class="kv" id="r-ca5">—</div><div class="ks">CHF</div></div>
+    <div class="card"><div class="kl">Charges an 5</div><div class="kv" id="r-ch5">—</div><div class="ks">CHF</div></div>
+    <div class="card"><div class="kl">Résultat an 5</div><div class="kv" id="r-re5">—</div><div class="ks">CHF</div></div>
   </div>
-
-  <!-- Total -->
-  <div class="fin-total">
-    <div>
-      <div style="font-size:11px;color:#aaa;margin-bottom:2px">TOTAL FINANCEMENT</div>
-      <div style="font-size:24px;font-weight:700" id="fin-total-val">0 CHF</div>
-    </div>
-    <div style="text-align:right">
-      <div style="font-size:11px;color:#aaa;margin-bottom:2px">CAPEX ESTIMÉ</div>
-      <div style="font-size:18px;font-weight:600" id="fin-capex-ref">—</div>
-      <div style="font-size:12px;margin-top:3px" id="fin-gap"></div>
-    </div>
+  <div class="sec">Progression An 1 → An 5</div>
+  <div class="tl" id="tl-box"></div>
+  <div class="g2" style="margin-top:1.2rem">
+    <div class="cw"><div class="ct">CA vs Charges — 5 ans</div>
+      <div class="leg"><span><div class="ld" style="background:#1a1a1a"></div>CA</span><span><div class="ld" style="background:#f0a47f"></div>Charges</span></div>
+      <div style="position:relative;height:220px"><canvas id="ch-evol"></canvas></div></div>
+    <div class="cw"><div class="ct">Répartition CA an 5</div>
+      <div style="position:relative;height:240px"><canvas id="ch-don"></canvas></div></div>
   </div>
-
-  <!-- Barre -->
-  <div class="capex-bar-wrap">
-    <div class="capex-bar-track"><div class="capex-bar-fill" id="fin-bar" style="background:#1d9e75;width:0%"></div></div>
-    <div class="capex-bar-labels"><span>0</span><span id="fin-bar-mid"></span><span id="fin-bar-max"></span></div>
+  <div class="sec" style="margin-top:1.5rem">Tableau An 1 → An 5</div>
+  <div style="overflow-x:auto;background:var(--white);border:1px solid var(--border);border-radius:10px">
+    <table><thead><tr><th>Indicateur</th><th class="r">An 1</th><th class="r">An 2</th><th class="r">An 3</th><th class="r">An 4</th><th class="r">An 5</th></tr></thead>
+    <tbody id="res-tbl"></tbody></table>
   </div>
-
-  <div style="text-align:right;margin-top:1rem">
-    <button onclick="showTab('results', document.querySelectorAll('.tab')[4])" style="background:var(--black);color:var(--white);border:none;padding:.6rem 1.4rem;border-radius:7px;cursor:pointer;font-size:13px;font-weight:600">Voir les Résultats →</button>
+  <div class="g2" style="margin-top:1.2rem">
+    <div class="cw"><div class="ct">Structure de financement</div><div style="position:relative;height:200px"><canvas id="ch-fin"></canvas></div></div>
+    <div class="cw"><div class="ct">Décomposition charges an 5</div><div style="position:relative;height:200px"><canvas id="ch-chg"></canvas></div></div>
   </div>
-</div>
-</div>
-
-<!-- ===== TAB 5 : RÉSULTATS ===== -->
-<div id="pane-results" class="pane">
-<div class="page">
-
-  <div id="main-verdict" style="margin-bottom:1.2rem"></div>
-
-  <div class="grid4" style="margin-bottom:1.2rem">
-    <div class="card"><div class="kpi-label">CAPEX total estimé</div><div class="kpi-val" id="res-capex">—</div><div class="kpi-sub">CHF</div></div>
-    <div class="card"><div class="kpi-label">CA an 5</div><div class="kpi-val" id="res-ca5">—</div><div class="kpi-sub">CHF</div></div>
-    <div class="card"><div class="kpi-label">Charges totales an 5</div><div class="kpi-val" id="res-ch5">—</div><div class="kpi-sub">CHF</div></div>
-    <div class="card"><div class="kpi-label">Résultat an 5</div><div class="kpi-val" id="res-res5">—</div><div class="kpi-sub">CHF</div></div>
-  </div>
-
-  <!-- Timeline -->
-  <div class="section-title">Progression An 1 → An 5</div>
-  <div class="tl" id="tl-results"></div>
-
-  <div class="grid2" style="margin-top:1.2rem">
-    <div class="chart-wrap">
-      <div class="chart-title">CA vs Charges — 5 ans</div>
-      <div class="legend">
-        <span><div class="ld" style="background:var(--black)"></div>CA</span>
-        <span><div class="ld" style="background:#f0a47f"></div>Charges</span>
-        <span><div class="ld" style="background:#378add;opacity:.5"></div>Seuil rentabilité</span>
-      </div>
-      <div style="position:relative;height:220px"><canvas id="chart-evol"></canvas></div>
-    </div>
-    <div class="chart-wrap">
-      <div class="chart-title">Répartition CA an 5</div>
-      <div style="position:relative;height:240px"><canvas id="chart-donut"></canvas></div>
-    </div>
-  </div>
-
-  <div class="section-title" style="margin-top:1.5rem">Tableau complet An 1 → An 5</div>
-  <div class="table-wrap card" style="margin-bottom:1.2rem">
-    <table>
-      <thead><tr><th>Indicateur</th><th class="r">An 1</th><th class="r">An 2</th><th class="r">An 3</th><th class="r">An 4</th><th class="r">An 5</th></tr></thead>
-      <tbody id="result-table"></tbody>
-    </table>
-  </div>
-
-  <div class="grid2">
-    <div class="card">
-      <div class="card-title">Structure de financement</div>
-      <div style="position:relative;height:200px"><canvas id="chart-fin"></canvas></div>
-    </div>
-    <div class="card">
-      <div class="card-title">Décomposition des charges an 5</div>
-      <div style="position:relative;height:200px"><canvas id="chart-charges"></canvas></div>
-    </div>
-  </div>
-</div>
-</div>
+</div></div>
 
 <div style="background:#f0f0ec;border-top:1px solid var(--border);padding:.7rem 2rem;font-size:11px;color:#888;display:flex;justify-content:space-between">
-  <span>Association ProFilms · Simulateur Studio Custom · v1.0</span>
-  <span id="foot-date"></span>
+  <span>Association ProFilms · Simulateur Studio Custom · v2.0</span>
+  <span id="foot-d"></span>
 </div>
 
 <script>
-document.getElementById('foot-date').textContent = new Date().toLocaleDateString('fr-CH',{day:'2-digit',month:'long',year:'numeric'});
+document.getElementById('foot-d').textContent=new Date().toLocaleDateString('fr-CH',{day:'2-digit',month:'long',year:'numeric'});
 
-// ===== UTILS =====
-function fmt(n){if(n===null||n===undefined)return'—';return Math.round(n).toLocaleString('fr-CH')}
-function fmtM(n){
-  if(n===null||n===undefined)return'—';
-  const a=Math.abs(n),s=n<0?'−':'';
-  if(a>=1000000)return s+(a/1000000).toFixed(2)+' M';
-  if(a>=1000)return s+(a/1000).toFixed(2)+' k';
-  return s+fmt(n);
-}
-function fmtC(n){return fmtM(n)+' CHF'}
-function pct(n){return Math.round(n)+'%'}
-function v(id){return +document.getElementById(id).value||0}
-function vs(id){return document.getElementById(id).value}
-function el(id){return document.getElementById(id)}
-function set(id,val){const e=el(id);if(e)e.textContent=val}
+var fmt=function(n){if(isNaN(n)||n==null)return'—';return Math.round(n).toLocaleString('fr-CH');};
+var fmtM=function(n){if(isNaN(n)||n==null)return'—';var a=Math.abs(n),s=n<0?'−':'';if(a>=1000000)return s+(a/1000000).toFixed(2)+' M';if(a>=1000)return s+(a/1000).toFixed(2)+' k';return s+fmt(a);};
+var fmtC=function(n){return fmtM(n)+' CHF';};
+var g=function(id){var e=document.getElementById(id);return e?+e.value||0:0;};
+var el=function(id){return document.getElementById(id);};
+var st=function(id,t){var e=el(id);if(e)e.textContent=t;};
+var sh=function(id,h){var e=el(id);if(e)e.innerHTML=h;};
 
-// ===== TABS =====
-let chartsReady = false;
-function showTab(id,btn){
-  document.querySelectorAll('.pane').forEach(p=>p.classList.remove('active'));
-  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
-  el('pane-'+id).classList.add('active');
-  if(btn) btn.classList.add('active');
-  if(id==='results' && !chartsReady){ initCharts(); chartsReady=true; }
-  update();
-}
-
-// ===== STUDIOS =====
-let studioId = 0;
-let studios = [];
-
-function addStudio(name, surf, type){
-  studioId++;
-  const id = studioId;
-  const s = {id, name: name||`Studio ${id}`, surf: surf||800, type: type||'standard'};
-  studios.push(s);
-  renderStudios();
-  update();
-}
-
-function removeStudio(id){
-  studios = studios.filter(s=>s.id!==id);
-  renderStudios();
-  update();
-}
-
-function renderStudios(){
-  const list = el('studio-list');
-  list.innerHTML = '';
-  studios.forEach(s=>{
-    const div = document.createElement('div');
-    div.className = 'studio-item'+(studios.length===1?' highlight':'');
-    div.innerHTML = `
-      <div class="studio-header">
-        <input class="studio-name-input" value="${s.name}" onchange="studioSetName(${s.id},this.value)">
-        <span class="studio-badge">${s.type==='grand'?'Grand plateau':'Standard'}</span>
-        ${studios.length>1?`<button class="studio-remove" onclick="removeStudio(${s.id})">✕ Retirer</button>`:''}
-      </div>
-      <div class="studio-controls">
-        <div class="studio-ctrl">
-          <label>Surface plateau net (m²)</label>
-          <input type="range" min="100" max="5000" step="50" value="${s.surf}" oninput="studioSetSurf(${s.id},this.value);this.nextElementSibling.textContent=Math.round(this.value).toLocaleString('fr-CH')+' m²'">
-          <div class="val">${fmt(s.surf)} m²</div>
-        </div>
-        <div class="studio-ctrl">
-          <label>Type</label>
-          <select style="border:1px solid var(--border);border-radius:5px;padding:4px 6px;font-size:12px;width:100%" onchange="studioSetType(${s.id},this.value)">
-            <option value="standard" ${s.type==='standard'?'selected':''}>Standard (H: 6–9m)</option>
-            <option value="grand" ${s.type==='grand'?'selected':''}>Grand plateau (H: 12–16m)</option>
-          </select>
-          <div class="val" style="color:var(--mid)">${s.type==='grand'?'Coeff ×2.0':'Coeff ×1.6'}</div>
-        </div>
-        <div class="studio-ctrl">
-          <label>CAPEX estimé</label>
-          <div class="val" id="capex-studio-${s.id}" style="font-size:14px;font-weight:700;margin-top:6px">—</div>
-        </div>
-      </div>`;
-    list.appendChild(div);
-  });
-}
-
-function studioSetName(id,val){const s=studios.find(x=>x.id===id);if(s)s.name=val;}
-function studioSetSurf(id,val){const s=studios.find(x=>x.id===id);if(s){s.surf=+val;update();}}
-function studioSetType(id,val){const s=studios.find(x=>x.id===id);if(s){s.type=val;renderStudios();update();}}
-
-// ===== EPT DATA =====
-const EPT_ROLES = [
-  {key:'dir', label:'Direction des studios', role:'Direction générale, gestion artistique', ept:1, salary:120000},
-  {key:'ops', label:'Direction des opérations', role:'Sécurité, logistique, exploitation', ept:1, salary:80000},
-  {key:'com', label:'Responsable commercial', role:'Marketing, booking, relations clients', ept:1, salary:80000},
-  {key:'adm', label:'Administration / comptabilité', role:'Gestion financière, RH, secrétariat', ept:1, salary:80000},
-  {key:'acc', label:'Accueil / réception', role:'Accueil visiteurs et productions', ept:1, salary:70000},
-  {key:'tec', label:'Technicien·ne polyvalent·e', role:'Maintenance studios, IT, réseaux', ept:1, salary:75000},
-  {key:'fac', label:'Facility manager', role:'Entretien, nettoyage, logistique', ept:0.5, salary:70000},
-  {key:'con', label:'Conseil de fondation', role:'Gouvernance — forfait honoraires', ept:0, salary:60000},
-];
-
-function renderEPT(){
-  const list = el('ept-list');
-  list.innerHTML = '';
-  EPT_ROLES.forEach(r=>{
-    const div = document.createElement('div');
-    div.className = 'ept-row';
-    div.innerHTML = `
-      <div style="flex:1">
-        <div class="ept-label">${r.label}</div>
-        <div class="ept-role">${r.role}</div>
-      </div>
-      <input type="number" class="ept-input" id="ept-${r.key}" value="${r.ept}" step="0.5" min="0" max="20" oninput="update()">
-      <input type="number" class="ept-salary" id="sal-${r.key}" value="${r.salary}" step="1000" oninput="update()">
-      <div class="ept-cost" id="cost-${r.key}">—</div>`;
-    list.appendChild(div);
-  });
-}
-
-// ===== CHARTS =====
-let chartEvol=null, chartDonut=null, chartFin=null, chartCharges=null;
-
+var chartsOk=false,cEv=null,cDon=null,cFin=null,cChg=null;
 function initCharts(){
-  chartEvol=new Chart(el('chart-evol'),{type:'line',data:{labels:['An 1','An 2','An 3','An 4','An 5'],datasets:[
+  cEv=new Chart(el('ch-evol'),{type:'line',data:{labels:['An 1','An 2','An 3','An 4','An 5'],datasets:[
     {label:'CA',data:[0,0,0,0,0],borderColor:'#1a1a1a',backgroundColor:'rgba(26,26,26,.06)',tension:.3,fill:true,pointRadius:4},
-    {label:'Charges',data:[0,0,0,0,0],borderColor:'#f0a47f',backgroundColor:'transparent',borderDash:[4,3],tension:.1,pointRadius:3},
-    {label:'Seuil',data:[0,0,0,0,0],borderColor:'rgba(55,138,221,.5)',backgroundColor:'transparent',borderDash:[2,4],tension:.1,pointRadius:0}
-  ]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{ticks:{callback:v=>fmtM(v)}}}}});
-
-  chartDonut=new Chart(el('chart-donut'),{type:'doughnut',data:{labels:[],datasets:[{data:[],backgroundColor:['#1a1a1a','#378add','#1d9e75','#f0a47f','#9b59b6'],borderWidth:0}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{font:{size:11}}}}}});
-
-  chartFin=new Chart(el('chart-fin'),{type:'doughnut',data:{labels:[],datasets:[{data:[],backgroundColor:['#1a1a1a','#378add','#1d9e75','#f0a47f','#e74c3c'],borderWidth:0}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{font:{size:11}}}}}});
-
-  chartCharges=new Chart(el('chart-charges'),{type:'doughnut',data:{labels:[],datasets:[{data:[],backgroundColor:['#1a1a1a','#378add','#1d9e75','#f0a47f','#9b59b6','#e74c3c','#f39c12'],borderWidth:0}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{font:{size:11}}}}}});
+    {label:'Charges',data:[0,0,0,0,0],borderColor:'#f0a47f',backgroundColor:'transparent',borderDash:[4,3],tension:.1,pointRadius:3}
+  ]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{ticks:{callback:function(v){return fmtM(v);}}}}}});
+  cDon=new Chart(el('ch-don'),{type:'doughnut',data:{labels:[],datasets:[{data:[],backgroundColor:['#1a1a1a','#378add','#1d9e75','#f0a47f'],borderWidth:0}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{font:{size:11}}}}}});
+  cFin=new Chart(el('ch-fin'),{type:'doughnut',data:{labels:[],datasets:[{data:[],backgroundColor:['#1a1a1a','#378add','#1d9e75','#f0a47f'],borderWidth:0}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{font:{size:11}}}}}});
+  cChg=new Chart(el('ch-chg'),{type:'doughnut',data:{labels:[],datasets:[{data:[],backgroundColor:['#1a1a1a','#378add','#1d9e75','#f0a47f','#9b59b6','#e74c3c','#f39c12','#2ecc71'],borderWidth:0}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{font:{size:11}}}}}});
 }
 
-// ===== MAIN UPDATE =====
+function goTab(id,btn){
+  document.querySelectorAll('.pane').forEach(function(p){p.classList.remove('active');});
+  document.querySelectorAll('.tab').forEach(function(t){t.classList.remove('active');});
+  el('pane-'+id).classList.add('active');
+  if(btn)btn.classList.add('active');
+  if(id==='results'&&!chartsOk){initCharts();chartsOk=true;}
+  update();
+}
+
+var sid=0,studios=[];
+function addStudio(name,surf,type){
+  sid++;
+  studios.push({id:sid,name:name||'Studio '+sid,surf:surf||800,type:type||'standard'});
+  renderStudios();update();
+}
+function removeStudio(id){
+  studios=studios.filter(function(s){return s.id!==id;});
+  renderStudios();update();
+}
+function renderStudios(){
+  var list=el('slist');list.innerHTML='';
+  studios.forEach(function(s){
+    var d=document.createElement('div');d.className='sitem';
+    d.innerHTML='<div class="shdr">'+
+      '<input class="sname" value="'+s.name+'" onchange="studios.find(function(x){return x.id==='+s.id+';}).name=this.value">'+
+      '<span class="sbadge">'+(s.type==='grand'?'Grand plateau':'Standard')+'</span>'+
+      (studios.length>1?'<button class="btnrm" onclick="removeStudio('+s.id+')">✕ Retirer</button>':'')+
+      '</div>'+
+      '<div class="sctrls">'+
+      '<div class="sctrl"><label>Surface plateau net (m²)</label>'+
+      '<input type="range" min="100" max="5000" step="50" value="'+s.surf+'" oninput="studios.find(function(x){return x.id==='+s.id+';}).surf=+this.value;this.nextElementSibling.textContent=Math.round(this.value).toLocaleString(\'fr-CH\')+\' m²\';update()">'+
+      '<div class="val">'+fmt(s.surf)+' m²</div></div>'+
+      '<div class="sctrl"><label>Type</label>'+
+      '<select style="border:1px solid var(--border);border-radius:5px;padding:4px 6px;font-size:12px;width:100%" onchange="studios.find(function(x){return x.id==='+s.id+';}).type=this.value;renderStudios();update()">'+
+      '<option value="standard"'+(s.type==='standard'?' selected':'')+'>Standard (H 6–9m) ×1.6</option>'+
+      '<option value="grand"'+(s.type==='grand'?' selected':'')+'>Grand plateau (H 12–16m) ×2.0</option>'+
+      '</select></div>'+
+      '<div class="sctrl"><label>CAPEX estimé</label><div class="val" id="cs-'+s.id+'" style="font-size:14px;font-weight:700;margin-top:6px">—</div></div>'+
+      '</div>';
+    list.appendChild(d);
+  });
+}
+
+var ROLES=[
+  {k:'dir',l:'Direction des studios',r:'Direction générale, gestion artistique',e:1,s:120000},
+  {k:'ops',l:'Direction des opérations',r:'Sécurité, logistique, exploitation',e:1,s:80000},
+  {k:'com',l:'Responsable commercial',r:'Marketing, booking, relations clients',e:1,s:80000},
+  {k:'adm',l:'Administration / comptabilité',r:'Gestion financière, RH, secrétariat',e:1,s:80000},
+  {k:'acc',l:'Accueil / réception',r:'Accueil visiteurs et productions',e:1,s:70000},
+  {k:'tec',l:'Technicien·ne polyvalent·e',r:'Maintenance studios, IT, réseaux',e:1,s:75000},
+  {k:'fac',l:'Facility manager',r:'Entretien, nettoyage, logistique',e:0.5,s:70000},
+  {k:'con',l:'Conseil de fondation',r:'Gouvernance — forfait honoraires',e:0,s:60000}
+];
+function renderEPT(){
+  var list=el('ept-list');list.innerHTML='';
+  ROLES.forEach(function(r){
+    var d=document.createElement('div');d.className='erow';
+    d.innerHTML='<div style="flex:1"><div style="font-size:13px;font-weight:500">'+r.l+'</div><div style="font-size:11px;color:var(--mid)">'+r.r+'</div></div>'+
+      '<input type="number" class="einput" id="ept-'+r.k+'" value="'+r.e+'" step="0.5" min="0" max="20" oninput="update()">'+
+      '<input type="number" class="esal" id="sal-'+r.k+'" value="'+r.s+'" step="1000" oninput="update()">'+
+      '<div class="ecost" id="cost-'+r.k+'">—</div>';
+    list.appendChild(d);
+  });
+}
+
 function update(){
-  const cStd = v('c-std');
-  const cMultStd = v('c-mult-std');
-  const cMultBig = v('c-mult-big');
-  const cInfra = v('c-infra');
+  var cStd=g('c-std'),cMS=g('c-ms'),cMB=g('c-mb'),cInfra=g('c-infra');
 
-  // --- Surfaces ---
-  let surfStudios = 0;
-  studios.forEach(s=>{
-    surfStudios += s.surf;
-    const capexS = Math.round(s.surf * cStd * (s.type==='grand'?cMultBig:cMultStd));
-    set(`capex-studio-${s.id}`, fmtC(capexS));
+  var surfS=0,capexS=0;
+  studios.forEach(function(s){
+    surfS+=s.surf;
+    var cs=Math.round(s.surf*cStd*(s.type==='grand'?cMB:cMS));
+    capexS+=cs;
+    st('cs-'+s.id,fmtC(cs));
   });
 
-  const ecoleOn = el('ecole-on').checked;
-  const atelierOn = el('atelier-on').checked;
-  const depotOn = el('depot-on').checked;
-  const loueurOn = el('loueur-on').checked;
-  const bureauOn = el('bureau-on').checked;
-  const publicOn = el('public-on').checked;
+  var ecOn=el('ecole-on').checked,atOn=el('atelier-on').checked;
+  var dpOn=el('depot-on').checked,loOn=el('loueur-on').checked;
+  var buOn=el('bureau-on').checked,puOn=el('public-on').checked;
+  var sEc=ecOn?g('ecole-surf'):0,tvP=g('ecole-tv')/100;
+  var sAt=atOn?g('atelier-surf'):0,sDp=dpOn?g('depot-surf'):0;
+  var sLo=loOn?g('loueur-surf'):0,sBu=buOn?g('bureau-surf'):0,sPu=puOn?g('public-surf'):0;
 
-  const surfEcole = ecoleOn ? v('ecole-surf') : 0;
-  const ecoleTvPct = v('ecole-tv-pct') / 100;
-  const surfAtelier = atelierOn ? v('atelier-surf') : 0;
-  const surfDepot = depotOn ? v('depot-surf') : 0;
-  const surfLoueur = loueurOn ? v('loueur-surf') : 0;
-  const surfBureau = bureauOn ? v('bureau-surf') : 0;
-  const surfPublic = publicOn ? v('public-surf') : 0;
+  st('r-ecole-surf',fmt(g('ecole-surf'))+' m²');st('r-ecole-tv',g('ecole-tv')+'%');
+  st('r-atelier-surf',fmt(g('atelier-surf'))+' m²');st('r-depot-surf',fmt(g('depot-surf'))+' m²');
+  st('r-loueur-surf',fmt(g('loueur-surf'))+' m²');st('r-bureau-surf',fmt(g('bureau-surf'))+' m²');
+  st('r-public-surf',fmt(g('public-surf'))+' m²');
+  st('r-std',fmt(cStd));st('r-ms','×'+parseFloat(g('c-ms')).toFixed(1));st('r-mb','×'+parseFloat(g('c-mb')).toFixed(1));
+  st('r-infra',fmtM(cInfra)+' CHF');
 
-  // Update slider displays
-  set('r-ecole-surf', fmt(v('ecole-surf'))+' m²');
-  set('r-ecole-tv-pct', Math.round(v('ecole-tv-pct'))+'%');
-  set('r-atelier-surf', fmt(v('atelier-surf'))+' m²');
-  set('r-depot-surf', fmt(v('depot-surf'))+' m²');
-  set('r-loueur-surf', fmt(v('loueur-surf'))+' m²');
-  set('r-bureau-surf', fmt(v('bureau-surf'))+' m²');
-  set('r-public-surf', fmt(v('public-surf'))+' m²');
-  set('r-c-std', fmt(cStd));
-  set('r-c-mult-std', '×'+v('c-mult-std').toFixed(1));
-  set('r-c-mult-big', '×'+v('c-mult-big').toFixed(1));
-  set('r-c-infra', fmtM(cInfra));
+  var sAnn=sEc+sAt+sDp+sLo+sBu+sPu;
+  var sProd=surfS+sAnn;
+  var sTotal=Math.round(sProd*1.40);
 
-  const surfAnnexes = surfEcole + surfAtelier + surfDepot + surfLoueur + surfBureau + surfPublic;
-  const surfProd = surfStudios + surfAnnexes;
-  const surfServices = Math.round(surfProd * 0.40);
-  const surfTotal = surfProd + surfServices;
+  var capexEc=Math.round(sEc*(tvP*cStd*cMS+(1-tvP)*cStd));
+  var capexAt=Math.round(sAt*cStd);
+  var capexDp=Math.round(sDp*cStd*0.60);
+  var capexAnn=capexEc+capexAt+capexDp+Math.round((sLo+sBu+sPu)*cStd);
+  var capexTot=capexS+capexAnn+cInfra;
 
-  // --- CAPEX — école avec surcoût studio TV ---
-  let capexStudios = 0;
-  studios.forEach(s=>{capexStudios += Math.round(s.surf * cStd * (s.type==='grand'?cMultBig:cMultStd));});
-  const capexEcole = Math.round(surfEcole * ((ecoleTvPct * cStd * cMultStd) + ((1-ecoleTvPct) * cStd)));
-  const capexAtelier = Math.round(surfAtelier * cStd);
-  const capexDepot = Math.round(surfDepot * cStd * 0.60); // dépôts = 60% du coût standard
-  const capexAnnexes = capexEcole + capexAtelier + capexDepot + Math.round((surfLoueur+surfBureau+surfPublic) * cStd);
-  const capexTotal = capexStudios + capexAnnexes + cInfra;
+  st('sum-s',fmt(surfS)+' m²');st('sum-a',fmt(sAnn)+' m²');st('sum-t',fmt(sTotal)+' m²');st('sum-c',fmtC(capexTot));
+  st('hdr-capex','CAPEX : '+fmtM(capexTot)+' CHF');
 
-  set('sum-studios', fmt(surfStudios)+' m²');
-  set('sum-annexes', fmt(surfAnnexes)+' m²');
-  set('sum-total', fmt(surfTotal)+' m²');
-  set('sum-capex', fmtC(capexTotal));
-  set('hdr-capex', 'CAPEX estimé : '+fmtM(capexTotal)+' CHF');
+  var tS=g('t-s'),tB=g('t-b'),tBail=g('t-bail'),tL=g('t-l');
+  st('r-ts',tS.toFixed(2));st('r-tb',tB.toFixed(2));st('r-tbail',tBail.toFixed(0));st('r-tl',tL.toFixed(0));
 
-  // --- Tarifs & Occupation ---
-  const tStudio = v('t-studio');
-  const tBureau = v('t-bureau');
-  const tBail = v('t-bail');
-  const tLoueur = v('t-loueur');
+  var oS=[g('os1'),(g('os1')+g('os3'))/2,g('os3'),(g('os3')+g('os5'))/2,g('os5')];
+  var oB=[g('ob1'),(g('ob1')+g('ob3'))/2,g('ob3'),(g('ob3')+g('ob5'))/2,g('ob5')];
+  var oBL=[g('obl1'),(g('obl1')+g('obl3'))/2,g('obl3'),(g('obl3')+g('obl5'))/2,g('obl5')];
+  var oL=[g('ol1'),(g('ol1')+g('ol3'))/2,g('ol3'),(g('ol3')+g('ol5'))/2,g('ol5')];
+  st('r-os1',Math.round(g('os1'))+'%');st('r-os3',Math.round(g('os3'))+'%');st('r-os5',Math.round(g('os5'))+'%');
+  st('r-ob1',Math.round(g('ob1'))+'%');st('r-ob3',Math.round(g('ob3'))+'%');st('r-ob5',Math.round(g('ob5'))+'%');
+  st('r-obl1',Math.round(g('obl1'))+'%');st('r-obl3',Math.round(g('obl3'))+'%');st('r-obl5',Math.round(g('obl5'))+'%');
+  st('r-ol1',Math.round(g('ol1'))+'%');st('r-ol3',Math.round(g('ol3'))+'%');st('r-ol5',Math.round(g('ol5'))+'%');
 
-  set('r-t-studio', tStudio.toFixed(2));
-  set('r-t-bureau', tBureau.toFixed(2));
-  set('r-t-bail', tBail.toFixed(0));
-  set('r-t-loueur', tLoueur.toFixed(0));
+  var caS=oS.map(function(o){return Math.round(surfS*tS*360*o/100);});
+  var caB=oB.map(function(o){return Math.round(sBu*tB*360*o/100);});
+  var caBL=oBL.map(function(o){return Math.round((sEc+sAt+sDp)*tBail*o/100);});
+  var caL=oL.map(function(o){return Math.round(sLo*tL*o/100);});
+  var caArr=caS.map(function(_,i){return caS[i]+caB[i]+caBL[i]+caL[i];});
 
-  // Occupation
-  const occStudio = [v('occ-studio-1'), (v('occ-studio-1')+v('occ-studio-3'))/2, v('occ-studio-3'), (v('occ-studio-3')+v('occ-studio-5'))/2, v('occ-studio-5')];
-  const occBureau = [v('occ-bureau-1'), (v('occ-bureau-1')+v('occ-bureau-3'))/2, v('occ-bureau-3'), (v('occ-bureau-3')+v('occ-bureau-5'))/2, v('occ-bureau-5')];
-  const occBail = [v('occ-bail-1'), (v('occ-bail-1')+v('occ-bail-3'))/2, v('occ-bail-3'), (v('occ-bail-3')+v('occ-bail-5'))/2, v('occ-bail-5')];
-  const occLoueur = [v('occ-loueur-1'), (v('occ-loueur-1')+v('occ-loueur-3'))/2, v('occ-loueur-3'), (v('occ-loueur-3')+v('occ-loueur-5'))/2, v('occ-loueur-5')];
-
-  ['occ-studio','occ-bureau','occ-bail','occ-loueur'].forEach(pfx=>{
-    [1,3,5].forEach(y=>{set(`r-${pfx}-${y}`, Math.round(v(`${pfx}-${y}`))+' %');});
+  var masseS=0;
+  ROLES.forEach(function(r){
+    var e=g('ept-'+r.k),s=g('sal-'+r.k);
+    var c=Math.round(e*s*1.14);
+    masseS+=c;
+    st('cost-'+r.k,c>0?fmtC(c):'—');
   });
+  st('ept-total',fmtC(masseS));
 
-  // CA par année — tBail et tLoueur sont maintenant en CHF/m²/AN
-  const caStudiosArr = occStudio.map(o=>Math.round(surfStudios * tStudio * 360 * o/100));
-  const caBureauArr  = occBureau.map(o=>Math.round(surfBureau * tBureau * 360 * o/100));
-  const caBailArr    = occBail.map(o=>Math.round((surfEcole+surfAtelier+surfDepot) * tBail * o/100));
-  const caLoueurArr  = occLoueur.map(o=>Math.round(surfLoueur * tLoueur * o/100));
-  const caArr = caStudiosArr.map((_,i)=>caStudiosArr[i]+caBureauArr[i]+caBailArr[i]+caLoueurArr[i]);
+  st('r-en',g('c-en').toFixed(0));st('r-ma',g('c-ma').toFixed(0));
+  st('r-as',fmtM(g('c-as')));st('r-mk',fmtM(g('c-mk')));
+  st('r-ho',fmtM(g('c-ho')));st('r-ad',fmtM(g('c-ad')));
+  st('r-dd',fmt(g('c-dd')));st('r-va',parseFloat(g('c-va')).toFixed(1)+'%');
 
-  // --- Personnel ---
-  let masseSalariale = 0;
-  EPT_ROLES.forEach(r=>{
-    const ept = v(`ept-${r.key}`);
-    const sal = v(`sal-${r.key}`);
-    const cout = Math.round(ept * sal * 1.14);
-    masseSalariale += cout;
-    set(`cost-${r.key}`, cout>0?fmtC(cout):'—');
-  });
-  set('ept-total', fmtC(masseSalariale));
+  var cEn=Math.round(sTotal*g('c-en'));
+  var cMa=Math.round(sTotal*g('c-ma'));
+  var cAs=g('c-as'),cMk=g('c-mk'),cHo=g('c-ho'),cAd=g('c-ad'),cDd=g('c-dd');
+  var cVa=g('c-va')/100;
+  var fixHV=masseS+cEn+cMa+cAs+cMk+cHo+cAd+cDd;
 
-  // --- Charges fixes ---
-  set('r-c-energie', v('c-energie').toFixed(0));
-  set('r-c-maint', v('c-maint').toFixed(0));
-  set('r-c-assur', fmtM(v('c-assur')));
-  set('r-c-marketing', fmtM(v('c-marketing')));
-  set('r-c-honor', fmtM(v('c-honor')));
-  set('r-c-admin', fmtM(v('c-admin')));
-  set('r-c-ddp', fmtM(v('c-ddp')));
-  set('r-c-var', v('c-var').toFixed(1)+'%');
+  var pret=g('fpt'),taux=g('ftx')/100,duree=g('fdu');
+  var ann=0;
+  if(pret>0&&taux>0&&duree>0){var tm=taux/12,n=duree*12;ann=Math.round(pret*tm*Math.pow(1+tm,n)/(Math.pow(1+tm,n)-1))*12;}
+  else if(pret>0&&duree>0){ann=Math.round(pret/duree);}
+  var intTot=ann>0?Math.round(ann*duree-pret):0;
+  st('f-ann',fmtC(ann)+'/an');st('f-int',fmtC(intTot));
 
-  const chargesEnergie = Math.round(surfTotal * v('c-energie'));
-  const chargesMaint = Math.round(surfTotal * v('c-maint'));
-  const chargesAssur = v('c-assur');
-  const chargesMarketing = v('c-marketing');
-  const chargesHonor = v('c-honor');
-  const chargesAdmin = v('c-admin');
-  const chargesDDP = v('c-ddp');
+  var chArr=caArr.map(function(ca,i){return Math.round(fixHV*(1+i*0.025)+ca*cVa+ann);});
+  var resArr=caArr.map(function(ca,i){return ca-chArr[i];});
 
-  // Variables = % du CA studios
-  const cVar = v('c-var')/100;
+  var ff1=g('ff1'),ff2=g('ff2'),ffm=g('ffm');
+  var fca=g('fca'),fco=g('fco'),fcf=g('fcf');
+  var fpr=g('fpr'),fcr=g('fcr');
+  var ftot=ff1+ff2+ffm+fca+fco+fcf+fpr+fcr+pret;
+  st('sub-f',fmtC(ff1+ff2+ffm));st('sub-p',fmtC(fca+fco+fcf));
+  st('sub-pr',fmtC(fpr+fcr));st('sub-pt',fmtC(pret));
+  st('f-tot',fmtC(ftot));st('f-cap',fmtC(capexTot));
+  var gap=ftot-capexTot;
+  sh('f-gap',gap>=0?'<span style="color:#1d9e75">Solde : +'+fmtM(gap)+' CHF</span>':'<span style="color:var(--red)">Déficit : '+fmtM(gap)+' CHF</span>');
+  var bMax=Math.max(ftot,capexTot,1);
+  var bf=el('f-bar');
+  if(bf){bf.style.width=Math.min(ftot/bMax*100,100)+'%';bf.style.background=gap>=0?'#1d9e75':'var(--red)';}
+  st('f-bm',fmtM(bMax/2)+' CHF');st('f-bx',fmtM(bMax)+' CHF');
 
-  const chargesFixesHorsVar = masseSalariale + chargesEnergie + chargesMaint + chargesAssur + chargesMarketing + chargesHonor + chargesAdmin + chargesDDP;
+  var cp=el('ca-prev');
+  if(cp)cp.innerHTML='<div class="card"><div class="kl">CA Studios an 5</div><div class="kv '+(caS[4]>0?'cg':'')+'" >'+fmtM(caS[4])+'</div><div class="ks">CHF</div></div>'+
+    '<div class="card"><div class="kl">CA Bureaux an 5</div><div class="kv">'+fmtM(caB[4])+'</div><div class="ks">CHF</div></div>'+
+    '<div class="card"><div class="kl">CA Baux stables an 5</div><div class="kv">'+fmtM(caBL[4])+'</div><div class="ks">CHF</div></div>'+
+    '<div class="card"><div class="kl">CA Loueurs an 5</div><div class="kv">'+fmtM(caL[4])+'</div><div class="ks">CHF</div></div>';
 
-  // Annuité prêt
-  const pret = v('fin-pret');
-  const tauxAnn = v('fin-taux')/100;
-  const duree = v('fin-duree');
-  let annuite = 0;
-  if(pret>0 && tauxAnn>0 && duree>0){
-    const tauxMens = tauxAnn/12;
-    const n = duree*12;
-    annuite = Math.round(pret * tauxMens * Math.pow(1+tauxMens,n) / (Math.pow(1+tauxMens,n)-1)) * 12;
-  } else if(pret>0 && duree>0){
-    annuite = Math.round(pret / duree);
-  }
-  const totalInterets = annuite>0 ? Math.round(annuite*duree - pret) : 0;
-  set('fin-annuite', fmtC(annuite)+'/an');
-  set('fin-interets', fmtC(totalInterets));
+  var chp=el('ch-prev');
+  if(chp)chp.innerHTML='<div class="card"><div class="kl">Masse salariale</div><div class="kv">'+fmtM(masseS)+'</div><div class="ks">CHF/an</div></div>'+
+    '<div class="card"><div class="kl">Énergie + Maintenance</div><div class="kv">'+fmtM(cEn+cMa)+'</div><div class="ks">CHF/an</div></div>'+
+    '<div class="card"><div class="kl">Autres charges fixes</div><div class="kv">'+fmtM(cAs+cMk+cHo+cAd+cDd)+'</div><div class="ks">CHF/an</div></div>'+
+    '<div class="card"><div class="kl">Total charges an 5</div><div class="kv '+(resArr[4]>=0?'cg':'cr')+'">'+fmtM(chArr[4])+'</div><div class="ks">CHF</div></div>';
 
-  // Charges totales par année (charges croissent légèrement)
-  const chArr = caArr.map((ca,i)=>{
-    const croissance = 1 + i*0.025; // +2.5% par an
-    return Math.round((chargesFixesHorsVar * croissance) + (ca * cVar) + annuite);
-  });
+  var res5=resArr[4],ca5=caArr[4],ch5=chArr[4];
+  var vhtml='',vcls='';
+  if(ca5===0){vhtml='Aucun studio configuré.';vcls='vwarn';}
+  else if(res5>ca5*0.05){vhtml='<strong>Modèle viable.</strong> CA an 5 : '+fmtM(ca5)+' CHF · Charges : '+fmtM(ch5)+' CHF · Résultat : +'+fmtM(res5)+' CHF ('+Math.round(res5/ca5*100)+'% de marge).';vcls='vgo';}
+  else if(res5>-ch5*0.15){vhtml='<strong>Modèle sous tension.</strong> CA an 5 : '+fmtM(ca5)+' CHF · Résultat : '+fmtM(res5)+' CHF.';vcls='vwarn';}
+  else{vhtml='<strong>Modèle déficitaire.</strong> Résultat an 5 : '+fmtM(res5)+' CHF.';vcls='vbad';}
+  var vb=el('verdict-box');if(vb)vb.innerHTML='<div class="verd '+vcls+'">'+vhtml+'</div>';
 
-  const resArr = caArr.map((ca,i)=>ca - chArr[i]);
+  st('r-cap',fmtM(capexTot));st('r-ca5',fmtM(ca5));st('r-ch5',fmtM(ch5));
+  var r5=el('r-re5');if(r5){r5.textContent=(res5>=0?'+':'')+fmtM(res5);r5.className='kv '+(res5>0?'cg':res5>-ch5*0.1?'cwa':'cr');}
 
-  // --- Financement ---
-  const finFond1 = v('fin-fond1'), finFond2 = v('fin-fond2'), finMecenat = v('fin-mecenat');
-  const finCanton = v('fin-canton'), finCommune = v('fin-commune'), finConf = v('fin-conf');
-  const finPropres = v('fin-propres'), finCrowd = v('fin-crowd');
-  const finPret = v('fin-pret');
-  const finTotal = finFond1+finFond2+finMecenat+finCanton+finCommune+finConf+finPropres+finCrowd+finPret;
-
-  set('fin-total-val', fmtC(finTotal));
-  set('fin-capex-ref', fmtC(capexTotal));
-
-  // Sous-totaux par bloc
-  set('sub-fondations', fmtC(finFond1+finFond2+finMecenat));
-  set('sub-public', fmtC(finCanton+finCommune+finConf));
-  set('sub-propres', fmtC(finPropres+finCrowd));
-  set('sub-pret', fmtC(finPret));
-
-  const gap = finTotal - capexTotal;
-  const gapEl = el('fin-gap');
-  if(gap >= 0){
-    gapEl.innerHTML = `<span style="color:#1d9e75">Solde : +${fmtM(gap)} CHF</span>`;
-  } else {
-    gapEl.innerHTML = `<span style="color:#a32d2d">Déficit : ${fmtM(gap)} CHF</span>`;
-  }
-
-  const barMax = Math.max(finTotal, capexTotal, 1);
-  const barPct = Math.min(finTotal/barMax*100, 100);
-  const barEl = el('fin-bar');
-  barEl.style.width = barPct+'%';
-  barEl.style.background = gap >= 0 ? '#1d9e75' : '#a32d2d';
-  set('fin-bar-mid', fmtM(barMax/2)+' CHF');
-  set('fin-bar-max', fmtM(barMax)+' CHF');
-
-  // ---- CA PREVIEW (tab 2) ----
-  const cp = el('ca-preview');
-  if(cp){
-    cp.innerHTML = `
-      <div class="card"><div class="kpi-label">CA Studios an 5</div><div class="kpi-val ${caStudiosArr[4]>0?'green':''}">${fmtM(caStudiosArr[4])}</div><div class="kpi-sub">CHF</div></div>
-      <div class="card"><div class="kpi-label">CA Bureaux an 5</div><div class="kpi-val">${fmtM(caBureauArr[4])}</div><div class="kpi-sub">CHF</div></div>
-      <div class="card"><div class="kpi-label">CA Baux stables an 5</div><div class="kpi-val">${fmtM(caBailArr[4])}</div><div class="kpi-sub">CHF</div></div>
-      <div class="card"><div class="kpi-label">CA Loueurs an 5</div><div class="kpi-val">${fmtM(caLoueurArr[4])}</div><div class="kpi-sub">CHF</div></div>`;
-  }
-  }
-
-  // ---- CHARGES PREVIEW (tab 3) ----
-  const chp = el('charges-preview');
-  if(chp){
-    chp.innerHTML = `
-      <div class="card"><div class="kpi-label">Masse salariale</div><div class="kpi-val">${fmtM(masseSalariale)}</div><div class="kpi-sub">CHF/an</div></div>
-      <div class="card"><div class="kpi-label">Énergie + Maintenance</div><div class="kpi-val">${fmtM(chargesEnergie+chargesMaint)}</div><div class="kpi-sub">CHF/an</div></div>
-      <div class="card"><div class="kpi-label">Charges fixes hors salaires</div><div class="kpi-val">${fmtM(chargesFixesHorsVar-masseSalariale)}</div><div class="kpi-sub">CHF/an</div></div>
-      <div class="card"><div class="kpi-label">Total charges an 5</div><div class="kpi-val ${resArr[4]>=0?'green':'red'}">${fmtM(chArr[4])}</div><div class="kpi-sub">CHF</div></div>`;
-  }
-
-  // ---- RÉSULTATS ----
-  // Verdict
-  const res5 = resArr[4];
-  const ca5 = caArr[4];
-  const ch5 = chArr[4];
-  let vhtml='', vcls='';
-  if(ca5===0){
-    vhtml='Aucune surface ni tarif configuré. Définissez au moins un studio et ses paramètres dans les onglets 1 et 2.';vcls='warn';
-  } else if(res5>ca5*0.05){
-    vhtml=`<strong>Modèle viable.</strong> CA an 5 : ${fmtM(ca5)} CHF · Charges : ${fmtM(ch5)} CHF · Résultat : +${fmtM(res5)} CHF (${Math.round(res5/ca5*100)}% de marge). Le projet peut s'autofinancer en régime de croisière.`;vcls='go';
-  } else if(res5>-ch5*0.15){
-    vhtml=`<strong>Modèle sous tension mais défendable.</strong> CA an 5 : ${fmtM(ca5)} CHF · Résultat : ${fmtM(res5)} CHF. Des subventions culturelles récurrentes ou un ajustement tarifaire permettent d'équilibrer.`;vcls='warn';
-  } else {
-    vhtml=`<strong>Modèle déficitaire.</strong> Résultat an 5 : ${fmtM(res5)} CHF. Revoir le programme (surface studios insuffisante), les tarifs, ou le taux d'occupation. Le déficit structurel nécessiterait des subventions récurrentes importantes.`;vcls='bad';
-  }
-  const mv = el('main-verdict'); if(mv) mv.innerHTML = `<div class="verdict ${vcls}">${vhtml}</div>`;
-
-  set('res-capex', fmtM(capexTotal));
-  const res5El = el('res-res5');
-  set('res-ca5', fmtM(ca5));
-  set('res-ch5', fmtM(ch5));
-  if(res5El){
-    res5El.textContent = (res5>=0?'+':'')+fmtM(res5);
-    res5El.className = 'kpi-val '+(res5>0?'green':res5>-ch5*0.1?'warn':'red');
-  }
-
-  // Timeline
-  const tlEl = el('tl-results');
-  if(tlEl){
-    tlEl.innerHTML = '';
-    ['An 1','An 2','An 3','An 4','An 5'].forEach((y,i)=>{
-      const cls = resArr[i]>0?'ok':resArr[i]>-chArr[i]*0.2?'neutral':'ko';
-      tlEl.innerHTML += `<div class="tl-step ${cls}">
-        <div class="tl-lbl">${y}</div>
-        <div class="tl-ca">${fmtM(caArr[i])}</div>
-        <div class="tl-res" style="color:${resArr[i]>=0?'#0f6e56':'#a32d2d'}">${resArr[i]>=0?'+':''}${fmtM(resArr[i])}</div>
-      </div>`;
+  var tlb=el('tl-box');
+  if(tlb){
+    tlb.innerHTML='';
+    ['An 1','An 2','An 3','An 4','An 5'].forEach(function(y,i){
+      var cls=resArr[i]>=0?'tok':'tko';
+      var col=resArr[i]>=0?'var(--green)':'var(--red)';
+      tlb.innerHTML+='<div class="tls '+cls+'"><div class="tl-l">'+y+'</div><div class="tl-v">'+fmtM(caArr[i])+'</div><div style="font-size:11px;color:'+col+'">'+(resArr[i]>=0?'+':'')+fmtM(resArr[i])+'</div></div>';
     });
   }
 
-  // Result table — fix rendering
-  const rt = el('result-table');
+  var rt=el('res-tbl');
   if(rt){
-    const rows = [
-      {label:"Chiffre d'affaires", arr:caArr, cls:'green', bold:true},
-      {label:'— dont CA studios', arr:caStudiosArr, cls:'', bold:false},
-      {label:'— dont CA bureaux', arr:caBureauArr, cls:'', bold:false},
-      {label:'— dont CA baux stables', arr:caBailArr, cls:'', bold:false},
-      {label:'— dont CA loueurs', arr:caLoueurArr, cls:'', bold:false},
-      {label:'Charges totales', arr:chArr, cls:'', bold:true},
-      {label:'— dont masse salariale', arr:chArr.map((_,i)=>Math.round(masseSalariale*(1+i*0.025))), cls:'', bold:false},
-      {label:'— dont énergie + maintenance', arr:chArr.map(()=>chargesEnergie+chargesMaint), cls:'', bold:false},
-      {label:'— dont annuité prêt', arr:chArr.map(()=>annuite), cls:'', bold:false},
-      {label:'Résultat courant', arr:resArr, cls:'', bold:true, colored:true},
+    var rows=[
+      {l:"Chiffre d'affaires",a:caArr,b:true,col:'pos'},
+      {l:'— Studios',a:caS,b:false},{l:'— Bureaux',a:caB,b:false},
+      {l:'— Baux stables',a:caBL,b:false},{l:'— Loueurs',a:caL,b:false},
+      {l:'Charges totales',a:chArr,b:true},
+      {l:'— Masse salariale',a:chArr.map(function(_,i){return Math.round(masseS*(1+i*0.025));}),b:false},
+      {l:'— Énergie + Maintenance',a:chArr.map(function(){return cEn+cMa;}),b:false},
+      {l:'— Annuité prêt',a:chArr.map(function(){return ann;}),b:false},
+      {l:'Résultat courant',a:resArr,b:true,col:'signed'}
     ];
-    rt.innerHTML = rows.map(r=>`
-      <tr>
-        <td style="${r.bold?'font-weight:600':''}">${r.label}</td>
-        ${r.arr.map(val=>`<td class="r" style="${r.bold?'font-weight:600':''}${r.colored?(val>=0?';color:var(--green)':';color:var(--red)'):''}">${fmtM(val)}</td>`).join('')}
-      </tr>`).join('');
+    rt.innerHTML=rows.map(function(r){
+      return '<tr><td style="'+(r.b?'font-weight:700':'')+'">'+r.l+'</td>'+
+        r.a.map(function(val){
+          var s='';
+          if(r.col==='signed')s=val>=0?' style="color:var(--green);font-weight:700"':' style="color:var(--red);font-weight:700"';
+          else if(r.col==='pos')s=' style="color:var(--green);font-weight:700"';
+          return '<td class="r"'+s+'>'+fmtM(val)+'</td>';
+        }).join('')+'</tr>';
+    }).join('');
   }
 
-  // Charts update
-  if(chartEvol){
-    chartEvol.data.datasets[0].data = caArr;
-    chartEvol.data.datasets[1].data = chArr;
-    chartEvol.data.datasets[2].data = chArr.map(()=>chArr[4]);
-    chartEvol.update('none');
+  if(cEv){cEv.data.datasets[0].data=caArr;cEv.data.datasets[1].data=chArr;cEv.update('none');}
+  if(cDon){
+    var dl=[],dd=[];
+    [['Studios',caS[4]],['Bureaux',caB[4]],['Baux stables',caBL[4]],['Loueurs',caL[4]]].forEach(function(x){if(x[1]>0){dl.push(x[0]);dd.push(x[1]);}});
+    cDon.data.labels=dl;cDon.data.datasets[0].data=dd;cDon.update('none');
   }
-
-  if(chartDonut){
-    const labels=['Studios','Bureaux','Baux stables','Loueurs'].filter((_,i)=>[caStudiosArr[4],caBureauArr[4],caBailArr[4],caLoueurArr[4]][i]>0);
-    const data=[caStudiosArr[4],caBureauArr[4],caBailArr[4],caLoueurArr[4]].filter(v=>v>0);
-    chartDonut.data.labels=labels;
-    chartDonut.data.datasets[0].data=data;
-    chartDonut.update('none');
+  if(cFin){
+    var fl=[],fd=[];
+    [['Fondations',ff1+ff2+ffm],['Subventions',fca+fco+fcf],['Fonds propres',fpr+fcr],['Prêt',pret]].forEach(function(x){if(x[1]>0){fl.push(x[0]);fd.push(x[1]);}});
+    cFin.data.labels=fl;cFin.data.datasets[0].data=fd;cFin.update('none');
   }
-
-  if(chartFin){
-    const finLabels=['Fondations','Subventions pub.','Fonds propres','Prêt bancaire'].filter((_,i)=>[finFond1+finFond2+finMecenat,finCanton+finCommune+finConf,finPropres+finCrowd,finPret][i]>0);
-    const finData=[finFond1+finFond2+finMecenat,finCanton+finCommune+finConf,finPropres+finCrowd,finPret].filter(v=>v>0);
-    chartFin.data.labels=finLabels;
-    chartFin.data.datasets[0].data=finData;
-    chartFin.update('none');
+  if(cChg){
+    cChg.data.labels=['Salaires','Énergie','Maintenance','Assurances','Marketing','Honoraires/Admin','DDP/Loyer','Annuité'];
+    cChg.data.datasets[0].data=[masseS,cEn,cMa,cAs,cMk,cHo+cAd,cDd,ann];
+    cChg.update('none');
   }
-
-  if(chartCharges){
-    chartCharges.data.labels=['Masse salariale','Énergie','Maintenance','Assurances','Marketing','Honoraires/Admin','DDP/Loyer','Annuité prêt'];
-    chartCharges.data.datasets[0].data=[masseSalariale,chargesEnergie,chargesMaint,chargesAssur,chargesMarketing,chargesHonor+chargesAdmin,chargesDDP,annuite];
-    chartCharges.update('none');
-  }
-
 }
 
-// ===== INIT =====
 renderEPT();
-addStudio('Studio 1', 1500, 'grand');
-addStudio('Studio 2', 800, 'standard');
+addStudio('Studio 1',1500,'grand');
+addStudio('Studio 2',800,'standard');
 update();
 </script>
 </body>
