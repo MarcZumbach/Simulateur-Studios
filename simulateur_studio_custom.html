@@ -606,11 +606,13 @@ function el(id){return document.getElementById(id)}
 function set(id,val){const e=el(id);if(e)e.textContent=val}
 
 // ===== TABS =====
+let chartsReady = false;
 function showTab(id,btn){
   document.querySelectorAll('.pane').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
   el('pane-'+id).classList.add('active');
   if(btn) btn.classList.add('active');
+  if(id==='results' && !chartsReady){ initCharts(); chartsReady=true; }
   update();
 }
 
@@ -1019,7 +1021,6 @@ function update(){
 renderEPT();
 addStudio('Studio 1', 1500, 'grand');
 addStudio('Studio 2', 800, 'standard');
-initCharts();
 update();
 </script>
 </body>
