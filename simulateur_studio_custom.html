@@ -811,6 +811,11 @@ function exportExcel(){
 
   XLSX.writeFile(wb,'ProFilms_Simulateur_'+new Date().toISOString().slice(0,10)+'.xlsx');
 }
+
+renderEPT();
+addStudio('Studio 1',1500,'grand');
+addStudio('Studio 2',800,'standard');
+update();
 </script>
 </body>
 </html>
