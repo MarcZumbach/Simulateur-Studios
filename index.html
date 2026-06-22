@@ -3,45 +3,56 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ProFilms · Simulateurs Studios</title>
+<title>Simulateurs — La Fabrique du Film · ProFilms</title>
 <style>
+:root{--bg:#141414;--panel:#1e1e1e;--line:#343434;--txt:#ededed;--muted:#9a9a9a;--terra:#c8674f;--terra-d:#a8533e}
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Arial,sans-serif;background:#1a1a1a;color:#fff;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2rem}
-.logo{font-size:13px;letter-spacing:.15em;text-transform:uppercase;color:#888;margin-bottom:.5rem}
-h1{font-size:28px;font-weight:700;margin-bottom:.4rem}
-.sub{font-size:14px;color:#666;margin-bottom:3rem}
-.cards{display:flex;gap:20px;flex-wrap:wrap;justify-content:center}
-.card{background:#252525;border:1px solid #333;border-radius:14px;padding:2rem;width:300px;transition:.2s;text-decoration:none;color:#fff;display:block}
-.card:hover{border-color:#555;background:#2d2d2d;transform:translateY(-2px)}
-.card-tag{font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:#888;margin-bottom:.8rem}
-.card-title{font-size:18px;font-weight:700;margin-bottom:.5rem}
-.card-desc{font-size:13px;color:#888;line-height:1.6;margin-bottom:1.2rem}
-.card-btn{display:inline-block;background:#fff;color:#1a1a1a;font-size:12px;font-weight:700;padding:.45rem 1rem;border-radius:6px}
-.card:hover .card-btn{background:#f0f0f0}
-.footer{margin-top:3rem;font-size:11px;color:#555}
+body{background:var(--bg);color:var(--txt);font-family:Arial,Helvetica,sans-serif;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:30px}
+.wrap{max-width:760px;width:100%}
+.brand{display:flex;align-items:baseline;gap:14px;flex-wrap:wrap;margin-bottom:8px}
+.wordmark{font-weight:bold;letter-spacing:3px;font-size:22px}
+.wordmark .pf{background:var(--terra);color:#fff;padding:2px 9px;border-radius:3px}
+.tag{color:var(--muted);font-size:12px;letter-spacing:1px;text-transform:uppercase}
+h1{font-size:20px;margin:18px 0 6px}
+.lead{color:var(--muted);font-size:13px;margin-bottom:28px}
+.cards{display:grid;gap:14px}
+a.card{display:block;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:20px 22px;text-decoration:none;color:var(--txt);transition:.15s}
+a.card:hover{border-color:var(--terra);transform:translateY(-2px)}
+a.card .t{font-size:16px;font-weight:bold}
+a.card .t .v{color:var(--terra);font-size:12px;margin-left:8px;letter-spacing:1px}
+a.card .d{color:var(--muted);font-size:12.5px;margin-top:6px}
+a.card .arrow{float:right;color:var(--terra);font-size:18px}
+.foot{color:var(--muted);font-size:11px;margin-top:26px;border-top:1px solid var(--line);padding-top:14px}
 </style>
 </head>
 <body>
-<div class="logo">Association ProFilms · Genève</div>
-<h1>La Fabrique du Film</h1>
-<p class="sub">Outils de simulation financière · Studios audiovisuels</p>
+<div class="wrap">
+  <div class="brand">
+    <div class="wordmark"><span class="pf">PRO</span>FILMS</div>
+    <div class="tag">La Fabrique du Film · The Hive, Meyrin</div>
+  </div>
+  <h1>Simulateurs financiers</h1>
+  <div class="lead">Outils de modélisation du projet La Fabrique du Film. Données de travail — usage interne.</div>
 
-<div class="cards">
-  <a class="card" href="Simulateur_Hive.html">
-    <div class="card-tag">Projet The Hive · Meyrin</div>
-    <div class="card-title">Simulateur HIVE</div>
-    <div class="card-desc">Basé sur le programme CCHE Lausanne et le prévisionnel ProFilms du 13.02.2026. CAPEX de référence : 186 M CHF. Modules architecturaux sélectionnables.</div>
-    <span class="card-btn">Ouvrir →</span>
-  </a>
+  <div class="cards">
+    <a class="card" href="Simulateur_Hive.html">
+      <span class="arrow">→</span>
+      <div class="t">Simulateur HIVE <span class="v">BP 13.02.2026</span></div>
+      <div class="d">Modélisation figée sur le business plan ProFilms et l'architecture CCHE. Prévisionnel An1→5, conservateur &amp; réaliste, benchmarks internationaux.</div>
+    </a>
+    <a class="card" href="simulateur_studio_custom.html">
+      <span class="arrow">→</span>
+      <div class="t">Simulateur Custom <span class="v">OPEN BAR</span></div>
+      <div class="d">Configurateur libre, aucune donnée figée. Programme, tarifs, charges et financement entièrement paramétrables. Pensé pour les discussions de sensibilité EY/Parthenon.</div>
+    </a>
+    <a class="card" href="Simulateur_Hive_V2.html">
+      <span class="arrow">→</span>
+      <div class="t">Simulateur HIVE V2 <span class="v">PROGRAMME V7 · FINANCEMENT</span></div>
+      <div class="d">Programme studios subdivisible (m² &amp; m³), coûts de construction détaillés, et surtout le <b>montage financier</b> : mécénat, subvention annuelle, emprunts multiples → rentabilité année par année et mécénat minimum pour viabilité. Scénarios partagés enregistrables. Repères Point Blim sur les tarifs.</div>
+    </a>
+  </div>
 
-  <a class="card" href="simulateur_studio_custom.html">
-    <div class="card-tag">Outil générique</div>
-    <div class="card-title">Simulateur Custom</div>
-    <div class="card-desc">Construisez votre propre programme from scratch. Studios configurables, tarifs benchmarks européens, charges, personnel et mix de financement libres.</div>
-    <span class="card-btn">Ouvrir →</span>
-  </a>
+  <div class="foot">ProFilms · 1-3 rue de Chantepoulet, 1201 Genève · info@profilms.ch</div>
 </div>
-
-<div class="footer">ProFilms · marc@profilms.ch · Mars 2026</div>
 </body>
 </html>
