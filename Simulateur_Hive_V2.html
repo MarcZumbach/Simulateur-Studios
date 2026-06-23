@@ -238,12 +238,16 @@ input[type=range]::-moz-range-thumb{width:15px;height:15px;border-radius:50%;bac
   <div class="grid4" id="exploKpis"></div>
   <div class="grid2">
     <div class="card"><h2>Charges d'exploitation annuelles</h2>
-      <div class="desc">Hors financement. Tous les postes sont ajustables : DDP et exploitation au m², salaires et frais en CHF/an.</div>
+      <div class="desc">DDP et exploitation au m². Masse salariale et frais généraux évolutifs (An1/An3/An5, interpolés). Provision fonds de rénovation en % du CAPEX.</div>
       <div class="inp-line"><label>DDP — droit du sol (CHF/m²/an)</label><input type="number" id="i_ddp" value="20" step="1"></div>
       <div id="sl-explo"></div>
-      <div class="inp-line"><label>Masse salariale (CHF/an)</label><input type="number" id="i_salaires" value="700000" step="10000"></div>
-      <div class="inp-line"><label>Frais généraux &amp; divers (CHF/an)</label><input type="number" id="i_fraisgen" value="250000" step="10000"></div>
-      <div style="overflow-x:auto;margin-top:8px"><table id="chgTable"><tbody id="chgBody"></tbody></table></div>
+      <div id="sl-renov"></div>
+      <table style="margin-top:8px"><thead><tr><th>Charge évolutive</th><th>An 1</th><th>An 3</th><th>An 5</th></tr></thead><tbody>
+        <tr><td>Masse salariale (CHF/an)</td><td><input class="cell" style="width:92px" id="i_sal1" value="450000"></td><td><input class="cell" style="width:92px" id="i_sal3" value="600000"></td><td><input class="cell" style="width:92px" id="i_sal5" value="700000"></td></tr>
+        <tr><td>Frais généraux &amp; divers (CHF/an)</td><td><input class="cell" style="width:92px" id="i_fg1" value="150000"></td><td><input class="cell" style="width:92px" id="i_fg3" value="200000"></td><td><input class="cell" style="width:92px" id="i_fg5" value="250000"></td></tr>
+      </tbody></table>
+      <div class="ctrl-foot" style="margin-top:6px">An 2 et An 4 interpolés. Le tableau ci-dessous montre le régime de croisière (An 5).</div>
+      <div style="overflow-x:auto;margin-top:12px"><table id="chgTable"><tbody id="chgBody"></tbody></table></div>
     </div>
     <div class="card"><h2>Capacité contributive</h2>
       <div class="desc">Recettes d'exploitation moins charges = ce que le projet peut consacrer au remboursement du capital, avant tout financement.</div>
@@ -378,10 +382,10 @@ const P={
   hono:15, amint:600, amtech:800, amtechSurf:3700,
   amextSurf:3000, amext:300, reserve:5,
   eurchf:0.95, plateau:1.90, annexe:1.00, bail:280,
-  explo:90, ddp:20, salaires:700000, fraisgen:250000, subAnnual:0
+  explo:90, ddp:20, renov:1.0, subAnnual:0
 };
 function defaultP(){return {m3:700,ssM3:1000,ssSurf:5000,ssHaut:3.5,hono:15,amint:600,amtech:800,amtechSurf:3700,
-  amextSurf:3000,amext:300,reserve:5,eurchf:0.95,plateau:1.90,annexe:1.00,bail:280,explo:90,ddp:20,salaires:700000,fraisgen:250000,subAnnual:0};}
+  amextSurf:3000,amext:300,reserve:5,eurchf:0.95,plateau:1.90,annexe:1.00,bail:280,explo:90,ddp:20,renov:1.0,subAnnual:0};}
 
 const SLIDERS={
  'sl-grosoeuvre':{id:'m3',label:'Gros œuvre hors-sol',unit:'CHF/m³',min:400,max:1200,step:10,
@@ -405,7 +409,9 @@ const SLIDERS={
  'sl-bail':{id:'bail',label:'Baux long / moyen terme',unit:'CHF/m²/an',min:60,max:600,step:5,
    foot:'Écoles, ateliers, prestataires, restaurant. Ancre EY = 300 €/m²/an (converti CHF).',bench:[{v:300,t:'Ancre EY',eur:true}]},
  'sl-explo':{id:'explo',label:'Exploitation & maintenance',unit:'CHF/m²/an',min:30,max:200,step:5,
-   foot:'Énergie, maintenance, sécurité, nettoyage, assurances, marketing. Appliqué à toute la surface active.',bench:[{v:90,t:'réf.',cls:'ch'}]},
+   foot:'Énergie, maintenance courante, sécurité, nettoyage, assurances, marketing. Appliqué à toute la surface active.',bench:[{v:90,t:'réf.',cls:'ch'}]},
+ 'sl-renov':{id:'renov',label:'Provision fonds de rénovation',unit:'% du CAPEX/an',min:0,max:3,step:0.1,dec:1,
+   foot:'Réserve annuelle pour gros entretien et rénovations futurs (toiture, technique, etc., tous les 5–10 ans). Référence immobilière suisse : 0,5–1,5 % de la valeur par an. Réduit la capacité contributive.',bench:[{v:1,t:'réf. CH',cls:'ch'}]},
  'sl-subannual':{id:'subAnnual',label:'Subvention publique annuelle',unit:'CHF/an',min:0,max:2000000,step:50000,
    foot:'Soutien public récurrent (canton, commune, Confédération). Incertain — laisser à 0 pour le scénario prudent. Améliore le résultat net chaque année.',bench:[]}
 };
@@ -550,7 +556,7 @@ function agg(){
 /* ---------- Calcul global ---------- */
 function recompute(){
   P.ssSurf=num('i_ssSurf');P.ssHaut=num('i_ssHaut');P.amtechSurf=num('i_amtechSurf');
-  P.amextSurf=num('i_amextSurf');P.eurchf=num('i_eurchf');P.salaires=num('i_salaires');P.fraisgen=num('i_fraisgen');P.ddp=num('i_ddp');
+  P.amextSurf=num('i_amextSurf');P.eurchf=num('i_eurchf');P.ddp=num('i_ddp');
   const A=agg();
   updateProgTotals();
 
@@ -608,8 +614,11 @@ function recompute(){
   document.getElementById('recBody').innerHTML=rb;
 
   // Charges & capacité
-  const ddp=A.surf*P.ddp, exploit=A.surf*P.explo, charges=ddp+exploit+P.salaires+P.fraisgen;
-  const chgRows=[['DDP ('+fmt(P.ddp)+' CHF/m²)',ddp],['Exploitation & maintenance',exploit],['Masse salariale',P.salaires],['Frais généraux & divers',P.fraisgen]];
+  const ddp=A.surf*P.ddp, exploit=A.surf*P.explo;
+  const sal1=num('i_sal1'),sal3=num('i_sal3'),sal5=num('i_sal5'),fg1=num('i_fg1'),fg3=num('i_fg3'),fg5=num('i_fg5');
+  const renov=capex*P.renov/100;
+  const charges=ddp+exploit+sal5+fg5+renov;
+  const chgRows=[['DDP ('+fmt(P.ddp)+' CHF/m²)',ddp],['Exploitation & maintenance',exploit],['Masse salariale (An5)',sal5],['Frais généraux & divers (An5)',fg5],['Provision fonds de rénovation ('+fmt2(P.renov)+' % CAPEX)',renov]];
   let chg='';chgRows.forEach(function(r){chg+='<tr><td>'+r[0]+'</td><td>'+chf(r[1])+'</td></tr>';});
   chg+='<tr class="tot"><td>Total charges</td><td>'+chf(charges)+'</td></tr>';
   document.getElementById('chgBody').innerHTML=chg;
@@ -671,8 +680,10 @@ function recompute(){
   const maxDur=LOANS.reduce(function(a,l){return Math.max(a,l.duree);},0);
   const HOR=Math.max(25,maxDur+5);
   let yrs=[],resNet=[],cumul=[],cum=0,beYear=0,cumBE=0;
+  function lin(a1,a3,a5,y){if(y<=1)return a1;if(y===2)return (a1+a3)/2;if(y===3)return a3;if(y===4)return (a3+a5)/2;return a5;}
   for(let y=1;y<=HOR;y++){
-    const capY=recYear(y)-charges;
+    const chargesY=ddp+exploit+lin(sal1,sal3,sal5,y)+lin(fg1,fg3,fg5,y)+renov;
+    const capY=recYear(y)-chargesY;
     let debtY=0;LOANS.forEach(function(l){if(y<=l.duree)debtY+=l.montant*annuity(l.taux,l.duree);});
     const rn=capY+subv-debtY;cum+=rn;
     yrs.push(y);resNet.push(rn);cumul.push(cum);
@@ -702,7 +713,7 @@ function recompute(){
     +sub2('CAPEX')
     +row2('CAPEX total',chf(capex))+row2('dont réserve surélévation',chf(surelev)+' ('+nbB+' bât.)')+row2('CAPEX / m²',chf(A.surf?capex/A.surf:0))+row2('CAPEX / m³',chf(A.vol?capex/A.vol:0))
     +sub2('Exploitation (régime de croisière An5)')
-    +row2('Recettes',chf(recTot))+row2('Charges',chf(charges))+row2('Capacité contributive',chf(capacite))+row2('Subvention publique annuelle',chf(subv))
+    +row2('Recettes',chf(recTot))+row2('Charges (dont rénovation '+chf(renov)+')',chf(charges))+row2('Capacité contributive',chf(capacite))+row2('Subvention publique annuelle',chf(subv))
     +sub2('Financement')
     +row2('Mécénat réuni',chf(sumMec)+' ('+(capex?fmt2(sumMec/capex*100):'0')+' %)')
     +row2('Emprunts',chf(sumLoanAmt))
@@ -766,14 +777,16 @@ document.querySelectorAll('.tab').forEach(function(t){
 
 /* ---------- Scénarios : état ---------- */
 function occInputs(){const o={};['o_pl_1','o_pl_3','o_pl_5','o_an_1','o_an_3','o_an_5','o_ba_1','o_ba_3','o_ba_5'].forEach(function(id){o[id]=val(id);});return o;}
-function collectState(){return {spaces:JSON.parse(JSON.stringify(SPACES)),mecenat:JSON.parse(JSON.stringify(MECENAT)),loans:JSON.parse(JSON.stringify(LOANS)),surelev:JSON.parse(JSON.stringify(SURELEV)),P:JSON.parse(JSON.stringify(P)),occ:occInputs()};}
-function syncInputsFromP(){const map={i_ssSurf:'ssSurf',i_ssHaut:'ssHaut',i_amtechSurf:'amtechSurf',i_amextSurf:'amextSurf',i_eurchf:'eurchf',i_salaires:'salaires',i_fraisgen:'fraisgen',i_ddp:'ddp'};
+function chargeInputs(){const o={};['i_sal1','i_sal3','i_sal5','i_fg1','i_fg3','i_fg5'].forEach(function(id){o[id]=val(id);});return o;}
+function collectState(){return {spaces:JSON.parse(JSON.stringify(SPACES)),mecenat:JSON.parse(JSON.stringify(MECENAT)),loans:JSON.parse(JSON.stringify(LOANS)),surelev:JSON.parse(JSON.stringify(SURELEV)),P:JSON.parse(JSON.stringify(P)),occ:occInputs(),charges:chargeInputs()};}
+function syncInputsFromP(){const map={i_ssSurf:'ssSurf',i_ssHaut:'ssHaut',i_amtechSurf:'amtechSurf',i_amextSurf:'amextSurf',i_eurchf:'eurchf',i_ddp:'ddp'};
   Object.keys(map).forEach(function(id){const e=document.getElementById(id);if(e)e.value=P[map[id]];});}
 function applyState(s){
   if(!s)return;
   if(s.spaces)SPACES=s.spaces.map(function(x){if(x.actif===undefined)x.actif=true;return x;});
   if(s.mecenat)MECENAT=s.mecenat;if(s.loans)LOANS=s.loans;if(s.surelev)SURELEV=s.surelev;if(s.P)Object.assign(P,s.P);
   if(s.occ)Object.keys(s.occ).forEach(function(id){const e=document.getElementById(id);if(e)e.value=s.occ[id];});
+  if(s.charges)Object.keys(s.charges).forEach(function(id){const e=document.getElementById(id);if(e)e.value=s.charges[id];});
   syncInputsFromP();
   Object.keys(SLIDERS).forEach(function(k){const sl=SLIDERS[k];const r=document.getElementById('rng_'+sl.id);if(r)r.value=P[sl.id];updateSliderLabel(k);renderBench(k);});
   renderProg();renderMecenat();renderLoans();renderSurelev();recompute();
@@ -856,8 +869,12 @@ function exportXlsx(){
 
   const occ5={plateau:numId('o_pl_5'),annexe:numId('o_an_5'),bail:numId('o_ba_5')};
   const recPl=A.fam.plateau.s*P.plateau*365*occ5.plateau/100,recAn=A.fam.annexe.s*P.annexe*365*occ5.annexe/100,recBa=A.fam.bail.s*P.bail*occ5.bail/100,recTot=recPl+recAn+recBa;
-  const ddp=A.surf*P.ddp,exploit=A.surf*P.explo,charges=ddp+exploit+P.salaires+P.fraisgen,capacite=recTot-charges;
-  const expSheet=[['Indicateur','Valeur'],['Recettes An5',recTot],['Charges',charges],['Capacité contributive',capacite],['Subvention annuelle',P.subAnnual],['Taux EUR/CHF',P.eurchf]];
+  const ddp=A.surf*P.ddp,exploit=A.surf*P.explo,sal5=num('i_sal5'),fg5=num('i_fg5'),renov=capex*P.renov/100,charges=ddp+exploit+sal5+fg5+renov,capacite=recTot-charges;
+  const expSheet=[['Indicateur','Valeur'],['Recettes An5',recTot],['DDP',ddp],['Exploitation & maintenance',exploit],
+    ['Masse salariale An1',num('i_sal1')],['Masse salariale An3',num('i_sal3')],['Masse salariale An5',sal5],
+    ['Frais généraux An1',num('i_fg1')],['Frais généraux An3',num('i_fg3')],['Frais généraux An5',fg5],
+    ['Provision fonds de rénovation ('+P.renov+'% CAPEX)',renov],['Charges totales An5',charges],['Capacité contributive',capacite],
+    ['Subvention annuelle',P.subAnnual],['Taux EUR/CHF',P.eurchf]];
   XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet(expSheet),'Exploitation');
 
   let sumMec=0;MECENAT.forEach(function(m){sumMec+=m.montant;});
@@ -876,7 +893,8 @@ function exportXlsx(){
 /* ---------- Reset ---------- */
 function resetAll(){
   SPACES=defaultSpaces();MECENAT=defaultMecenat();LOANS=defaultLoans();SURELEV=defaultSurelev();Object.assign(P,defaultP());
-  const map={i_ssSurf:5000,i_ssHaut:3.5,i_amtechSurf:3700,i_amextSurf:3000,i_eurchf:0.95,i_salaires:700000,i_fraisgen:250000,i_ddp:20};
+  const map={i_ssSurf:5000,i_ssHaut:3.5,i_amtechSurf:3700,i_amextSurf:3000,i_eurchf:0.95,i_ddp:20,
+    i_sal1:450000,i_sal3:600000,i_sal5:700000,i_fg1:150000,i_fg3:200000,i_fg5:250000};
   Object.keys(map).forEach(function(id){document.getElementById(id).value=map[id];});
   const occ={o_pl_1:10,o_pl_3:30,o_pl_5:50,o_an_1:15,o_an_3:35,o_an_5:55,o_ba_1:30,o_ba_3:70,o_ba_5:80};
   Object.keys(occ).forEach(function(id){document.getElementById(id).value=occ[id];});
@@ -886,7 +904,7 @@ function resetAll(){
 
 /* ---------- Init ---------- */
 Object.keys(SLIDERS).forEach(renderSlider);
-['i_ssSurf','i_ssHaut','i_amtechSurf','i_amextSurf','i_eurchf','i_salaires','i_fraisgen','i_ddp',
+['i_ssSurf','i_ssHaut','i_amtechSurf','i_amextSurf','i_eurchf','i_ddp','i_sal1','i_sal3','i_sal5','i_fg1','i_fg3','i_fg5',
  'o_pl_1','o_pl_3','o_pl_5','o_an_1','o_an_3','o_an_5','o_ba_1','o_ba_3','o_ba_5'].forEach(function(id){
   const e=document.getElementById(id);if(e)e.addEventListener('input',function(){if(id==='i_eurchf')Object.keys(SLIDERS).forEach(renderBench);recompute();});
 });
