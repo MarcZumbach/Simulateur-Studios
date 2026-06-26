@@ -145,7 +145,8 @@ input[type=range]::-moz-range-thumb{width:15px;height:15px;border-radius:50%;bac
   <div class="tab" data-p="tarifs">3 · Tarifs &amp; Recettes</div>
   <div class="tab" data-p="explo">4 · Exploitation</div>
   <div class="tab" data-p="fin">5 · Financement &amp; Rentabilité</div>
-  <div class="tab" data-p="recap">6 · Récapitulatif</div>
+  <div class="tab" data-p="bat">6 · Rentabilité / bâtiment</div>
+  <div class="tab" data-p="recap">7 · Récapitulatif</div>
 </div>
 
 <!-- ===== 1 PROGRAMME ===== -->
@@ -155,7 +156,7 @@ input[type=range]::-moz-range-thumb{width:15px;height:15px;border-radius:50%;bac
     <div class="desc">Décochez un objet pour le retirer des calculs sans l'effacer (test « et si je coupe ce studio ? »). Chaque espace reste subdivisible. Le volume (m³) est l'unité de chiffrage des promoteurs.</div>
     <div style="overflow-x:auto">
     <table id="progTable">
-      <thead><tr><th>Actif</th><th>Objet</th><th>Type</th><th>Bât.</th><th>Surface m²</th><th>Hauteur m</th><th>Volume m³</th><th>Famille tarifaire</th><th></th></tr></thead>
+      <thead><tr><th>Actif</th><th>Objet</th><th>Typologie</th><th>Bât.</th><th>Surface m²</th><th>H. utile (Xavier)</th><th>H. CCHE</th><th>Volume m³</th><th>Famille tarifaire</th><th></th></tr></thead>
       <tbody id="progBody"></tbody><tfoot id="progFoot"></tfoot>
     </table>
     </div>
@@ -173,40 +174,47 @@ input[type=range]::-moz-range-thumb{width:15px;height:15px;border-radius:50%;bac
 
 <!-- ===== 2 CAPEX ===== -->
 <div class="page" id="capex">
-  <div class="note-box"><b>Référence benchmark :</b> repères <b>marché CH / SIA</b> (le benchmark Blime ne couvre que des <i>tarifs de location</i> — le « Point Blim » est sur l'onglet Tarifs). Les curseurs peuvent aller au-delà des repères.</div>
+  <div class="note-box"><b>Référence benchmark :</b> repères <b>marché CH / SIA</b> (le benchmark Blime ne couvre que des <i>tarifs de location</i> — le « Point Blim » est sur l'onglet Tarifs). Les valeurs peuvent aller au-delà des repères.</div>
+  <div class="card"><h2>Prix de construction au m³ par typologie</h2>
+    <div class="desc">Trois couches par typologie : gros œuvre + CFC 2 (aménagements) + CFC 3 (spécifique audiovisuel). Coût d'un objet = volume (surface × hauteur CCHE) × prix de revient de sa typologie. Valeurs indicatives, à caler avec CCHE / EY.</div>
+    <div style="overflow-x:auto"><table id="typoTable">
+      <thead><tr><th>Typologie</th><th>Gros œuvre CHF/m³</th><th>CFC 2 CHF/m³</th><th>CFC 3 audiovisuel CHF/m³</th><th>Prix de revient CHF/m³</th></tr></thead>
+      <tbody id="typoBody"></tbody>
+    </table></div>
+  </div>
   <div class="grid2">
-    <div class="card"><h2>Gros œuvre &amp; sous-sol</h2><div class="desc">Structure et enveloppe, chiffrées au m³.</div>
-      <div id="sl-grosoeuvre"></div>
+    <div class="card"><h2>Sous-sol</h2><div class="desc">Parking, locaux techniques, stockage enterré, chiffrés au m³.</div>
       <div class="inp-line"><label>Surface sous-sol (m²)</label><input type="number" id="i_ssSurf" value="5000"></div>
       <div class="inp-line"><label>Hauteur sous-sol (m)</label><input type="number" id="i_ssHaut" value="3.5" step="0.1"></div>
       <div id="sl-soussol"></div>
     </div>
-    <div class="card"><h2>Aménagements</h2><div class="desc">Second œuvre, équipements techniques et extérieurs — séparés.</div>
-      <div id="sl-amint"></div>
-      <div class="inp-line"><label>Surface application technique (m²)</label><input type="number" id="i_amtechSurf" value="3700"></div>
-      <div id="sl-amtech"></div>
+    <div class="card"><h2>Honoraires, réserve &amp; frais HIAG</h2><div class="desc">Honoraires et réserve sur les travaux ; pilotage et risques HIAG sur le total construction (travaux + honoraires + réserve).</div>
+      <div id="sl-hono"></div><div id="sl-reserve"></div><div id="sl-pilotage"></div><div id="sl-risques"></div>
     </div>
-  </div>
-  <div class="card"><h2>Surélévation future — réserve structurelle (par bâtiment)</h2>
-    <div class="desc">Construire fondations et structure pour pouvoir ajouter des étages plus tard. Surcoût initial, activable bâtiment par bâtiment et ajustable selon la typologie (un studio haut coûte plus à renforcer qu'un dépôt).</div>
-    <div style="overflow-x:auto"><table id="surelevTable">
-      <thead><tr><th>Bâtiment</th><th>Prévoir surélévation</th><th>Surface structure m²</th><th>Surcoût CHF/m²</th><th>Surcoût</th></tr></thead>
-      <tbody id="surelevBody"></tbody><tfoot id="surelevFoot"></tfoot>
-    </table></div>
-    <div class="ctrl-foot" style="margin-top:8px">Surcoût ajouté aux travaux (donc honoraires et réserve s'appliquent dessus). Surfaces et coûts par défaut indicatifs — à ajuster.</div>
   </div>
   <div class="grid2">
-    <div class="card"><h2>Aménagements extérieurs</h2>
-      <div class="inp-line"><label>Surface extérieure aménagée (m²)</label><input type="number" id="i_amextSurf" value="3000"></div>
-      <div id="sl-amext"></div>
+    <div class="card"><h2>Charges spéciales (forfaits)</h2><div class="desc">Réparties sur les bâtiments au prorata des m³ : désactiver un bâtiment les redistribue sur les autres.</div>
+      <div class="inp-line"><label>Démolition bâtiment existant (CHF)</label><input type="number" id="i_demol" value="3600000" step="100000"></div>
+      <div class="inp-line"><label>Cession DDP (CHF)</label><input type="number" id="i_cession" value="2680000" step="100000"></div>
     </div>
-    <div class="card"><h2>Honoraires, frais &amp; réserve</h2><div class="desc">Honoraires appliqués au total des travaux.</div>
-      <div id="sl-hono"></div><div id="sl-reserve"></div>
+    <div class="card"><h2>Surélévation future — réserve par bâtiment</h2>
+      <div class="desc">Fondations et structure renforcées pour ajouter des étages plus tard. Coût direct au bâtiment concerné.</div>
+      <div style="overflow-x:auto"><table id="surelevTable">
+        <thead><tr><th>Bâtiment</th><th>Prévoir</th><th>Surface m²</th><th>CHF/m²</th><th>Surcoût</th></tr></thead>
+        <tbody id="surelevBody"></tbody><tfoot id="surelevFoot"></tfoot>
+      </table></div>
     </div>
   </div>
   <div class="card"><h2>Récapitulatif CAPEX</h2>
     <div style="overflow-x:auto"><table id="capexTable"><tbody id="capexBody"></tbody></table></div>
     <div class="grid4" id="capexKpis" style="margin-top:16px"></div>
+  </div>
+  <div class="card"><h2>Coût de construction par bâtiment</h2>
+    <div class="desc">Travaux propres du bâtiment + quote-part des frais partagés (honoraires, réserve, pilotage, risques, démolition, cession, sous-sol) au prorata du volume. La somme égale le CAPEX total — activez/désactivez objets et bâtiments pour voir l'impact.</div>
+    <div style="overflow-x:auto"><table id="capexBatTable">
+      <thead><tr><th>Bâtiment</th><th>Volume m³</th><th>Travaux propres</th><th>Quote-part frais</th><th>Coût total</th><th>% CAPEX</th></tr></thead>
+      <tbody id="capexBatBody"></tbody>
+    </table></div>
   </div>
 </div>
 
@@ -246,7 +254,17 @@ input[type=range]::-moz-range-thumb{width:15px;height:15px;border-radius:50%;bac
         <tr><td>Masse salariale (CHF/an)</td><td><input class="cell" style="width:92px" id="i_sal1" value="450000"></td><td><input class="cell" style="width:92px" id="i_sal3" value="600000"></td><td><input class="cell" style="width:92px" id="i_sal5" value="700000"></td></tr>
         <tr><td>Frais généraux &amp; divers (CHF/an)</td><td><input class="cell" style="width:92px" id="i_fg1" value="150000"></td><td><input class="cell" style="width:92px" id="i_fg3" value="200000"></td><td><input class="cell" style="width:92px" id="i_fg5" value="250000"></td></tr>
       </tbody></table>
-      <div class="ctrl-foot" style="margin-top:6px">An 2 et An 4 interpolés. Le tableau ci-dessous montre le régime de croisière (An 5).</div>
+      <div class="ctrl-foot" style="margin-top:6px">An 2 et An 4 interpolés.</div>
+      <table style="margin-top:10px"><thead><tr><th>Charge évolutive (CHF/an)</th><th>An 1</th><th>An 3</th><th>An 5</th></tr></thead><tbody>
+        <tr><td>Assurances</td><td><input class="cell" style="width:84px" id="i_assur1" value="100000"></td><td><input class="cell" style="width:84px" id="i_assur3" value="100000"></td><td><input class="cell" style="width:84px" id="i_assur5" value="100000"></td></tr>
+        <tr><td>Administration</td><td><input class="cell" style="width:84px" id="i_admin1" value="80000"></td><td><input class="cell" style="width:84px" id="i_admin3" value="80000"></td><td><input class="cell" style="width:84px" id="i_admin5" value="80000"></td></tr>
+        <tr><td>Autres dépenses</td><td><input class="cell" style="width:84px" id="i_autres1" value="50000"></td><td><input class="cell" style="width:84px" id="i_autres3" value="50000"></td><td><input class="cell" style="width:84px" id="i_autres5" value="50000"></td></tr>
+        <tr><td>Impôts immobiliers</td><td><input class="cell" style="width:84px" id="i_impot1" value="60000"></td><td><input class="cell" style="width:84px" id="i_impot3" value="60000"></td><td><input class="cell" style="width:84px" id="i_impot5" value="60000"></td></tr>
+        <tr><td>Conciergerie</td><td><input class="cell" style="width:84px" id="i_concierge1" value="120000"></td><td><input class="cell" style="width:84px" id="i_concierge3" value="120000"></td><td><input class="cell" style="width:84px" id="i_concierge5" value="120000"></td></tr>
+        <tr><td>Approvisionnement</td><td><input class="cell" style="width:84px" id="i_appro1" value="40000"></td><td><input class="cell" style="width:84px" id="i_appro3" value="40000"></td><td><input class="cell" style="width:84px" id="i_appro5" value="40000"></td></tr>
+        <tr><td>Frais de location</td><td><input class="cell" style="width:84px" id="i_location1" value="0"></td><td><input class="cell" style="width:84px" id="i_location3" value="0"></td><td><input class="cell" style="width:84px" id="i_location5" value="0"></td></tr>
+      </tbody></table>
+      <div class="ctrl-foot" style="margin-top:6px">Le tableau ci-dessous récapitule le régime de croisière (An 5).</div>
       <div style="overflow-x:auto;margin-top:12px"><table id="chgTable"><tbody id="chgBody"></tbody></table></div>
     </div>
     <div class="card"><h2>Capacité contributive</h2>
@@ -276,7 +294,7 @@ input[type=range]::-moz-range-thumb{width:15px;height:15px;border-radius:50%;bac
       <div style="margin-top:16px" id="sl-subannual"></div>
     </div>
     <div class="card"><h2>Emprunts (remboursés avec intérêts)</h2>
-      <div class="desc">Une ligne par prêt (montant CHF, taux, durée) : communal préférentiel, bancaire, etc.</div>
+      <div class="desc">Une ligne par prêt (montant CHF, taux, durée d'amortissement en années — jusqu'à 60 ans, p. ex. aligné sur la DDP). L'annuité rembourse capital + intérêts sur la durée saisie.</div>
       <div style="overflow-x:auto"><table id="loanTable">
         <thead><tr><th>Emprunt</th><th>Montant CHF</th><th>Taux %</th><th>Durée</th><th>% CAPEX</th><th>Annuité</th><th></th></tr></thead>
         <tbody id="loanBody"></tbody><tfoot id="loanFoot"></tfoot>
@@ -300,7 +318,20 @@ input[type=range]::-moz-range-thumb{width:15px;height:15px;border-radius:50%;bac
   </div>
 </div>
 
-<!-- ===== 6 RECAP ===== -->
+<!-- ===== 6 RENTABILITÉ PAR BÂTIMENT ===== -->
+<div class="page" id="bat">
+  <div class="note-box"><b>Lecture :</b> pour chaque bâtiment, on confronte son <b>coût annuel</b> — sa quote-part des annuités d'emprunt (au prorata de son CAPEX) plus ses charges d'exploitation (au prorata de sa surface) — à ses <b>recettes maximales à 100 % d'occupation</b>. Le <b>seuil de remplissage</b> est le taux d'occupation à partir duquel le bâtiment couvre ses frais. Dépend donc du financement (mécénat vs emprunts) et des tarifs.</div>
+  <div class="grid4" id="batKpis"></div>
+  <div class="card"><h2>Seuil de rentabilité par bâtiment</h2>
+    <div style="overflow-x:auto"><table id="batTable">
+      <thead><tr><th>Bâtiment</th><th>CAPEX chargé</th><th>Annuités /an</th><th>Charges expl. /an</th><th>Coût annuel</th><th>Recettes à 100 %</th><th>Seuil de remplissage</th><th>Statut</th></tr></thead>
+      <tbody id="batBody"></tbody>
+    </table></div>
+    <div class="ctrl-foot" style="margin-top:10px">Annuités réparties au prorata du CAPEX de chaque bâtiment ; charges d'exploitation au prorata de la surface. Les centres de coût (administration, accueil) n'ont pas de recettes propres et sont portés par les bâtiments productifs.</div>
+  </div>
+</div>
+
+<!-- ===== 7 RECAP ===== -->
 <div class="page" id="recap">
   <div id="recapVerdict"></div>
   <div class="card"><h2>Chiffres clés</h2><div style="overflow-x:auto"><table><tbody id="recapKeyBody"></tbody></table></div></div>
@@ -324,41 +355,41 @@ const SHARE={url:'https://nbfpjltczcazeuwtjxwr.supabase.co',key:'sb_publishable_
 
 /* ---------- Programme par défaut (plan Meyrin Hive V7) ---------- */
 function defaultSpaces(){return [
- {nom:'Studio 1',type:'court',surf:200,haut:6,bat:'B/C',fam:'plateau',actif:true},
- {nom:'Studio 2',type:'court',surf:500,haut:15,bat:'C',fam:'plateau',actif:true},
- {nom:'Studio 3',type:'court',surf:500,haut:15,bat:'C',fam:'plateau',actif:true},
- {nom:'Studio 4',type:'court',surf:1000,haut:18,bat:'D',fam:'plateau',actif:true},
- {nom:'Studio 5',type:'court',surf:1500,haut:18,bat:'E',fam:'plateau',actif:true},
- {nom:'Administration',type:'nr',surf:350,haut:3,bat:'C',fam:'aucun',actif:true},
- {nom:'Accueil',type:'nr',surf:50,haut:6,bat:'C',fam:'aucun',actif:true},
- {nom:'Ateliers décors',type:'long',surf:1000,haut:9,bat:'A',fam:'bail',actif:true},
- {nom:'Bureaux des décors',type:'long',surf:200,haut:3,bat:'A',fam:'bail',actif:true},
- {nom:'Ateliers costumes',type:'long',surf:1000,haut:3,bat:'B',fam:'bail',actif:true},
- {nom:'Dépôts accessoires',type:'moyen',surf:1200,haut:3,bat:'A',fam:'bail',actif:true},
- {nom:'Dépôts meubles',type:'moyen',surf:1200,haut:6,bat:'A',fam:'bail',actif:true},
- {nom:'Dépôts costumes',type:'long',surf:1000,haut:3,bat:'B',fam:'bail',actif:true},
- {nom:'Dépôts matériel',type:'court',surf:120,haut:3,bat:'C/D/E',fam:'annexe',actif:true},
- {nom:'HMC',type:'court',surf:480,haut:3,bat:'C/D/E',fam:'annexe',actif:true},
- {nom:'Loges',type:'court',surf:1000,haut:3,bat:'C/D/E',fam:'annexe',actif:true},
- {nom:'Régie',type:'court',surf:50,haut:3,bat:'B/C',fam:'annexe',actif:true},
- {nom:'Salles de réunion',type:'court',surf:270,haut:3,bat:'C/D/E',fam:'annexe',actif:true},
- {nom:'Salles de répétitions',type:'court',surf:260,haut:3,bat:'C/D/E',fam:'annexe',actif:true},
- {nom:'Bureaux des artisans',type:'long',surf:1200,haut:3,bat:'A',fam:'bail',actif:true},
- {nom:'Bureaux des artisans',type:'long',surf:500,haut:3,bat:'C',fam:'bail',actif:true},
- {nom:'Bureaux de prod temp.',type:'moyen',surf:1500,haut:3,bat:'C',fam:'bail',actif:true},
- {nom:'Cantine',type:'court',surf:500,haut:3,bat:'C',fam:'annexe',actif:true},
- {nom:'Écoles',type:'long',surf:2000,haut:3,bat:'B',fam:'bail',actif:true},
- {nom:'Restaurant (exploitant)',type:'long',surf:500,haut:3,bat:'A',fam:'bail',actif:true},
- {nom:'Espace expo',type:'long',surf:1500,haut:3,bat:'B',fam:'bail',actif:true},
- {nom:'Boutique + café',type:'long',surf:500,haut:3,bat:'C',fam:'bail',actif:true}
+ {nom:'Studio 1',typo:'plateauM',surf:200,haut:6,hu:5,bat:'B',fam:'plateau',actif:true},
+ {nom:'Studio 2',typo:'plateauH',surf:500,haut:15,hu:12,bat:'C',fam:'plateau',actif:true},
+ {nom:'Studio 3',typo:'plateauH',surf:500,haut:15,hu:12,bat:'C',fam:'plateau',actif:true},
+ {nom:'Studio 4',typo:'plateauH',surf:1000,haut:18,hu:15,bat:'D',fam:'plateau',actif:true},
+ {nom:'Studio 5',typo:'plateauH',surf:1500,haut:18,hu:15,bat:'E',fam:'plateau',actif:true},
+ {nom:'Administration',typo:'bureau',surf:350,haut:3,hu:2.7,bat:'C',fam:'aucun',actif:true},
+ {nom:'Accueil',typo:'commerce',surf:50,haut:6,hu:5,bat:'C',fam:'aucun',actif:true},
+ {nom:'Ateliers décors',typo:'atelier',surf:1000,haut:9,hu:7.5,bat:'A',fam:'bail',actif:true},
+ {nom:'Bureaux des décors',typo:'bureau',surf:200,haut:3,hu:2.7,bat:'A',fam:'bail',actif:true},
+ {nom:'Ateliers costumes',typo:'atelier',surf:1000,haut:3,hu:2.7,bat:'B',fam:'bail',actif:true},
+ {nom:'Dépôts accessoires',typo:'depot',surf:1200,haut:3,hu:2.7,bat:'A',fam:'bail',actif:true},
+ {nom:'Dépôts meubles',typo:'depot',surf:1200,haut:6,hu:5,bat:'A',fam:'bail',actif:true},
+ {nom:'Dépôts costumes',typo:'depot',surf:1000,haut:3,hu:2.7,bat:'B',fam:'bail',actif:true},
+ {nom:'Dépôts matériel',typo:'depot',surf:120,haut:3,hu:2.7,bat:'C',fam:'annexe',actif:true},
+ {nom:'HMC',typo:'annexe',surf:480,haut:3,hu:2.7,bat:'C',fam:'annexe',actif:true},
+ {nom:'Loges',typo:'annexe',surf:1000,haut:3,hu:2.7,bat:'C',fam:'annexe',actif:true},
+ {nom:'Régie',typo:'annexe',surf:50,haut:3,hu:2.7,bat:'B',fam:'annexe',actif:true},
+ {nom:'Salles de réunion',typo:'annexe',surf:270,haut:3,hu:2.7,bat:'C',fam:'annexe',actif:true},
+ {nom:'Salles de répétitions',typo:'annexe',surf:260,haut:3,hu:2.7,bat:'C',fam:'annexe',actif:true},
+ {nom:'Bureaux des artisans',typo:'bureau',surf:1200,haut:3,hu:2.7,bat:'A',fam:'bail',actif:true},
+ {nom:'Bureaux des artisans',typo:'bureau',surf:500,haut:3,hu:2.7,bat:'C',fam:'bail',actif:true},
+ {nom:'Bureaux de prod temp.',typo:'bureau',surf:1500,haut:3,hu:2.7,bat:'C',fam:'bail',actif:true},
+ {nom:'Cantine',typo:'commerce',surf:500,haut:3,hu:2.7,bat:'C',fam:'annexe',actif:true},
+ {nom:'Écoles',typo:'bureau',surf:2000,haut:3,hu:2.7,bat:'B',fam:'bail',actif:true},
+ {nom:'Restaurant (exploitant)',typo:'commerce',surf:500,haut:3,hu:2.7,bat:'A',fam:'bail',actif:true},
+ {nom:'Espace expo',typo:'commerce',surf:1500,haut:3,hu:2.7,bat:'B',fam:'bail',actif:true},
+ {nom:'Boutique + café',typo:'commerce',surf:500,haut:3,hu:2.7,bat:'C',fam:'bail',actif:true}
 ];}
 function defaultMecenat(){return [
  {nom:'Mécénat principal',montant:50000000},
  {nom:'Fondation partenaire',montant:22000000}
 ];}
 function defaultLoans(){return [
- {nom:'Emprunt communal (préférentiel)',montant:40000000,taux:1.0,duree:25},
- {nom:'Emprunt bancaire',montant:30000000,taux:2.5,duree:20}
+ {nom:'Emprunt long terme (préférentiel, DDP)',montant:40000000,taux:1.0,duree:60},
+ {nom:'Emprunt bancaire',montant:30000000,taux:2.5,duree:25}
 ];}
 function defaultSurelev(){return [
  {bat:'A',actif:false,surf:2500,cout:120},
@@ -367,41 +398,47 @@ function defaultSurelev(){return [
  {bat:'D',actif:false,surf:1200,cout:200},
  {bat:'E',actif:false,surf:1500,cout:220}
 ];}
+/* Prix de construction au m³ par typologie : gros œuvre + CFC2 (aménagements) + CFC3 (spécifique audiovisuel) */
+function defaultTypo(){return {
+ plateauH:{label:'Plateau grande hauteur (15–18 m)',go:280,cfc2:90,cfc3:180},
+ plateauM:{label:'Plateau / studio moyen (6–9 m)',go:350,cfc2:120,cfc3:150},
+ atelier:{label:'Atelier de production',go:300,cfc2:110,cfc3:40},
+ depot:{label:'Dépôt / stockage',go:220,cfc2:60,cfc3:10},
+ bureau:{label:'Bureaux / administration',go:350,cfc2:250,cfc3:20},
+ annexe:{label:'Annexe technique',go:320,cfc2:180,cfc3:80},
+ commerce:{label:'Commerce / accueil public',go:350,cfc2:300,cfc3:30}
+};}
 let SPACES=defaultSpaces();
 let MECENAT=defaultMecenat();
 let LOANS=defaultLoans();
 let SURELEV=defaultSurelev();
+let TYPO=defaultTypo();
 let SCENARIOS=[];
 
-const TYPES={court:'Court terme',moyen:'Moyen terme',long:'Long terme',nr:'Pas de rendement'};
+const TYPOLABELS={plateauH:'Plateau grande hauteur',plateauM:'Plateau / studio moyen',atelier:'Atelier de production',depot:'Dépôt / stockage',bureau:'Bureaux / administration',annexe:'Annexe technique',commerce:'Commerce / accueil public'};
 const FAMS={plateau:'Plateaux',annexe:'Annexes court terme',bail:'Baux long/moyen',aucun:'Aucun'};
 const FAMCOL={plateau:'#c8674f',annexe:'#d4a24a',bail:'#5a8fb8',aucun:'#666'};
 
 const P={
-  m3:700, ssM3:1000, ssSurf:5000, ssHaut:3.5,
-  hono:15, amint:600, amtech:800, amtechSurf:3700,
-  amextSurf:3000, amext:300, reserve:5,
+  ssM3:1000, ssSurf:5000, ssHaut:3.5,
+  hono:15, reserve:5, pilotage:2, risques:20, demol:3600000, cession:2680000,
   eurchf:0.95, plateau:1.90, annexe:1.00, bail:280,
   explo:90, ddp:20, renov:1.0, subAnnual:0
 };
-function defaultP(){return {m3:700,ssM3:1000,ssSurf:5000,ssHaut:3.5,hono:15,amint:600,amtech:800,amtechSurf:3700,
-  amextSurf:3000,amext:300,reserve:5,eurchf:0.95,plateau:1.90,annexe:1.00,bail:280,explo:90,ddp:20,renov:1.0,subAnnual:0};}
+function defaultP(){return {ssM3:1000,ssSurf:5000,ssHaut:3.5,hono:15,reserve:5,pilotage:2,risques:20,demol:3600000,cession:2680000,
+  eurchf:0.95,plateau:1.90,annexe:1.00,bail:280,explo:90,ddp:20,renov:1.0,subAnnual:0};}
 
 const SLIDERS={
- 'sl-grosoeuvre':{id:'m3',label:'Gros œuvre hors-sol',unit:'CHF/m³',min:400,max:1200,step:10,
-   foot:'Structure + enveloppe, hors aménagements. Repère marché CH industriel/commercial : 600–800 CHF/m³.',bench:[{v:700,t:'réf. CH',cls:'ch'}]},
  'sl-soussol':{id:'ssM3',label:'Coût sous-sol',unit:'CHF/m³',min:600,max:1600,step:20,
    foot:'Excavation, étanchéité, fondations. Repère CH : 900–1\u2009200 CHF/m³.',bench:[{v:1050,t:'réf. CH',cls:'ch'}]},
- 'sl-amint':{id:'amint',label:'Aménagements intérieurs de base',unit:'CHF/m²',min:150,max:1500,step:10,
-   foot:'Second œuvre indispensable : cloisons, sols, CVC, électricité, sanitaires. Appliqué à TOUTE la surface active. Repère CH : 500–800 CHF/m².',bench:[{v:650,t:'réf. CH',cls:'ch'}]},
- 'sl-amtech':{id:'amtech',label:'Aménagements intérieurs techniques',unit:'CHF/m²',min:0,max:2500,step:10,
-   foot:'Écrans LED / VP volume, grills, insonorisation, fond vert. Appliqué à la surface saisie ci-dessus (défaut = plateaux).',bench:[]},
- 'sl-amext':{id:'amext',label:'Aménagements extérieurs',unit:'CHF/m²',min:50,max:800,step:10,
-   foot:'Accès, cour technique, parking extérieur, paysager. Repère CH : 200–400 CHF/m².',bench:[{v:300,t:'réf. CH',cls:'ch'}]},
  'sl-hono':{id:'hono',label:'Honoraires & frais',unit:'%',min:6,max:25,step:0.5,dec:1,
    foot:'Architecte, ingénieurs, géomètre, frais. Appliqué au total des travaux. Repère SIA : 12–18 %.',bench:[{v:15,t:'réf. SIA',cls:'ch'}]},
  'sl-reserve':{id:'reserve',label:'Réserve / divers',unit:'%',min:0,max:15,step:0.5,dec:1,
-   foot:'Imprévus, contingence. Appliqué au sous-total. 0 pour neutraliser.',bench:[{v:5,t:'usuel',cls:'ch'}]},
+   foot:'Imprévus, contingence. Appliqué au total des travaux. 0 pour neutraliser.',bench:[{v:5,t:'usuel',cls:'ch'}]},
+ 'sl-pilotage':{id:'pilotage',label:'Pilotage HIAG',unit:'% du coût construction',min:0,max:5,step:0.5,dec:1,
+   foot:'Honoraires de pilotage HIAG, appliqués au total construction (travaux + honoraires + réserve). Convention HIAG : 2 %.',bench:[{v:2,t:'HIAG',cls:'ch'}]},
+ 'sl-risques':{id:'risques',label:'Risques / aléas HIAG',unit:'% du coût construction',min:0,max:30,step:1,dec:0,
+   foot:'Provision pour risques et aléas (HIAG), appliquée au total construction. Convention : 20 %.',bench:[{v:20,t:'HIAG',cls:'ch'}]},
  'sl-plateau':{id:'plateau',label:'Plateaux (court terme)',unit:'CHF/m²/jour',min:0.5,max:4,step:0.05,dec:2,
    foot:'Tarif location plateaux. Point Blim = 1,80–2,50 €/m²/j (converti CHF). Défaut ProFilms 1,90 = accessible.',bench:[{lo:1.80,hi:2.50,t:'Point Blim',eur:true},{v:1.90,t:'ProFilms',cls:'ch'}]},
  'sl-annexe':{id:'annexe',label:'Annexes court terme',unit:'CHF/m²/jour',min:0.2,max:3,step:0.05,dec:2,
@@ -409,7 +446,7 @@ const SLIDERS={
  'sl-bail':{id:'bail',label:'Baux long / moyen terme',unit:'CHF/m²/an',min:60,max:600,step:5,
    foot:'Écoles, ateliers, prestataires, restaurant. Ancre EY = 300 €/m²/an (converti CHF).',bench:[{v:300,t:'Ancre EY',eur:true}]},
  'sl-explo':{id:'explo',label:'Exploitation & maintenance',unit:'CHF/m²/an',min:30,max:200,step:5,
-   foot:'Énergie, maintenance courante, sécurité, nettoyage, assurances, marketing. Appliqué à toute la surface active.',bench:[{v:90,t:'réf.',cls:'ch'}]},
+   foot:'Énergie, maintenance technique, nettoyage, sécurité. Appliqué à toute la surface active. (Assurances, administration, impôts, etc. sont saisis séparément ci-dessous.)',bench:[{v:90,t:'réf.',cls:'ch'}]},
  'sl-renov':{id:'renov',label:'Provision fonds de rénovation',unit:'% du CAPEX/an',min:0,max:3,step:0.1,dec:1,
    foot:'Réserve annuelle pour gros entretien et rénovations futurs (toiture, technique, etc., tous les 5–10 ans). Référence immobilière suisse : 0,5–1,5 % de la valeur par an. Réduit la capacité contributive.',bench:[{v:1,t:'réf. CH',cls:'ch'}]},
  'sl-subannual':{id:'subAnnual',label:'Subvention publique annuelle',unit:'CHF/an',min:0,max:2000000,step:50000,
@@ -466,9 +503,10 @@ function renderProg(){
     const vol=sp.surf*sp.haut;const tr=document.createElement('tr');tr.id='sprow_'+i;if(!sp.actif)tr.className='off';
     tr.innerHTML='<td><input type="checkbox" '+(sp.actif?'checked':'')+' onchange="editSpace('+i+',\'actif\',this.checked)"></td>'
       +'<td><input class="cell" style="width:150px;text-align:left" value="'+esc(sp.nom)+'" oninput="editSpace('+i+',\'nom\',this.value)"></td>'
-      +'<td><select class="cell" onchange="editSpace('+i+',\'type\',this.value)">'+opts(TYPES,sp.type)+'</select></td>'
-      +'<td><input class="cell" style="width:56px" value="'+esc(sp.bat)+'" oninput="editSpace('+i+',\'bat\',this.value)"></td>'
+      +'<td><select class="cell" onchange="editSpace('+i+',\'typo\',this.value)">'+opts(TYPOLABELS,sp.typo)+'</select></td>'
+      +'<td><input class="cell" style="width:44px" value="'+esc(sp.bat)+'" oninput="editSpace('+i+',\'bat\',this.value)"></td>'
       +'<td><input class="cell" type="number" value="'+sp.surf+'" oninput="editSpace('+i+',\'surf\',this.value)"></td>'
+      +'<td><input class="cell" type="number" step="0.5" value="'+(sp.hu!==undefined?sp.hu:sp.haut)+'" oninput="editSpace('+i+',\'hu\',this.value)"></td>'
       +'<td><input class="cell" type="number" step="0.5" value="'+sp.haut+'" oninput="editSpace('+i+',\'haut\',this.value)"></td>'
       +'<td id="vol_'+i+'">'+fmt(vol)+'</td>'
       +'<td><select class="cell" onchange="editSpace('+i+',\'fam\',this.value)">'+opts(FAMS,sp.fam)+'</select></td>'
@@ -480,18 +518,34 @@ function renderProg(){
 function updateProgTotals(){
   let totS=0,totV=0,act=0;
   SPACES.forEach(function(s){if(s.actif){totS+=s.surf;totV+=s.surf*s.haut;act++;}});
-  document.getElementById('progFoot').innerHTML='<tr class="tot"><td></td><td>TOTAL ACTIF ('+act+'/'+SPACES.length+')</td><td></td><td></td><td>'+fmt(totS)+'</td><td></td><td>'+fmt(totV)+'</td><td></td><td></td></tr>';
+  document.getElementById('progFoot').innerHTML='<tr class="tot"><td></td><td>TOTAL ACTIF ('+act+'/'+SPACES.length+')</td><td></td><td></td><td>'+fmt(totS)+'</td><td></td><td></td><td>'+fmt(totV)+'</td><td></td><td></td></tr>';
 }
 function opts(map,sel){return Object.keys(map).map(function(k){return '<option value="'+k+'"'+(k===sel?' selected':'')+'>'+map[k]+'</option>';}).join('');}
 function editSpace(i,k,v){
-  if(k==='surf'||k==='haut')v=parseFloat(v)||0;
+  if(k==='surf'||k==='haut'||k==='hu')v=parseFloat(v)||0;
   if(k==='actif'){SPACES[i].actif=v;const r=document.getElementById('sprow_'+i);if(r)r.className=v?'':'off';}
   else SPACES[i][k]=v;
   if(k==='surf'||k==='haut'){const e=document.getElementById('vol_'+i);if(e)e.textContent=fmt(SPACES[i].surf*SPACES[i].haut);}
   recompute();
 }
-function addSpace(){SPACES.push({nom:'Nouvel espace',type:'court',surf:100,haut:3,bat:'—',fam:'annexe',actif:true});renderProg();recompute();}
+function addSpace(){SPACES.push({nom:'Nouvel espace',typo:'annexe',surf:100,haut:3,hu:2.7,bat:'—',fam:'annexe',actif:true});renderProg();recompute();}
 function delSpace(i){SPACES.splice(i,1);renderProg();recompute();}
+
+/* ---------- Matrice prix au m³ par typologie ---------- */
+function renderTypo(){
+  const tb=document.getElementById('typoBody');if(!tb)return;tb.innerHTML='';
+  Object.keys(TYPO).forEach(function(k){const t=TYPO[k];const tot=(t.go||0)+(t.cfc2||0)+(t.cfc3||0);
+    const tr=document.createElement('tr');
+    tr.innerHTML='<td style="text-align:left">'+t.label+'</td>'
+      +'<td><input class="cell" type="number" value="'+t.go+'" oninput="editTypo(\''+k+'\',\'go\',this.value)"></td>'
+      +'<td><input class="cell" type="number" value="'+t.cfc2+'" oninput="editTypo(\''+k+'\',\'cfc2\',this.value)"></td>'
+      +'<td><input class="cell" type="number" value="'+t.cfc3+'" oninput="editTypo(\''+k+'\',\'cfc3\',this.value)"></td>'
+      +'<td id="tpt_'+k+'"><b>'+fmt(tot)+'</b></td>';
+    tb.appendChild(tr);
+  });
+}
+function editTypo(k,f,v){TYPO[k][f]=parseFloat(v)||0;const e=document.getElementById('tpt_'+k);if(e)e.innerHTML='<b>'+fmt((TYPO[k].go||0)+(TYPO[k].cfc2||0)+(TYPO[k].cfc3||0))+'</b>';recompute();}
+function typoPrice(k){const t=TYPO[k];if(!t)return 0;return (t.go||0)+(t.cfc2||0)+(t.cfc3||0);}
 
 /* ---------- Mécénat ---------- */
 function renderMecenat(){
@@ -555,8 +609,7 @@ function agg(){
 
 /* ---------- Calcul global ---------- */
 function recompute(){
-  P.ssSurf=num('i_ssSurf');P.ssHaut=num('i_ssHaut');P.amtechSurf=num('i_amtechSurf');
-  P.amextSurf=num('i_amextSurf');P.eurchf=num('i_eurchf');P.ddp=num('i_ddp');
+  P.ssSurf=num('i_ssSurf');P.ssHaut=num('i_ssHaut');P.eurchf=num('i_eurchf');P.ddp=num('i_ddp');P.demol=num('i_demol');P.cession=num('i_cession');
   const A=agg();
   updateProgTotals();
 
@@ -576,21 +629,38 @@ function recompute(){
   SURELEV.forEach(function(b,i){const sc=b.actif?b.surf*b.cout:0;surelev+=sc;if(b.actif)nbB++;const e=document.getElementById('sc_'+i);if(e)e.textContent=chf(sc);});
   document.getElementById('surelevFoot').innerHTML='<tr class="tot"><td>Total réserve surélévation</td><td>'+nbB+' bât.</td><td></td><td></td><td>'+chf(surelev)+'</td></tr>';
 
-  // CAPEX
-  const grosOeuvre=A.vol*P.m3, volSS=P.ssSurf*P.ssHaut, sousSol=volSS*P.ssM3,
-        amBase=A.surf*P.amint, amTech=P.amtechSurf*P.amtech, amExt=P.amextSurf*P.amext,
-        travaux=grosOeuvre+sousSol+amBase+amTech+amExt+surelev,
-        honoraires=travaux*P.hono/100, sousTotal=travaux+honoraires,
-        reserve=sousTotal*P.reserve/100, capex=sousTotal+reserve;
-  const capRows=[['Gros œuvre hors-sol',fmt(A.vol)+' m³ × '+fmt(P.m3),grosOeuvre],
+  // ===== CAPEX (prix au m³ par typologie, agrégé par bâtiment) =====
+  const bld={};
+  function bAdd(b,key,v){b=b||'—';if(!bld[b])bld[b]={direct:0,vol:0,sv:0,obj:0,quote:0,total:0,surf:0,maxRev:0};bld[b][key]+=v;}
+  let travauxObjets=0;
+  SPACES.forEach(function(s){if(!s.actif)return;const v=s.surf*s.haut;const c=v*typoPrice(s.typo);
+    travauxObjets+=c;bAdd(s.bat,'obj',c);bAdd(s.bat,'direct',c);bAdd(s.bat,'vol',v);bAdd(s.bat,'surf',s.surf);
+    var pr=0;if(s.fam==='plateau')pr=s.surf*P.plateau*365;else if(s.fam==='annexe')pr=s.surf*P.annexe*365;else if(s.fam==='bail')pr=s.surf*P.bail;
+    bAdd(s.bat,'maxRev',pr);});
+  SURELEV.forEach(function(b){const sc=b.actif?b.surf*b.cout:0;if(sc){bAdd(b.bat,'direct',sc);bAdd(b.bat,'sv',sc);}});
+  const volSS=P.ssSurf*P.ssHaut, sousSol=volSS*P.ssM3;
+  const travaux=travauxObjets+surelev+sousSol;
+  const honoraires=travaux*P.hono/100, reserve=travaux*P.reserve/100;
+  const baseConstr=travaux+honoraires+reserve;
+  const pilotage=baseConstr*P.pilotage/100, risques=baseConstr*P.risques/100;
+  const demol=P.demol, cession=P.cession;
+  const capex=baseConstr+pilotage+risques+demol+cession;
+  // frais partagés répartis sur les bâtiments au prorata du volume construit
+  const shared=honoraires+reserve+pilotage+risques+demol+cession+sousSol;
+  const volTotB=Object.keys(bld).reduce(function(a,b){return a+bld[b].vol;},0);
+  Object.keys(bld).forEach(function(b){const w=volTotB?bld[b].vol/volTotB:0;bld[b].quote=shared*w;bld[b].total=bld[b].direct+bld[b].quote;});
+
+  const capRows=[['Travaux par typologie (objets actifs)',fmt(A.vol)+' m³',travauxObjets],
     ['Sous-sol',fmt(volSS)+' m³ × '+fmt(P.ssM3),sousSol],
-    ['Aménagements intérieurs de base',fmt(A.surf)+' m² × '+fmt(P.amint),amBase],
-    ['Aménagements intérieurs techniques',fmt(P.amtechSurf)+' m² × '+fmt(P.amtech),amTech],
-    ['Aménagements extérieurs',fmt(P.amextSurf)+' m² × '+fmt(P.amext),amExt],
     ['Réserve surélévation future',nbB+' bâtiment(s)',surelev],
     ['__sub','Total travaux',travaux],
     ['Honoraires & frais',fmt2(P.hono)+' %',honoraires],
-    ['Réserve / divers',fmt2(P.reserve)+' %',reserve]];
+    ['Réserve / divers',fmt2(P.reserve)+' %',reserve],
+    ['__sub','Total construction',baseConstr],
+    ['Pilotage HIAG',fmt2(P.pilotage)+' %',pilotage],
+    ['Risques / aléas HIAG',fmt(P.risques)+' %',risques],
+    ['Démolition bâtiment existant','forfait',demol],
+    ['Cession DDP','forfait',cession]];
   let cb='';capRows.forEach(function(r){
     if(r[0]==='__sub')cb+='<tr class="sub"><td>'+r[1]+'</td><td></td><td>'+chf(r[2])+'</td></tr>';
     else cb+='<tr><td>'+r[0]+'</td><td style="color:var(--muted)">'+r[1]+'</td><td>'+chf(r[2])+'</td></tr>';});
@@ -600,7 +670,12 @@ function recompute(){
     kpi('CAPEX total',fmtM(capex),'','hi')
     +kpi('CAPEX / m²',chf(A.surf?capex/A.surf:0),'surface active')
     +kpi('CAPEX / m³',chf(A.vol?capex/A.vol:0),'volume actif')
-    +kpi('Réserve surélévation',fmtM(surelev),nbB+' bât. prévu(s)');
+    +kpi('Coût revient travaux',chf(A.vol?travauxObjets/A.vol:0)+'/m³','objets, hors frais');
+  const bkeys=Object.keys(bld).sort();
+  let bb='';bkeys.forEach(function(b){const x=bld[b];
+    bb+='<tr><td><b>'+esc(b)+'</b></td><td>'+fmt(x.vol)+'</td><td>'+chf(x.direct)+'</td><td>'+chf(x.quote)+'</td><td><b>'+chf(x.total)+'</b></td><td>'+(capex?fmt2(x.total/capex*100):'0')+'%</td></tr>';});
+  bb+='<tr class="tot"><td>TOTAL</td><td>'+fmt(volTotB)+'</td><td>'+chf(travauxObjets+surelev)+'</td><td>'+chf(shared)+'</td><td>'+chf(capex)+'</td><td>100%</td></tr>';
+  const bbEl=document.getElementById('capexBatBody');if(bbEl)bbEl.innerHTML=bb;
 
   // Recettes
   const occ={plateau:numId('o_pl_5'),annexe:numId('o_an_5'),bail:numId('o_ba_5')};
@@ -616,9 +691,14 @@ function recompute(){
   // Charges & capacité
   const ddp=A.surf*P.ddp, exploit=A.surf*P.explo;
   const sal1=num('i_sal1'),sal3=num('i_sal3'),sal5=num('i_sal5'),fg1=num('i_fg1'),fg3=num('i_fg3'),fg5=num('i_fg5');
+  const exKeys=['assur','admin','autres','impot','concierge','appro','location'];
+  const exA1={},exA3={},exA5={};let extrasFix=0;
+  exKeys.forEach(function(k){exA1[k]=num('i_'+k+'1');exA3[k]=num('i_'+k+'3');exA5[k]=num('i_'+k+'5');extrasFix+=exA5[k];});
   const renov=capex*P.renov/100;
-  const charges=ddp+exploit+sal5+fg5+renov;
-  const chgRows=[['DDP ('+fmt(P.ddp)+' CHF/m²)',ddp],['Exploitation & maintenance',exploit],['Masse salariale (An5)',sal5],['Frais généraux & divers (An5)',fg5],['Provision fonds de rénovation ('+fmt2(P.renov)+' % CAPEX)',renov]];
+  const charges=ddp+exploit+sal5+fg5+extrasFix+renov;
+  const chgRows=[['DDP ('+fmt(P.ddp)+' CHF/m²)',ddp],['Exploitation & maintenance',exploit],['Masse salariale (An5)',sal5],['Frais généraux & divers (An5)',fg5],
+    ['Assurances',exA5.assur],['Administration',exA5.admin],['Autres dépenses',exA5.autres],['Impôts immobiliers',exA5.impot],['Conciergerie',exA5.concierge],['Approvisionnement',exA5.appro],['Frais de location',exA5.location],
+    ['Provision fonds de rénovation ('+fmt2(P.renov)+' % CAPEX)',renov]];
   let chg='';chgRows.forEach(function(r){chg+='<tr><td>'+r[0]+'</td><td>'+chf(r[1])+'</td></tr>';});
   chg+='<tr class="tot"><td>Total charges</td><td>'+chf(charges)+'</td></tr>';
   document.getElementById('chgBody').innerHTML=chg;
@@ -646,9 +726,42 @@ function recompute(){
   document.getElementById('loanFoot').innerHTML='<tr class="tot"><td>Total emprunts</td><td>'+chf(sumLoanAmt)+'</td><td></td><td></td><td>'+(capex?fmt2(sumLoanAmt/capex*100):'0')+'%</td><td>'+chf(sumAnnuity)+'</td><td></td></tr>';
 
   const blendedAF=sumLoanAmt>0?sumAnnuity/sumLoanAmt:0;
+
+  // ===== Rentabilité par bâtiment =====
+  (function(){
+    const surfTot=A.surf, bk=Object.keys(bld).sort();
+    let rentables=0, fills=[], minB=null, maxB=null, rows='';
+    bk.forEach(function(b){const x=bld[b];
+      const finB=capex?sumAnnuity*(x.total/capex):0;
+      const opB=surfTot?charges*((x.surf||0)/surfTot):0;
+      const costB=finB+opB, maxRevB=x.maxRev||0;
+      const fill=maxRevB>0?costB/maxRevB*100:Infinity;
+      let statut,col;
+      if(maxRevB<=0){statut='Centre de coût (sans recettes propres)';col='var(--muted)';}
+      else if(fill<=100){statut='Rentable dès '+Math.round(fill)+' % de remplissage';col='var(--good)';rentables++;}
+      else{statut='Non rentable à 100 % (manque '+fmtM(costB-maxRevB)+'/an)';col='var(--bad)';}
+      if(isFinite(fill)){fills.push(fill);if(minB===null||fill<minB.f)minB={b:b,f:fill};if(maxB===null||fill>maxB.f)maxB={b:b,f:fill};}
+      const barW=Math.max(0,Math.min(100,isFinite(fill)?fill:100));
+      const bar='<div style="background:#2b2b2b;border-radius:4px;height:15px;width:120px;position:relative;overflow:hidden;display:inline-block;vertical-align:middle">'
+        +'<div style="background:'+col+';height:100%;width:'+barW+'%"></div>'
+        +'<span style="position:absolute;left:6px;top:0;font-size:11px;line-height:15px;color:#ededed">'+(isFinite(fill)?Math.round(fill)+' %':'—')+'</span></div>';
+      rows+='<tr><td><b>'+esc(b)+'</b></td><td>'+chf(x.total)+'</td><td>'+chf(finB)+'</td><td>'+chf(opB)+'</td><td>'+chf(costB)+'</td><td>'+chf(maxRevB)+'</td><td>'+bar+'</td><td style="color:'+col+'">'+statut+'</td></tr>';
+    });
+    const bEl=document.getElementById('batBody');if(bEl)bEl.innerHTML=rows;
+    const avg=fills.length?fills.reduce(function(a,c){return a+c;},0)/fills.length:0;
+    const kEl=document.getElementById('batKpis');
+    if(kEl)kEl.innerHTML=
+      kpi('Bâtiments rentables ≤ 100 %',rentables+' / '+bk.length,'au remplissage requis','hi')
+      +kpi('Seuil moyen',(fills.length?Math.round(avg)+' %':'—'),'remplissage pour équilibre')
+      +kpi('Le plus accessible',minB?('Bât. '+minB.b):'—',minB?Math.round(minB.f)+' % suffisent':'')
+      +kpi('Le plus exigeant',maxB?('Bât. '+maxB.b):'—',maxB?Math.round(maxB.f)+' % requis':'');
+  })();
   const subv=P.subAnnual;
   const totalFin=sumMec+sumLoanAmt, gap=capex-totalFin, cover=capex?totalFin/capex*100:0;
   const resWithDebt=capacite+subv-sumAnnuity, resAfterDebt=capacite+subv;
+  const deficitDebt=resWithDebt<0?-resWithDebt:0;
+  const fixableByMec=(capacite+subv)>=0;
+  const mecaMissing=(blendedAF>0)?Math.min(sumLoanAmt,deficitDebt/blendedAF):0;
   const balanced=Math.abs(gap)<capex*0.01;
   const covCol=balanced?'var(--good)':(gap>0?'var(--warn)':'var(--blim)');
   document.getElementById('coverBody').innerHTML=
@@ -669,20 +782,23 @@ function recompute(){
     +'<tr><td>− Annuités des emprunts</td><td>'+chf(sumAnnuity)+'</td></tr>'
     +'<tr class="tot"><td>Résultat net (emprunts actifs)</td><td style="color:'+(resWithDebt>=0?'var(--good)':'var(--bad)')+'">'+chf(resWithDebt)+'</td></tr>'
     +'<tr><td>Résultat net après remboursement</td><td style="color:'+(resAfterDebt>=0?'var(--good)':'var(--bad)')+'">'+chf(resAfterDebt)+'</td></tr>';
-  document.getElementById('finMixNote').innerHTML=(resAfterDebt>=0
-    ? 'Objectif mécénat pour résultat ≥ 0 : <b>'+(mecObj!==null?fmtM(mecObj)+' ('+fmt2(mecObjPct)+' %)':'—')+'</b> — si le solde du CAPEX est emprunté au coût moyen actuel ('+fmt2(blendedAF*100)+' %/an). Mécénat réuni : '+fmtM(sumMec)+'.'
-    : 'Résultat négatif même sans emprunt : les recettes ne couvrent pas les charges (subvention comprise).');
+  document.getElementById('finMixNote').innerHTML=(resWithDebt>=0
+    ? 'Équilibre atteint : résultat net positif ('+fmtM(resWithDebt)+'/an), aucun mécénat additionnel requis.'
+    : (fixableByMec
+      ? 'Pour l\'équilibre annuel, il manque <b>'+fmtM(mecaMissing)+'</b> de mécénat à convertir depuis la dette (coût moyen '+fmt2(blendedAF*100)+' %/an). Mécénat réuni : '+fmtM(sumMec)+'.'
+      : 'Recettes insuffisantes : même sans emprunt, résultat négatif ('+fmtM(resAfterDebt)+'/an). Le mécénat seul ne suffit pas — agir sur tarifs, occupation ou charges.'));
 
   // Projection
   const occA={plateau:[numId('o_pl_1'),numId('o_pl_3'),numId('o_pl_5')],annexe:[numId('o_an_1'),numId('o_an_3'),numId('o_an_5')],bail:[numId('o_ba_1'),numId('o_ba_3'),numId('o_ba_5')]};
   function occYear(arr,y){if(y<=1)return arr[0];if(y===2)return (arr[0]+arr[1])/2;if(y===3)return arr[1];if(y===4)return (arr[1]+arr[2])/2;return arr[2];}
   function recYear(y){return A.fam.plateau.s*P.plateau*365*occYear(occA.plateau,y)/100+A.fam.annexe.s*P.annexe*365*occYear(occA.annexe,y)/100+A.fam.bail.s*P.bail*occYear(occA.bail,y)/100;}
   const maxDur=LOANS.reduce(function(a,l){return Math.max(a,l.duree);},0);
-  const HOR=Math.max(25,maxDur+5);
+  const HOR=Math.max(30,maxDur+5);
   let yrs=[],resNet=[],cumul=[],cum=0,beYear=0,cumBE=0;
   function lin(a1,a3,a5,y){if(y<=1)return a1;if(y===2)return (a1+a3)/2;if(y===3)return a3;if(y===4)return (a3+a5)/2;return a5;}
   for(let y=1;y<=HOR;y++){
-    const chargesY=ddp+exploit+lin(sal1,sal3,sal5,y)+lin(fg1,fg3,fg5,y)+renov;
+    let extrasY=0;exKeys.forEach(function(k){extrasY+=lin(exA1[k],exA3[k],exA5[k],y);});
+    const chargesY=ddp+exploit+lin(sal1,sal3,sal5,y)+lin(fg1,fg3,fg5,y)+extrasY+renov;
     const capY=recYear(y)-chargesY;
     let debtY=0;LOANS.forEach(function(l){if(y<=l.duree)debtY+=l.montant*annuity(l.taux,l.duree);});
     const rn=capY+subv-debtY;cum+=rn;
@@ -692,17 +808,19 @@ function recompute(){
   }
   const cumMin=Math.min.apply(null,cumul);
 
+  const mecaMissLabel=resWithDebt>=0?'Équilibre atteint':(fixableByMec?fmtM(mecaMissing):'insuffisant seul');
+  const mecaMissNote=resWithDebt>=0?'aucun don additionnel requis':(fixableByMec?'à convertir en dons (résultat ≥ 0)':'recettes < charges même sans dette');
   document.getElementById('finKpis').innerHTML=
-    kpi('Couverture du CAPEX',fmt2(cover)+' %',balanced?'équilibré':(gap>0?'manque '+fmtM(gap):'excédent '+fmtM(-gap)),'hi')
-    +kpi('Mécénat réuni',fmtM(sumMec),(capex?fmt2(sumMec/capex*100):'0')+' % du CAPEX')
-    +kpi('Résultat net (emprunts actifs)',fmtM(resWithDebt),resWithDebt>=0?'positif':'déficit/an')
+    kpi('Couverture du CAPEX',fmt2(cover)+' %',balanced?'équilibré':(gap>0?'manque '+fmtM(gap):'excédent '+fmtM(-gap)))
+    +kpi('Résultat net / an',fmtM(resWithDebt),resWithDebt>=0?'positif (emprunts actifs)':'déficit pendant emprunts')
+    +kpi('Mécénat manquant',mecaMissLabel,mecaMissNote,'hi')
     +kpi('Rentable dès l\'année',beYear?('An '+beYear):('> '+HOR),(beYear&&beYear>maxDur)?'après les emprunts':'en exploitation');
 
   let fc,ft,fd;
   const covMsg=balanced?'':(gap>0?'<b>Attention :</b> financement incomplet, il manque '+fmtM(gap)+' pour couvrir le CAPEX. ':'Financement excédentaire de '+fmtM(-gap)+' — réduisez une source. ');
   if(resAfterDebt<0){fc='bad';ft='Non rentabilisable en l\'état';fd=covMsg+'Même sans aucun emprunt, le résultat reste négatif ('+fmtM(resAfterDebt)+'/an) : les recettes ne couvrent pas les charges, subvention comprise. Il faut augmenter tarifs/occupation, baisser les charges, ou désactiver des objets coûteux côté programme.';}
   else if(resWithDebt>=0){fc=gap>0?'warn':'good';ft=gap>0?'Rentable, mais financement à compléter':'Rentable dès le régime de croisière, emprunts inclus';fd=covMsg+'Avec ce montage (mécénat '+fmtM(sumMec)+', emprunts '+fmtM(sumLoanAmt)+(subv>0?', subvention '+chf(subv)+'/an':'')+'), le résultat net est positif ('+fmtM(resWithDebt)+'/an) même pendant le remboursement.';}
-  else{fc='warn';ft='Viable sous condition de mécénat';fd=covMsg+'Le résultat est déficitaire pendant les emprunts ('+fmtM(resWithDebt)+'/an). Objectif : porter le mécénat à <b>'+(mecObj!==null?fmtM(mecObj):'—')+'</b> (vs '+fmtM(sumMec)+' réunis) pour réduire la dette. '+(beYear?('Rentabilité atteinte en An '+beYear+(beYear>maxDur?' (après remboursement)':'')+', déficit cumulé de '+fmtM(-cumMin)+' à financer entre-temps.'):'Le déficit persiste sur tout l\'horizon.');}
+  else{fc='warn';ft='Viable sous condition de mécénat';fd=covMsg+'Déficit de <b>'+fmtM(resWithDebt)+'/an</b> pendant les emprunts. Il manque <b>'+fmtM(mecaMissing)+'</b> de mécénat (à convertir depuis la dette, sur '+fmtM(sumMec)+' déjà réunis) pour atteindre l\'équilibre annuel. '+(beYear?('Rentabilité atteinte en An '+beYear+(beYear>maxDur?' (après remboursement)':'')+', déficit cumulé de '+fmtM(-cumMin)+' à financer entre-temps.'):'Le déficit persiste sur tout l\'horizon.');}
   document.getElementById('finVerdict').innerHTML='<div class="verdict '+fc+'"><div class="vt">'+ft+'</div><div class="vd">'+fd+'</div></div>';
   document.getElementById('finProjNote').innerHTML='Premier résultat net positif : '+(beYear?'An '+beYear:'aucun sur '+HOR+' ans')+' · dernier emprunt remboursé : An '+maxDur+' · cumul positif dès : '+(cumBE?'An '+cumBE:'jamais sur l\'horizon')+'. Hypothèse : charges et tarifs constants après An5 (hors indexation).';
 
@@ -734,7 +852,7 @@ function recompute(){
   document.getElementById('recapFinBody').innerHTML=rf;
 
   // Charts
-  drawExploCharts({grosOeuvre:grosOeuvre,sousSol:sousSol,amBase:amBase,amTech:amTech,amExt:amExt,surelev:surelev,honoraires:honoraires,reserve:reserve,recPl:recPl,recAn:recAn,recBa:recBa});
+  drawExploCharts({travauxObjets:travauxObjets,sousSol:sousSol,surelev:surelev,honoraires:honoraires,reserve:reserve,pilotage:pilotage,risques:risques,demol:demol,cession:cession,recPl:recPl,recAn:recAn,recBa:recBa});
   drawFinChart({years:yrs,resNet:resNet,cumul:cumul});
 }
 function row2(a,b){return '<tr><td>'+a+'</td><td>'+b+'</td></tr>';}
@@ -746,8 +864,8 @@ function drawExploCharts(d){
   if(!chartsOk||!document.getElementById('explo').classList.contains('active'))return;
   if(chCapex)chCapex.destroy();
   chCapex=new Chart(document.getElementById('chCapex'),{type:'doughnut',
-    data:{labels:['Gros œuvre','Sous-sol','Amgt base','Amgt technique','Amgt ext.','Surélévation','Honoraires','Réserve'],
-      datasets:[{data:[d.grosOeuvre,d.sousSol,d.amBase,d.amTech,d.amExt,d.surelev,d.honoraires,d.reserve],backgroundColor:['#c8674f','#a8533e','#5a8fb8','#7aa9cc','#9fc2dc','#56a37a','#d4a24a','#666'],borderColor:'#1e1e1e',borderWidth:2}]},options:donutOpts()});
+    data:{labels:['Travaux objets','Sous-sol','Surélévation','Honoraires','Réserve','Pilotage HIAG','Risques HIAG','Démolition','Cession DDP'],
+      datasets:[{data:[d.travauxObjets,d.sousSol,d.surelev,d.honoraires,d.reserve,d.pilotage,d.risques,d.demol,d.cession],backgroundColor:['#c8674f','#a8533e','#56a37a','#d4a24a','#888888','#5a8fb8','#7aa9cc','#9b6b9e','#666666'],borderColor:'#1e1e1e',borderWidth:2}]},options:donutOpts()});
   if(chRec)chRec.destroy();
   chRec=new Chart(document.getElementById('chRec'),{type:'doughnut',
     data:{labels:['Plateaux','Annexes','Baux'],datasets:[{data:[d.recPl,d.recAn,d.recBa],backgroundColor:['#c8674f','#d4a24a','#5a8fb8'],borderColor:'#1e1e1e',borderWidth:2}]},options:donutOpts()});
@@ -777,19 +895,20 @@ document.querySelectorAll('.tab').forEach(function(t){
 
 /* ---------- Scénarios : état ---------- */
 function occInputs(){const o={};['o_pl_1','o_pl_3','o_pl_5','o_an_1','o_an_3','o_an_5','o_ba_1','o_ba_3','o_ba_5'].forEach(function(id){o[id]=val(id);});return o;}
-function chargeInputs(){const o={};['i_sal1','i_sal3','i_sal5','i_fg1','i_fg3','i_fg5'].forEach(function(id){o[id]=val(id);});return o;}
-function collectState(){return {spaces:JSON.parse(JSON.stringify(SPACES)),mecenat:JSON.parse(JSON.stringify(MECENAT)),loans:JSON.parse(JSON.stringify(LOANS)),surelev:JSON.parse(JSON.stringify(SURELEV)),P:JSON.parse(JSON.stringify(P)),occ:occInputs(),charges:chargeInputs()};}
-function syncInputsFromP(){const map={i_ssSurf:'ssSurf',i_ssHaut:'ssHaut',i_amtechSurf:'amtechSurf',i_amextSurf:'amextSurf',i_eurchf:'eurchf',i_ddp:'ddp'};
+function chargeInputs(){const o={};['i_sal1','i_sal3','i_sal5','i_fg1','i_fg3','i_fg5',
+  'i_assur1','i_assur3','i_assur5','i_admin1','i_admin3','i_admin5','i_autres1','i_autres3','i_autres5','i_impot1','i_impot3','i_impot5','i_concierge1','i_concierge3','i_concierge5','i_appro1','i_appro3','i_appro5','i_location1','i_location3','i_location5'].forEach(function(id){o[id]=val(id);});return o;}
+function collectState(){return {spaces:JSON.parse(JSON.stringify(SPACES)),mecenat:JSON.parse(JSON.stringify(MECENAT)),loans:JSON.parse(JSON.stringify(LOANS)),surelev:JSON.parse(JSON.stringify(SURELEV)),typo:JSON.parse(JSON.stringify(TYPO)),P:JSON.parse(JSON.stringify(P)),occ:occInputs(),charges:chargeInputs()};}
+function syncInputsFromP(){const map={i_ssSurf:'ssSurf',i_ssHaut:'ssHaut',i_eurchf:'eurchf',i_ddp:'ddp',i_demol:'demol',i_cession:'cession'};
   Object.keys(map).forEach(function(id){const e=document.getElementById(id);if(e)e.value=P[map[id]];});}
 function applyState(s){
   if(!s)return;
   if(s.spaces)SPACES=s.spaces.map(function(x){if(x.actif===undefined)x.actif=true;return x;});
-  if(s.mecenat)MECENAT=s.mecenat;if(s.loans)LOANS=s.loans;if(s.surelev)SURELEV=s.surelev;if(s.P)Object.assign(P,s.P);
+  if(s.mecenat)MECENAT=s.mecenat;if(s.loans)LOANS=s.loans;if(s.surelev)SURELEV=s.surelev;if(s.typo)TYPO=s.typo;if(s.P)Object.assign(P,s.P);
   if(s.occ)Object.keys(s.occ).forEach(function(id){const e=document.getElementById(id);if(e)e.value=s.occ[id];});
   if(s.charges)Object.keys(s.charges).forEach(function(id){const e=document.getElementById(id);if(e)e.value=s.charges[id];});
   syncInputsFromP();
   Object.keys(SLIDERS).forEach(function(k){const sl=SLIDERS[k];const r=document.getElementById('rng_'+sl.id);if(r)r.value=P[sl.id];updateSliderLabel(k);renderBench(k);});
-  renderProg();renderMecenat();renderLoans();renderSurelev();recompute();
+  renderProg();renderTypo();renderMecenat();renderLoans();renderSurelev();recompute();
 }
 
 /* ---------- Scénarios : stockage partagé (Supabase) ---------- */
@@ -850,18 +969,38 @@ function importScenario(ev){
 /* ---------- Export Excel ---------- */
 function exportXlsx(){
   const A=agg();const wb=XLSX.utils.book_new();
-  const prog=[['Actif','Objet','Type','Bâtiment','Surface m²','Hauteur m','Volume m³','Famille']];
-  SPACES.forEach(function(s){prog.push([s.actif?'oui':'non',s.nom,TYPES[s.type],s.bat,s.surf,s.haut,s.surf*s.haut,FAMS[s.fam]]);});
-  prog.push(['TOTAL ACTIF','','','',A.surf,'',A.vol,'']);
+  const prog=[['Actif','Objet','Typologie','Bâtiment','Surface m²','H. utile (Xavier)','H. CCHE','Volume m³','Famille']];
+  SPACES.forEach(function(s){prog.push([s.actif?'oui':'non',s.nom,TYPOLABELS[s.typo]||s.typo,s.bat,s.surf,(s.hu!==undefined?s.hu:s.haut),s.haut,s.surf*s.haut,FAMS[s.fam]]);});
+  prog.push(['TOTAL ACTIF','','','',A.surf,'','',A.vol,'']);
   XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet(prog),'Programme');
 
-  let surelev=0,nbB=0;SURELEV.forEach(function(b){if(b.actif){surelev+=b.surf*b.cout;nbB++;}});
-  const grosOeuvre=A.vol*P.m3,volSS=P.ssSurf*P.ssHaut,sousSol=volSS*P.ssM3,amBase=A.surf*P.amint,amTech=P.amtechSurf*P.amtech,amExt=P.amextSurf*P.amext,
-        travaux=grosOeuvre+sousSol+amBase+amTech+amExt+surelev,honoraires=travaux*P.hono/100,sousTotal=travaux+honoraires,reserve=sousTotal*P.reserve/100,capex=sousTotal+reserve;
-  const cap=[['Poste','Base','CHF'],['Gros œuvre hors-sol',A.vol+' m³ x '+P.m3,grosOeuvre],['Sous-sol',volSS+' m³ x '+P.ssM3,sousSol],
-    ['Amgt intérieurs base',A.surf+' m² x '+P.amint,amBase],['Amgt intérieurs techniques',P.amtechSurf+' m² x '+P.amtech,amTech],['Amgt extérieurs',P.amextSurf+' m² x '+P.amext,amExt],
-    ['Réserve surélévation',nbB+' bât.',surelev],['Total travaux','',travaux],['Honoraires & frais',P.hono+' %',honoraires],['Réserve / divers',P.reserve+' %',reserve],['CAPEX TOTAL','',capex]];
+  const tm=[['Typologie','Gros œuvre CHF/m³','CFC2 CHF/m³','CFC3 audiovisuel CHF/m³','Prix revient CHF/m³']];
+  Object.keys(TYPO).forEach(function(k){const t=TYPO[k];tm.push([t.label,t.go,t.cfc2,t.cfc3,(t.go||0)+(t.cfc2||0)+(t.cfc3||0)]);});
+  XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet(tm),'Typologies');
+
+  const bld={};
+  function bAdd(b,key,v){b=b||'—';if(!bld[b])bld[b]={direct:0,vol:0};bld[b][key]+=v;}
+  let travauxObjets=0;
+  SPACES.forEach(function(s){if(!s.actif)return;const v=s.surf*s.haut;const t=TYPO[s.typo]||{};const pu=(t.go||0)+(t.cfc2||0)+(t.cfc3||0);const c=v*pu;travauxObjets+=c;bAdd(s.bat,'direct',c);bAdd(s.bat,'vol',v);});
+  let surelev=0,nbB=0;SURELEV.forEach(function(b){const sc=b.actif?b.surf*b.cout:0;if(sc){surelev+=sc;nbB++;bAdd(b.bat,'direct',sc);}});
+  const volSS=P.ssSurf*P.ssHaut,sousSol=volSS*P.ssM3;
+  const travaux=travauxObjets+surelev+sousSol;
+  const honoraires=travaux*P.hono/100,reserve=travaux*P.reserve/100,baseConstr=travaux+honoraires+reserve;
+  const pilotage=baseConstr*P.pilotage/100,risques=baseConstr*P.risques/100,demol=P.demol,cession=P.cession;
+  const capex=baseConstr+pilotage+risques+demol+cession;
+  const shared=honoraires+reserve+pilotage+risques+demol+cession+sousSol;
+  const volTotB=Object.keys(bld).reduce(function(a,b){return a+bld[b].vol;},0);
+  const cap=[['Poste','Base','CHF'],
+    ['Travaux par typologie',A.vol+' m³',travauxObjets],['Sous-sol',volSS+' m³ x '+P.ssM3,sousSol],['Réserve surélévation',nbB+' bât.',surelev],
+    ['Total travaux','',travaux],['Honoraires & frais',P.hono+' %',honoraires],['Réserve / divers',P.reserve+' %',reserve],
+    ['Total construction','',baseConstr],['Pilotage HIAG',P.pilotage+' %',pilotage],['Risques HIAG',P.risques+' %',risques],
+    ['Démolition bâtiment existant','forfait',demol],['Cession DDP','forfait',cession],['CAPEX TOTAL','',capex]];
   XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet(cap),'CAPEX');
+
+  const cbat=[['Bâtiment','Volume m³','Travaux propres','Quote-part frais','Coût total','% CAPEX']];
+  Object.keys(bld).sort().forEach(function(b){const x=bld[b];const q=shared*(volTotB?x.vol/volTotB:0);const tot=x.direct+q;cbat.push([b,x.vol,x.direct,q,tot,capex?tot/capex*100:0]);});
+  cbat.push(['TOTAL',volTotB,travauxObjets+surelev,shared,capex,100]);
+  XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet(cbat),'Cout_par_batiment');
 
   const sv=[['Bâtiment','Prévu','Surface m²','Surcoût CHF/m²','Surcoût CHF']];
   SURELEV.forEach(function(b){sv.push([b.bat,b.actif?'oui':'non',b.surf,b.cout,b.actif?b.surf*b.cout:0]);});
@@ -869,12 +1008,19 @@ function exportXlsx(){
 
   const occ5={plateau:numId('o_pl_5'),annexe:numId('o_an_5'),bail:numId('o_ba_5')};
   const recPl=A.fam.plateau.s*P.plateau*365*occ5.plateau/100,recAn=A.fam.annexe.s*P.annexe*365*occ5.annexe/100,recBa=A.fam.bail.s*P.bail*occ5.bail/100,recTot=recPl+recAn+recBa;
-  const ddp=A.surf*P.ddp,exploit=A.surf*P.explo,sal5=num('i_sal5'),fg5=num('i_fg5'),renov=capex*P.renov/100,charges=ddp+exploit+sal5+fg5+renov,capacite=recTot-charges;
-  const expSheet=[['Indicateur','Valeur'],['Recettes An5',recTot],['DDP',ddp],['Exploitation & maintenance',exploit],
-    ['Masse salariale An1',num('i_sal1')],['Masse salariale An3',num('i_sal3')],['Masse salariale An5',sal5],
-    ['Frais généraux An1',num('i_fg1')],['Frais généraux An3',num('i_fg3')],['Frais généraux An5',fg5],
-    ['Provision fonds de rénovation ('+P.renov+'% CAPEX)',renov],['Charges totales An5',charges],['Capacité contributive',capacite],
-    ['Subvention annuelle',P.subAnnual],['Taux EUR/CHF',P.eurchf]];
+  const ddp=A.surf*P.ddp,exploit=A.surf*P.explo,sal5=num('i_sal5'),fg5=num('i_fg5'),renov=capex*P.renov/100;
+  const exKeys=['assur','admin','autres','impot','concierge','appro','location'];
+  const exLbl={assur:'Assurances',admin:'Administration',autres:'Autres dépenses',impot:'Impôts immobiliers',concierge:'Conciergerie',appro:'Approvisionnement',location:'Frais de location'};
+  let extrasFix=0;exKeys.forEach(function(k){extrasFix+=num('i_'+k+'5');});
+  const charges=ddp+exploit+sal5+fg5+extrasFix+renov,capacite=recTot-charges;
+  const expSheet=[['Indicateur','An1','An3','An5'],['Recettes An5','','',recTot],['DDP','','',ddp],['Exploitation & maintenance','','',exploit],
+    ['Masse salariale',num('i_sal1'),num('i_sal3'),sal5],['Frais généraux',num('i_fg1'),num('i_fg3'),fg5]];
+  exKeys.forEach(function(k){expSheet.push([exLbl[k],num('i_'+k+'1'),num('i_'+k+'3'),num('i_'+k+'5')]);});
+  expSheet.push(['Provision fonds de rénovation ('+P.renov+'% CAPEX)','','',renov]);
+  expSheet.push(['Charges totales An5','','',charges]);
+  expSheet.push(['Capacité contributive','','',capacite]);
+  expSheet.push(['Subvention annuelle','','',P.subAnnual]);
+  expSheet.push(['Taux EUR/CHF','','',P.eurchf]);
   XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet(expSheet),'Exploitation');
 
   let sumMec=0;MECENAT.forEach(function(m){sumMec+=m.montant;});
@@ -883,32 +1029,39 @@ function exportXlsx(){
   LOANS.forEach(function(l){const ann=l.montant*annuity(l.taux,l.duree);sumLoanAmt+=l.montant;sumAnnuity+=ann;fin.push([l.nom,'emprunt',l.montant,l.taux,l.duree,ann]);});
   fin.push([]);
   const subv=P.subAnnual,totalFin=sumMec+sumLoanAmt,resWithDebt=capacite+subv-sumAnnuity,resAfterDebt=capacite+subv;
+  const blendedAF=sumLoanAmt>0?sumAnnuity/sumLoanAmt:0,mecaMissing=(blendedAF>0&&resWithDebt<0)?Math.min(sumLoanAmt,(-resWithDebt)/blendedAF):0;
   fin.push(['CAPEX total',capex]);fin.push(['Financement réuni',totalFin]);fin.push(['Couverture %',capex?totalFin/capex*100:0]);
   fin.push(['Mécénat réuni',sumMec]);fin.push(['Emprunts',sumLoanAmt]);fin.push(['Annuités totales',sumAnnuity]);
   fin.push(['Subvention annuelle',subv]);fin.push(['Résultat net emprunts actifs',resWithDebt]);fin.push(['Résultat net après remboursement',resAfterDebt]);
+  fin.push(['Mécénat manquant pour équilibre',mecaMissing]);
   XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet(fin),'Financement');
   XLSX.writeFile(wb,'Simulateur_Hive_V2.xlsx');
 }
 
 /* ---------- Reset ---------- */
 function resetAll(){
-  SPACES=defaultSpaces();MECENAT=defaultMecenat();LOANS=defaultLoans();SURELEV=defaultSurelev();Object.assign(P,defaultP());
-  const map={i_ssSurf:5000,i_ssHaut:3.5,i_amtechSurf:3700,i_amextSurf:3000,i_eurchf:0.95,i_ddp:20,
-    i_sal1:450000,i_sal3:600000,i_sal5:700000,i_fg1:150000,i_fg3:200000,i_fg5:250000};
-  Object.keys(map).forEach(function(id){document.getElementById(id).value=map[id];});
+  SPACES=defaultSpaces();MECENAT=defaultMecenat();LOANS=defaultLoans();SURELEV=defaultSurelev();TYPO=defaultTypo();Object.assign(P,defaultP());
+  const map={i_ssSurf:5000,i_ssHaut:3.5,i_eurchf:0.95,i_ddp:20,i_demol:3600000,i_cession:2680000,
+    i_sal1:450000,i_sal3:600000,i_sal5:700000,i_fg1:150000,i_fg3:200000,i_fg5:250000,
+    i_assur1:100000,i_assur3:100000,i_assur5:100000,i_admin1:80000,i_admin3:80000,i_admin5:80000,
+    i_autres1:50000,i_autres3:50000,i_autres5:50000,i_impot1:60000,i_impot3:60000,i_impot5:60000,
+    i_concierge1:120000,i_concierge3:120000,i_concierge5:120000,i_appro1:40000,i_appro3:40000,i_appro5:40000,
+    i_location1:0,i_location3:0,i_location5:0};
+  Object.keys(map).forEach(function(id){const e=document.getElementById(id);if(e)e.value=map[id];});
   const occ={o_pl_1:10,o_pl_3:30,o_pl_5:50,o_an_1:15,o_an_3:35,o_an_5:55,o_ba_1:30,o_ba_3:70,o_ba_5:80};
   Object.keys(occ).forEach(function(id){document.getElementById(id).value=occ[id];});
   Object.keys(SLIDERS).forEach(function(k){const s=SLIDERS[k];document.getElementById('rng_'+s.id).value=P[s.id];updateSliderLabel(k);renderBench(k);});
-  renderProg();renderMecenat();renderLoans();renderSurelev();recompute();
+  renderProg();renderTypo();renderMecenat();renderLoans();renderSurelev();recompute();
 }
 
 /* ---------- Init ---------- */
 Object.keys(SLIDERS).forEach(renderSlider);
-['i_ssSurf','i_ssHaut','i_amtechSurf','i_amextSurf','i_eurchf','i_ddp','i_sal1','i_sal3','i_sal5','i_fg1','i_fg3','i_fg5',
+['i_ssSurf','i_ssHaut','i_demol','i_cession','i_eurchf','i_ddp','i_sal1','i_sal3','i_sal5','i_fg1','i_fg3','i_fg5',
+ 'i_assur1','i_assur3','i_assur5','i_admin1','i_admin3','i_admin5','i_autres1','i_autres3','i_autres5','i_impot1','i_impot3','i_impot5','i_concierge1','i_concierge3','i_concierge5','i_appro1','i_appro3','i_appro5','i_location1','i_location3','i_location5',
  'o_pl_1','o_pl_3','o_pl_5','o_an_1','o_an_3','o_an_5','o_ba_1','o_ba_3','o_ba_5'].forEach(function(id){
   const e=document.getElementById(id);if(e)e.addEventListener('input',function(){if(id==='i_eurchf')Object.keys(SLIDERS).forEach(renderBench);recompute();});
 });
-renderProg();renderMecenat();renderLoans();renderSurelev();
+renderProg();renderTypo();renderMecenat();renderLoans();renderSurelev();
 scStatus(cloudReady()?'Stockage partagé actif.':'Stockage partagé non configuré — mode fichier (.json) actif. Voir les instructions pour activer le partage.',cloudReady()?'good':'muted');
 refreshScenarios();
 recompute();
