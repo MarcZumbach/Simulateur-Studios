@@ -224,14 +224,15 @@ input[type=range]::-moz-range-thumb{width:15px;height:15px;border-radius:50%;bac
   <div class="grid2">
     <div class="card"><h2>Taux de change &amp; tarifs</h2>
       <div class="inp-line"><label>Taux EUR → CHF</label><input type="number" id="i_eurchf" value="0.95" step="0.01"></div>
-      <div id="sl-plateau"></div><div id="sl-annexe"></div><div id="sl-bail"></div>
+      <div id="sl-plateau"></div><div id="sl-annexe"></div><div id="sl-bail"></div><div id="sl-bailM"></div>
     </div>
     <div class="card"><h2>Taux d'occupation (montée en charge)</h2>
       <div class="desc">An 1 / An 3 / An 5. An 2 et An 4 interpolés. Défauts = hypothèses conservatrices du BP 15.02.2026.</div>
       <table><thead><tr><th>Famille</th><th>An 1 %</th><th>An 3 %</th><th>An 5 %</th></tr></thead><tbody>
         <tr><td>Plateaux</td><td><input class="cell" id="o_pl_1" value="10"></td><td><input class="cell" id="o_pl_3" value="30"></td><td><input class="cell" id="o_pl_5" value="50"></td></tr>
         <tr><td>Annexes court terme</td><td><input class="cell" id="o_an_1" value="15"></td><td><input class="cell" id="o_an_3" value="35"></td><td><input class="cell" id="o_an_5" value="55"></td></tr>
-        <tr><td>Baux long / moyen terme</td><td><input class="cell" id="o_ba_1" value="30"></td><td><input class="cell" id="o_ba_3" value="70"></td><td><input class="cell" id="o_ba_5" value="80"></td></tr>
+        <tr><td>Baux long terme</td><td><input class="cell" id="o_ba_1" value="30"></td><td><input class="cell" id="o_ba_3" value="70"></td><td><input class="cell" id="o_ba_5" value="80"></td></tr>
+        <tr><td>Baux moyen terme</td><td><input class="cell" id="o_bm_1" value="40"></td><td><input class="cell" id="o_bm_3" value="80"></td><td><input class="cell" id="o_bm_5" value="90"></td></tr>
       </tbody></table>
       <div class="ctrl-foot" style="margin-top:10px">Plateaux/annexes = surface × tarif × 365 × occupation. Baux = surface × tarif annuel × occupation.</div>
     </div>
@@ -365,8 +366,8 @@ function defaultSpaces(){return [
  {nom:'Ateliers décors',typo:'atelier',surf:1000,haut:9,hu:7.5,bat:'A',fam:'bail',actif:true},
  {nom:'Bureaux des décors',typo:'bureau',surf:200,haut:3,hu:2.7,bat:'A',fam:'bail',actif:true},
  {nom:'Ateliers costumes',typo:'atelier',surf:1000,haut:3,hu:2.7,bat:'B',fam:'bail',actif:true},
- {nom:'Dépôts accessoires',typo:'depot',surf:1200,haut:3,hu:2.7,bat:'A',fam:'bail',actif:true},
- {nom:'Dépôts meubles',typo:'depot',surf:1200,haut:6,hu:5,bat:'A',fam:'bail',actif:true},
+ {nom:'Dépôts accessoires',typo:'depot',surf:1200,haut:3,hu:2.7,bat:'A',fam:'bailM',actif:true},
+ {nom:'Dépôts meubles',typo:'depot',surf:1200,haut:6,hu:5,bat:'A',fam:'bailM',actif:true},
  {nom:'Dépôts costumes',typo:'depot',surf:1000,haut:3,hu:2.7,bat:'B',fam:'bail',actif:true},
  {nom:'Dépôts matériel C',typo:'depot',surf:60,haut:3,hu:2.7,bat:'C',fam:'annexe',actif:true},
  {nom:'Dépôts matériel D',typo:'depot',surf:30,haut:3,hu:2.7,bat:'D',fam:'annexe',actif:true},
@@ -386,7 +387,7 @@ function defaultSpaces(){return [
  {nom:'Salles de répétitions E',typo:'annexe',surf:120,haut:3,hu:2.7,bat:'E',fam:'annexe',actif:true},
  {nom:'Bureaux des artisans',typo:'bureau',surf:1200,haut:3,hu:2.7,bat:'A',fam:'bail',actif:true},
  {nom:'Bureaux des artisans',typo:'bureau',surf:500,haut:3,hu:2.7,bat:'C',fam:'bail',actif:true},
- {nom:'Bureaux de prod temp.',typo:'bureau',surf:1500,haut:3,hu:2.7,bat:'C',fam:'bail',actif:true},
+ {nom:'Bureaux de prod temp.',typo:'bureau',surf:1500,haut:3,hu:2.7,bat:'C',fam:'bailM',actif:true},
  {nom:'Cantine',typo:'commerce',surf:500,haut:3,hu:2.7,bat:'C',fam:'annexe',actif:true},
  {nom:'Écoles',typo:'bureau',surf:2000,haut:3,hu:2.7,bat:'B',fam:'bail',actif:true},
  {nom:'Restaurant (exploitant)',typo:'commerce',surf:500,haut:3,hu:2.7,bat:'A',fam:'bail',actif:true},
@@ -426,17 +427,17 @@ let TYPO=defaultTypo();
 let SCENARIOS=[];
 
 const TYPOLABELS={plateauH:'Plateau grande hauteur',plateauM:'Plateau / studio moyen',atelier:'Atelier de production',depot:'Dépôt / stockage',bureau:'Bureaux / administration',annexe:'Annexe technique',commerce:'Commerce / accueil public'};
-const FAMS={plateau:'Plateaux',annexe:'Annexes court terme',bail:'Baux long/moyen',aucun:'Aucun'};
-const FAMCOL={plateau:'#c8674f',annexe:'#d4a24a',bail:'#5a8fb8',aucun:'#666'};
+const FAMS={plateau:'Plateaux',annexe:'Annexes court terme',bail:'Baux long terme',bailM:'Baux moyen terme',aucun:'Aucun'};
+const FAMCOL={plateau:'#c8674f',annexe:'#d4a24a',bail:'#5a8fb8',bailM:'#86b8d8',aucun:'#666'};
 
 const P={
   ssM3:1000, ssSurf:5000, ssHaut:3.5,
   hono:15, reserve:5, pilotage:2, risques:20, demol:3600000, cession:2680000,
-  eurchf:0.95, plateau:1.90, annexe:1.00, bail:280,
+  eurchf:0.95, plateau:1.90, annexe:1.00, bail:280, bailM:220,
   explo:90, ddp:20, renov:1.0, subAnnual:0
 };
 function defaultP(){return {ssM3:1000,ssSurf:5000,ssHaut:3.5,hono:15,reserve:5,pilotage:2,risques:20,demol:3600000,cession:2680000,
-  eurchf:0.95,plateau:1.90,annexe:1.00,bail:280,explo:90,ddp:20,renov:1.0,subAnnual:0};}
+  eurchf:0.95,plateau:1.90,annexe:1.00,bail:280,bailM:220,explo:90,ddp:20,renov:1.0,subAnnual:0};}
 
 const SLIDERS={
  'sl-soussol':{id:'ssM3',label:'Coût sous-sol',unit:'CHF/m³',min:600,max:1600,step:20,
@@ -453,8 +454,10 @@ const SLIDERS={
    foot:'Tarif location plateaux. Point Blim = 1,80–2,50 €/m²/j (converti CHF). Défaut ProFilms 1,90 = accessible.',bench:[{lo:1.80,hi:2.50,t:'Point Blim',eur:true},{v:1.90,t:'ProFilms',cls:'ch'}]},
  'sl-annexe':{id:'annexe',label:'Annexes court terme',unit:'CHF/m²/jour',min:0.2,max:3,step:0.05,dec:2,
    foot:'HMC, loges, dépôts, salles. Repère Blim indicatif (ateliers 1,35–1,80 €/j ; stockage ~0,4–1,05 €/j).',bench:[{v:1.0,t:'réf. Blim',eur:true}]},
- 'sl-bail':{id:'bail',label:'Baux long / moyen terme',unit:'CHF/m²/an',min:60,max:600,step:5,
-   foot:'Écoles, ateliers, prestataires, restaurant. Ancre EY = 300 €/m²/an (converti CHF).',bench:[{v:300,t:'Ancre EY',eur:true}]},
+ 'sl-bail':{id:'bail',label:'Baux long terme',unit:'CHF/m²/an',min:60,max:600,step:5,
+   foot:'Écoles, ateliers, dépôts costumes, prestataires, restaurant, expo, boutique. Ancre EY = 300 €/m²/an (converti CHF).',bench:[{v:300,t:'Ancre EY',eur:true}]},
+ 'sl-bailM':{id:'bailM',label:'Baux moyen terme',unit:'CHF/m²/an',min:60,max:600,step:5,
+   foot:'Dépôts accessoires et meubles, bureaux de production temporaires. Locations de moyenne durée, tarif à ta main.',bench:[{v:250,t:'indicatif',eur:true}]},
  'sl-explo':{id:'explo',label:'Exploitation & maintenance',unit:'CHF/m²/an',min:30,max:200,step:5,
    foot:'Énergie, maintenance technique, nettoyage, sécurité. Appliqué à toute la surface active. (Assurances, administration, impôts, etc. sont saisis séparément ci-dessous.)',bench:[{v:90,t:'réf.',cls:'ch'}]},
  'sl-renov':{id:'renov',label:'Provision fonds de rénovation',unit:'% du CAPEX/an',min:0,max:3,step:0.1,dec:1,
@@ -612,7 +615,7 @@ function editSurelev(i,k,v){
 
 /* ---------- Agrégats (objets actifs) ---------- */
 function agg(){
-  const a={surf:0,vol:0,fam:{plateau:{s:0,v:0},annexe:{s:0,v:0},bail:{s:0,v:0},aucun:{s:0,v:0}}};
+  const a={surf:0,vol:0,fam:{plateau:{s:0,v:0},annexe:{s:0,v:0},bail:{s:0,v:0},bailM:{s:0,v:0},aucun:{s:0,v:0}}};
   SPACES.forEach(function(s){if(!s.actif)return;const v=s.surf*s.haut;a.surf+=s.surf;a.vol+=v;a.fam[s.fam].s+=s.surf;a.fam[s.fam].v+=v;});
   return a;
 }
@@ -629,7 +632,7 @@ function recompute(){
     +kpi('Volume actif',fmt(A.vol)+' m³','chiffrage promoteurs',true)
     +kpi('Hauteur moyenne',(A.surf?fmt2(A.vol/A.surf):'0')+' m','pondérée surface')
     +kpi('Surface louable',fmt(A.surf-A.fam.aucun.s)+' m²','hors admin/accueil');
-  let fb='';['plateau','annexe','bail','aucun'].forEach(function(k){const f=A.fam[k];
+  let fb='';['plateau','annexe','bail','bailM','aucun'].forEach(function(k){const f=A.fam[k];
     fb+='<tr><td><span style="color:'+FAMCOL[k]+'">■</span> '+FAMS[k]+'</td><td>'+fmt(f.s)+'</td><td>'+(A.surf?Math.round(f.s/A.surf*100):0)+'%</td><td>'+fmt(f.v)+'</td><td>'+(A.vol?Math.round(f.v/A.vol*100):0)+'%</td><td>'+(f.s?fmt2(f.v/f.s):'—')+' m</td></tr>';});
   fb+='<tr class="tot"><td>TOTAL</td><td>'+fmt(A.surf)+'</td><td>100%</td><td>'+fmt(A.vol)+'</td><td>100%</td><td>'+(A.surf?fmt2(A.vol/A.surf):'0')+' m</td></tr>';
   document.getElementById('famBody').innerHTML=fb;
@@ -645,7 +648,7 @@ function recompute(){
   let travauxObjets=0;
   SPACES.forEach(function(s){if(!s.actif)return;const v=s.surf*s.haut;const c=v*typoPrice(s.typo);
     travauxObjets+=c;bAdd(s.bat,'obj',c);bAdd(s.bat,'direct',c);bAdd(s.bat,'vol',v);bAdd(s.bat,'surf',s.surf);
-    var pr=0;if(s.fam==='plateau')pr=s.surf*P.plateau*365;else if(s.fam==='annexe')pr=s.surf*P.annexe*365;else if(s.fam==='bail')pr=s.surf*P.bail;
+    var pr=0;if(s.fam==='plateau')pr=s.surf*P.plateau*365;else if(s.fam==='annexe')pr=s.surf*P.annexe*365;else if(s.fam==='bail')pr=s.surf*P.bail;else if(s.fam==='bailM')pr=s.surf*P.bailM;
     bAdd(s.bat,'maxRev',pr);});
   SURELEV.forEach(function(b){const sc=b.actif?b.surf*b.cout:0;if(sc){bAdd(b.bat,'direct',sc);bAdd(b.bat,'sv',sc);}});
   const volSS=P.ssSurf*P.ssHaut, sousSol=volSS*P.ssM3;
@@ -688,14 +691,15 @@ function recompute(){
   const bbEl=document.getElementById('capexBatBody');if(bbEl)bbEl.innerHTML=bb;
 
   // Recettes
-  const occ={plateau:numId('o_pl_5'),annexe:numId('o_an_5'),bail:numId('o_ba_5')};
+  const occ={plateau:numId('o_pl_5'),annexe:numId('o_an_5'),bail:numId('o_ba_5'),bailM:numId('o_bm_5')};
   const recPl=A.fam.plateau.s*P.plateau*365*occ.plateau/100;
   const recAn=A.fam.annexe.s*P.annexe*365*occ.annexe/100;
   const recBa=A.fam.bail.s*P.bail*occ.bail/100;
-  const recTot=recPl+recAn+recBa;
-  const recArr=[['plateau',recPl,fmt2(P.plateau)+' CHF/m²/j',occ.plateau],['annexe',recAn,fmt2(P.annexe)+' CHF/m²/j',occ.annexe],['bail',recBa,fmt(P.bail)+' CHF/m²/an',occ.bail]];
+  const recBaM=A.fam.bailM.s*P.bailM*occ.bailM/100;
+  const recTot=recPl+recAn+recBa+recBaM;
+  const recArr=[['plateau',recPl,fmt2(P.plateau)+' CHF/m²/j',occ.plateau],['annexe',recAn,fmt2(P.annexe)+' CHF/m²/j',occ.annexe],['bail',recBa,fmt(P.bail)+' CHF/m²/an',occ.bail],['bailM',recBaM,fmt(P.bailM)+' CHF/m²/an',occ.bailM]];
   let rb='';recArr.forEach(function(r){rb+='<tr><td><span style="color:'+FAMCOL[r[0]]+'">■</span> '+FAMS[r[0]]+'</td><td>'+fmt(A.fam[r[0]].s)+'</td><td>'+r[2]+'</td><td>'+r[3]+'%</td><td>'+chf(r[1])+'</td></tr>';});
-  rb+='<tr class="tot"><td>TOTAL An5</td><td>'+fmt(A.fam.plateau.s+A.fam.annexe.s+A.fam.bail.s)+'</td><td></td><td></td><td>'+chf(recTot)+'</td></tr>';
+  rb+='<tr class="tot"><td>TOTAL An5</td><td>'+fmt(A.fam.plateau.s+A.fam.annexe.s+A.fam.bail.s+A.fam.bailM.s)+'</td><td></td><td></td><td>'+chf(recTot)+'</td></tr>';
   document.getElementById('recBody').innerHTML=rb;
 
   // Charges & capacité
@@ -799,9 +803,9 @@ function recompute(){
       : 'Recettes insuffisantes : même sans emprunt, résultat négatif ('+fmtM(resAfterDebt)+'/an). Le mécénat seul ne suffit pas — agir sur tarifs, occupation ou charges.'));
 
   // Projection
-  const occA={plateau:[numId('o_pl_1'),numId('o_pl_3'),numId('o_pl_5')],annexe:[numId('o_an_1'),numId('o_an_3'),numId('o_an_5')],bail:[numId('o_ba_1'),numId('o_ba_3'),numId('o_ba_5')]};
+  const occA={plateau:[numId('o_pl_1'),numId('o_pl_3'),numId('o_pl_5')],annexe:[numId('o_an_1'),numId('o_an_3'),numId('o_an_5')],bail:[numId('o_ba_1'),numId('o_ba_3'),numId('o_ba_5')],bailM:[numId('o_bm_1'),numId('o_bm_3'),numId('o_bm_5')]};
   function occYear(arr,y){if(y<=1)return arr[0];if(y===2)return (arr[0]+arr[1])/2;if(y===3)return arr[1];if(y===4)return (arr[1]+arr[2])/2;return arr[2];}
-  function recYear(y){return A.fam.plateau.s*P.plateau*365*occYear(occA.plateau,y)/100+A.fam.annexe.s*P.annexe*365*occYear(occA.annexe,y)/100+A.fam.bail.s*P.bail*occYear(occA.bail,y)/100;}
+  function recYear(y){return A.fam.plateau.s*P.plateau*365*occYear(occA.plateau,y)/100+A.fam.annexe.s*P.annexe*365*occYear(occA.annexe,y)/100+A.fam.bail.s*P.bail*occYear(occA.bail,y)/100+A.fam.bailM.s*P.bailM*occYear(occA.bailM,y)/100;}
   const maxDur=LOANS.reduce(function(a,l){return Math.max(a,l.duree);},0);
   const HOR=Math.max(30,maxDur+5);
   let yrs=[],resNet=[],cumul=[],cum=0,beYear=0,cumBE=0;
@@ -862,7 +866,7 @@ function recompute(){
   document.getElementById('recapFinBody').innerHTML=rf;
 
   // Charts
-  drawExploCharts({travauxObjets:travauxObjets,sousSol:sousSol,surelev:surelev,honoraires:honoraires,reserve:reserve,pilotage:pilotage,risques:risques,demol:demol,cession:cession,recPl:recPl,recAn:recAn,recBa:recBa});
+  drawExploCharts({travauxObjets:travauxObjets,sousSol:sousSol,surelev:surelev,honoraires:honoraires,reserve:reserve,pilotage:pilotage,risques:risques,demol:demol,cession:cession,recPl:recPl,recAn:recAn,recBa:recBa,recBaM:recBaM});
   drawFinChart({years:yrs,resNet:resNet,cumul:cumul});
 }
 function row2(a,b){return '<tr><td>'+a+'</td><td>'+b+'</td></tr>';}
@@ -878,7 +882,7 @@ function drawExploCharts(d){
       datasets:[{data:[d.travauxObjets,d.sousSol,d.surelev,d.honoraires,d.reserve,d.pilotage,d.risques,d.demol,d.cession],backgroundColor:['#c8674f','#a8533e','#56a37a','#d4a24a','#888888','#5a8fb8','#7aa9cc','#9b6b9e','#666666'],borderColor:'#1e1e1e',borderWidth:2}]},options:donutOpts()});
   if(chRec)chRec.destroy();
   chRec=new Chart(document.getElementById('chRec'),{type:'doughnut',
-    data:{labels:['Plateaux','Annexes','Baux'],datasets:[{data:[d.recPl,d.recAn,d.recBa],backgroundColor:['#c8674f','#d4a24a','#5a8fb8'],borderColor:'#1e1e1e',borderWidth:2}]},options:donutOpts()});
+    data:{labels:['Plateaux','Annexes','Baux long terme','Baux moyen terme'],datasets:[{data:[d.recPl,d.recAn,d.recBa,d.recBaM],backgroundColor:['#c8674f','#d4a24a','#5a8fb8','#86b8d8'],borderColor:'#1e1e1e',borderWidth:2}]},options:donutOpts()});
 }
 function donutOpts(){return {responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'right',labels:{color:'#ededed',boxWidth:12,font:{size:11}}},tooltip:{callbacks:{label:function(c){return c.label+': '+chf(c.parsed);}}}}};}
 function drawFinChart(d){
@@ -904,7 +908,7 @@ document.querySelectorAll('.tab').forEach(function(t){
 });
 
 /* ---------- Scénarios : état ---------- */
-function occInputs(){const o={};['o_pl_1','o_pl_3','o_pl_5','o_an_1','o_an_3','o_an_5','o_ba_1','o_ba_3','o_ba_5'].forEach(function(id){o[id]=val(id);});return o;}
+function occInputs(){const o={};['o_pl_1','o_pl_3','o_pl_5','o_an_1','o_an_3','o_an_5','o_ba_1','o_ba_3','o_ba_5','o_bm_1','o_bm_3','o_bm_5'].forEach(function(id){o[id]=val(id);});return o;}
 function chargeInputs(){const o={};['i_sal1','i_sal3','i_sal5','i_fg1','i_fg3','i_fg5',
   'i_assur1','i_assur3','i_assur5','i_admin1','i_admin3','i_admin5','i_autres1','i_autres3','i_autres5','i_impot1','i_impot3','i_impot5','i_concierge1','i_concierge3','i_concierge5','i_appro1','i_appro3','i_appro5','i_location1','i_location3','i_location5'].forEach(function(id){o[id]=val(id);});return o;}
 function collectState(){return {spaces:JSON.parse(JSON.stringify(SPACES)),mecenat:JSON.parse(JSON.stringify(MECENAT)),loans:JSON.parse(JSON.stringify(LOANS)),surelev:JSON.parse(JSON.stringify(SURELEV)),typo:JSON.parse(JSON.stringify(TYPO)),P:JSON.parse(JSON.stringify(P)),occ:occInputs(),charges:chargeInputs()};}
@@ -1016,14 +1020,14 @@ function exportXlsx(){
   SURELEV.forEach(function(b){sv.push([b.bat,b.actif?'oui':'non',b.surf,b.cout,b.actif?b.surf*b.cout:0]);});
   XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet(sv),'Surelevation');
 
-  const occ5={plateau:numId('o_pl_5'),annexe:numId('o_an_5'),bail:numId('o_ba_5')};
-  const recPl=A.fam.plateau.s*P.plateau*365*occ5.plateau/100,recAn=A.fam.annexe.s*P.annexe*365*occ5.annexe/100,recBa=A.fam.bail.s*P.bail*occ5.bail/100,recTot=recPl+recAn+recBa;
+  const occ5={plateau:numId('o_pl_5'),annexe:numId('o_an_5'),bail:numId('o_ba_5'),bailM:numId('o_bm_5')};
+  const recPl=A.fam.plateau.s*P.plateau*365*occ5.plateau/100,recAn=A.fam.annexe.s*P.annexe*365*occ5.annexe/100,recBa=A.fam.bail.s*P.bail*occ5.bail/100,recBaM=A.fam.bailM.s*P.bailM*occ5.bailM/100,recTot=recPl+recAn+recBa+recBaM;
   const ddp=A.surf*P.ddp,exploit=A.surf*P.explo,sal5=num('i_sal5'),fg5=num('i_fg5'),renov=capex*P.renov/100;
   const exKeys=['assur','admin','autres','impot','concierge','appro','location'];
   const exLbl={assur:'Assurances',admin:'Administration',autres:'Autres dépenses',impot:'Impôts immobiliers',concierge:'Conciergerie',appro:'Approvisionnement',location:'Frais de location'};
   let extrasFix=0;exKeys.forEach(function(k){extrasFix+=num('i_'+k+'5');});
   const charges=ddp+exploit+sal5+fg5+extrasFix+renov,capacite=recTot-charges;
-  const expSheet=[['Indicateur','An1','An3','An5'],['Recettes An5','','',recTot],['DDP','','',ddp],['Exploitation & maintenance','','',exploit],
+  const expSheet=[['Indicateur','An1','An3','An5'],['Recettes Plateaux An5','','',recPl],['Recettes Annexes An5','','',recAn],['Recettes Baux long terme An5','','',recBa],['Recettes Baux moyen terme An5','','',recBaM],['Recettes totales An5','','',recTot],['DDP','','',ddp],['Exploitation & maintenance','','',exploit],
     ['Masse salariale',num('i_sal1'),num('i_sal3'),sal5],['Frais généraux',num('i_fg1'),num('i_fg3'),fg5]];
   exKeys.forEach(function(k){expSheet.push([exLbl[k],num('i_'+k+'1'),num('i_'+k+'3'),num('i_'+k+'5')]);});
   expSheet.push(['Provision fonds de rénovation ('+P.renov+'% CAPEX)','','',renov]);
