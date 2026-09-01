@@ -174,45 +174,47 @@ input[type=range]::-moz-range-thumb{width:15px;height:15px;border-radius:50%;bac
 
 <!-- ===== 2 CAPEX ===== -->
 <div class="page" id="capex">
-  <div class="note-box"><b>Référence benchmark :</b> repères <b>marché CH / SIA</b> (le benchmark Blime ne couvre que des <i>tarifs de location</i> — le « Point Blim » est sur l'onglet Tarifs). Les valeurs peuvent aller au-delà des repères.</div>
-  <div class="card"><h2>Prix de construction au m³ par typologie</h2>
-    <div class="desc">Trois couches par typologie : gros œuvre + CFC 2 (aménagements) + CFC 3 (spécifique audiovisuel). Coût d'un objet = volume (surface × hauteur CCHE) × prix de revient de sa typologie. Valeurs indicatives, à caler avec CCHE / EY.</div>
-    <div style="overflow-x:auto"><table id="typoTable">
-      <thead><tr><th>Typologie</th><th>Gros œuvre CHF/m³</th><th>CFC 2 CHF/m³</th><th>CFC 3 audiovisuel CHF/m³</th><th>Prix de revient CHF/m³</th></tr></thead>
-      <tbody id="typoBody"></tbody>
+  <div class="note-box"><b>Source :</b> chiffrage <b>CCHE Lausanne</b>, estimation au m³ V7 du 10.08.2026 (±25 %), ventilée sur nos cinq bâtiments le 01.09.2026. Les <b>sous-totaux CHF</b> sont les données d'entrée ; les ratios CHF/m³ et CHF/m² sont <b>calculés</b> en vérification. Les honoraires et frais sont inclus proportionnellement par bâtiment (CCHE). Hors équipements d'exploitation (machinerie d'atelier, outillage).</div>
+  <div class="card"><h2>Chiffrage CCHE par bâtiment</h2>
+    <div class="desc">Colonnes Quantité et Coût CHF éditables (par défaut : valeurs CCHE). Ratio = coût ÷ quantité. La mention * renvoie au chiffrage La Tomana du 22.07.2026.</div>
+    <div style="overflow-x:auto"><table id="ccheTable">
+      <thead><tr><th>Désignation</th><th>Unité</th><th>Quantité</th><th>Coût CHF (saisie)</th><th>Ratio CHF/unité (calculé)</th></tr></thead>
+      <tbody id="ccheBody"></tbody><tfoot id="ccheFoot"></tfoot>
     </table></div>
   </div>
   <div class="grid2">
-    <div class="card"><h2>Sous-sol</h2><div class="desc">Parking, locaux techniques, stockage enterré, chiffrés au m³.</div>
-      <div class="inp-line"><label>Surface sous-sol (m²)</label><input type="number" id="i_ssSurf" value="5000"></div>
-      <div class="inp-line"><label>Hauteur sous-sol (m)</label><input type="number" id="i_ssHaut" value="3.5" step="0.1"></div>
-      <div id="sl-soussol"></div>
+    <div class="card"><h2>Compléments hors chiffrage CCHE</h2><div class="desc">Appliqués au total construction CCHE. La provision pour risques est portée par le maître d'ouvrage (ProFilms), le chiffrage CCHE n'en contient pas.</div>
+      <div id="sl-risques"></div><div id="sl-pilotage"></div>
     </div>
-    <div class="card"><h2>Honoraires, réserve &amp; frais HIAG</h2><div class="desc">Honoraires et réserve sur les travaux ; pilotage et risques HIAG sur le total construction (travaux + honoraires + réserve).</div>
-      <div id="sl-hono"></div><div id="sl-reserve"></div><div id="sl-pilotage"></div><div id="sl-risques"></div>
-    </div>
-  </div>
-  <div class="grid2">
-    <div class="card"><h2>Charges spéciales (forfaits)</h2><div class="desc">Réparties sur les bâtiments au prorata des m³ : désactiver un bâtiment les redistribue sur les autres.</div>
+    <div class="card"><h2>Forfaits</h2><div class="desc">Répartis sur les bâtiments au prorata de leur chiffrage CCHE. Attention : le chiffrage CCHE inclut déjà la démolition du bâtiment LUIGIA (199'000, bât. C) ; ajuster le forfait démolition pour éviter un doublon.</div>
       <div class="inp-line"><label>Démolition bâtiment existant (CHF)</label><input type="number" id="i_demol" value="3600000" step="100000"></div>
       <div class="inp-line"><label>Cession DDP (CHF)</label><input type="number" id="i_cession" value="2680000" step="100000"></div>
     </div>
+  </div>
+  <div class="grid2">
     <div class="card"><h2>Surélévation future — réserve par bâtiment</h2>
-      <div class="desc">Fondations et structure renforcées pour ajouter des étages plus tard. Coût direct au bâtiment concerné.</div>
+      <div class="desc">Fondations et structure renforcées pour ajouter des étages plus tard. Coût direct au bâtiment concerné, en sus du chiffrage CCHE.</div>
       <div style="overflow-x:auto"><table id="surelevTable">
         <thead><tr><th>Bâtiment</th><th>Prévoir</th><th>Surface m²</th><th>CHF/m²</th><th>Surcoût</th></tr></thead>
         <tbody id="surelevBody"></tbody><tfoot id="surelevFoot"></tfoot>
       </table></div>
     </div>
+    <div class="card"><h2>Récapitulatif CAPEX</h2>
+      <div style="overflow-x:auto"><table id="capexTable"><tbody id="capexBody"></tbody></table></div>
+    </div>
   </div>
-  <div class="card"><h2>Récapitulatif CAPEX</h2>
-    <div style="overflow-x:auto"><table id="capexTable"><tbody id="capexBody"></tbody></table></div>
-    <div class="grid4" id="capexKpis" style="margin-top:16px"></div>
+  <div class="grid4" id="capexKpis" style="margin-top:4px"></div>
+  <div class="card"><h2>Ratios de vérification par bâtiment (calculés)</h2>
+    <div class="desc">Chiffrage CCHE rapporté à nos surfaces (liste de surfaces faisant foi) et au volume de construction CCHE (lignes « Construction » et sous-sols). Honoraires inclus rappelés par bâtiment.</div>
+    <div style="overflow-x:auto"><table id="ccheVerifTable">
+      <thead><tr><th>Bâtiment</th><th>Chiffrage CCHE</th><th>Notre surface m²</th><th>CHF/m²</th><th>Volume constr. CCHE m³</th><th>CHF/m³</th><th>Honoraires inclus</th><th>% hono.</th></tr></thead>
+      <tbody id="ccheVerifBody"></tbody>
+    </table></div>
   </div>
   <div class="card"><h2>Coût de construction par bâtiment</h2>
-    <div class="desc">Travaux propres du bâtiment + quote-part des frais partagés (honoraires, réserve, pilotage, risques, démolition, cession, sous-sol) au prorata du volume. La somme égale le CAPEX total — activez/désactivez objets et bâtiments pour voir l'impact.</div>
+    <div class="desc">Chiffrage CCHE du bâtiment + surélévation éventuelle + quote-part des frais partagés (aménagements extérieurs, provision risques, pilotage, démolition, cession) au prorata du chiffrage CCHE. La somme égale le CAPEX total.</div>
     <div style="overflow-x:auto"><table id="capexBatTable">
-      <thead><tr><th>Bâtiment</th><th>Volume m³</th><th>Travaux propres</th><th>Quote-part frais</th><th>Coût total</th><th>% CAPEX</th></tr></thead>
+      <thead><tr><th>Bâtiment</th><th>Chiffrage CCHE</th><th>Surélévation</th><th>Quote-part frais partagés</th><th>Coût total chargé</th><th>% CAPEX</th></tr></thead>
       <tbody id="capexBatBody"></tbody>
     </table></div>
   </div>
@@ -356,7 +358,7 @@ const SHARE={url:'https://nbfpjltczcazeuwtjxwr.supabase.co',key:'sb_publishable_
 
 /* ---------- Programme par défaut (plan Meyrin Hive V7) ---------- */
 function defaultSpaces(){return [
- {nom:'Studio 1',typo:'plateauM',surf:200,haut:6,hu:5,bat:'B',fam:'plateau',actif:true},
+ {nom:'Studio 1',typo:'plateauM',surf:200,haut:6,hu:5,bat:'C',fam:'plateau',actif:true},
  {nom:'Studio 2',typo:'plateauH',surf:500,haut:15,hu:12,bat:'C',fam:'plateau',actif:true},
  {nom:'Studio 3',typo:'plateauH',surf:500,haut:15,hu:12,bat:'C',fam:'plateau',actif:true},
  {nom:'Studio 4',typo:'plateauH',surf:1000,haut:18,hu:15,bat:'D',fam:'plateau',actif:true},
@@ -410,20 +412,60 @@ function defaultSurelev(){return [
  {bat:'E',actif:false,surf:1500,cout:220}
 ];}
 /* Prix de construction au m³ par typologie : gros œuvre + CFC2 (aménagements) + CFC3 (spécifique audiovisuel) */
-function defaultTypo(){return {
- plateauH:{label:'Plateau grande hauteur (15–18 m)',go:280,cfc2:90,cfc3:180},
- plateauM:{label:'Plateau / studio moyen (6–9 m)',go:350,cfc2:120,cfc3:150},
- atelier:{label:'Atelier de production',go:300,cfc2:110,cfc3:40},
- depot:{label:'Dépôt / stockage',go:220,cfc2:60,cfc3:10},
- bureau:{label:'Bureaux / administration',go:350,cfc2:250,cfc3:20},
- annexe:{label:'Annexe technique',go:320,cfc2:180,cfc3:80},
- commerce:{label:'Commerce / accueil public',go:350,cfc2:300,cfc3:30}
+function defaultCCHE(){return {
+ A:{label:'Bâtiment A',lines:[
+   {d:'Construction admin',u:'m3',q:11918,c:5125000,v:1},
+   {d:'Aménagement intérieur admin',u:'m3',q:11918,c:2384000},
+   {d:'Construction loueurs',u:'m3',q:10478,c:4506000,v:1},
+   {d:'Construction expo, restaurant, boutique',u:'m3',q:8436,c:8014000,v:1},
+   {d:'Construction dépôts en sous-sol',u:'m3',q:2141,c:1110000,v:1},
+   {d:'Sous-sol parking (hors galerie)',u:'m3',q:2839,c:1470000,v:1},
+   {d:'Honoraires et frais',u:'ens',q:1,c:4748000,h:1}]},
+ B:{label:'Bâtiment B',lines:[
+   {d:'Construction admin',u:'m3',q:13511,c:5810000,v:1},
+   {d:'Aménagement intérieur admin',u:'m3',q:13511,c:2702000},
+   {d:'Construction ateliers',u:'m3',q:13231,c:5689000,v:1},
+   {d:'Installations spécifiques ateliers (technique + revêtement) *',u:'m3',q:13231,c:949000},
+   {d:'Construction dépôts en sous-sol',u:'m3',q:4803,c:2489000,v:1},
+   {d:'Sous-sol parking (hors galerie)',u:'m3',q:0,c:0,v:1},
+   {d:'Honoraires et frais',u:'ens',q:1,c:3704000,h:1}]},
+ C:{label:'Bâtiment C (studios 2 × 500 + 200 m²)',lines:[
+   {d:'Démolition totale du bâtiment LUIGIA',u:'m3',q:3317,c:199000},
+   {d:'Construction studio en sous-sol',u:'m3',q:1915,c:993000,v:1},
+   {d:'Sous-sol parking',u:'m3',q:4910,c:2542000,v:1},
+   {d:'Construction studios',u:'m3',q:27260,c:10835000,v:1},
+   {d:'Installations spécifiques studios (techniques) *',u:'m3',q:17694,c:4494000},
+   {d:'Aménagements intérieurs HIAG (couloirs, stockages, WC)',u:'m3',q:2975,c:536000},
+   {d:'Aménagement intérieur loges, HMC, bureaux *',u:'m3',q:4350,c:879000},
+   {d:'Aménagements intérieurs cantine',u:'m3',q:1379,c:248000},
+   {d:'Honoraires et frais',u:'ens',q:1,c:4352000,h:1}]},
+ D:{label:'Bâtiment D (studio 1000 m²)',lines:[
+   {d:'Construction studio en sous-sol',u:'m3',q:622,c:323000,v:1},
+   {d:'Construction dépôts en sous-sol',u:'m3',q:3633,c:1883000,v:1},
+   {d:'Construction studios',u:'m3',q:22110,c:8788000,v:1},
+   {d:'Installations spécifiques studios (techniques) *',u:'m3',q:18946,c:4812000},
+   {d:'Aménagements intérieurs HIAG (couloirs, stockages, WC)',u:'m3',q:1470,c:265000},
+   {d:'Aménagement intérieur loges, HMC, bureaux *',u:'m3',q:1376,c:278000},
+   {d:'Honoraires et frais',u:'ens',q:1,c:3433000,h:1}]},
+ E:{label:'Bâtiment E (studio 1500 m²)',lines:[
+   {d:'Construction studio en sous-sol',u:'m3',q:768,c:399000,v:1},
+   {d:'Sous-sol parking',u:'m3',q:7266,c:3765000,v:1},
+   {d:'Construction studios',u:'m3',q:33040,c:13133000,v:1},
+   {d:'Installations spécifiques studios (techniques) *',u:'m3',q:28352,c:7201000},
+   {d:'Aménagements intérieurs HIAG (couloirs, stockages, WC)',u:'m3',q:2297,c:413000},
+   {d:'Aménagement intérieur loges, HMC, bureaux *',u:'m3',q:1864,c:377000},
+   {d:'Honoraires et frais',u:'ens',q:1,c:5310000,h:1}]},
+ AMEX:{label:'Aménagements extérieurs (galerie souterraine, parking, extérieurs)',lines:[
+   {d:'Aménagements extérieurs',u:'m2',q:6300,c:3963000},
+   {d:'Sous-sol parking - galerie',u:'m3',q:5830,c:3018000,v:1},
+   {d:'Honoraires et frais',u:'ens',q:1,c:1466000,h:1}]}
 };}
+const CCHE_REF=132600000;
 let SPACES=defaultSpaces();
 let MECENAT=defaultMecenat();
 let LOANS=defaultLoans();
 let SURELEV=defaultSurelev();
-let TYPO=defaultTypo();
+let CCHE=defaultCCHE();
 let SCENARIOS=[];
 
 const TYPOLABELS={plateauH:'Plateau grande hauteur',plateauM:'Plateau / studio moyen',atelier:'Atelier de production',depot:'Dépôt / stockage',bureau:'Bureaux / administration',annexe:'Annexe technique',commerce:'Commerce / accueil public'};
@@ -431,25 +473,18 @@ const FAMS={plateau:'Plateaux',annexe:'Annexes court terme',bail:'Baux long term
 const FAMCOL={plateau:'#c8674f',annexe:'#d4a24a',bail:'#5a8fb8',bailM:'#86b8d8',aucun:'#666'};
 
 const P={
-  ssM3:1000, ssSurf:5000, ssHaut:3.5,
-  hono:15, reserve:5, pilotage:2, risques:20, demol:3600000, cession:2680000,
+  pilotage:2, risques:10, demol:3600000, cession:2680000,
   eurchf:0.95, plateau:1.90, annexe:1.00, bail:280, bailM:220,
   explo:90, ddp:20, renov:1.0, subAnnual:0
 };
-function defaultP(){return {ssM3:1000,ssSurf:5000,ssHaut:3.5,hono:15,reserve:5,pilotage:2,risques:20,demol:3600000,cession:2680000,
+function defaultP(){return {pilotage:2,risques:10,demol:3600000,cession:2680000,
   eurchf:0.95,plateau:1.90,annexe:1.00,bail:280,bailM:220,explo:90,ddp:20,renov:1.0,subAnnual:0};}
 
 const SLIDERS={
- 'sl-soussol':{id:'ssM3',label:'Coût sous-sol',unit:'CHF/m³',min:600,max:1600,step:20,
-   foot:'Excavation, étanchéité, fondations. Repère CH : 900–1\u2009200 CHF/m³.',bench:[{v:1050,t:'réf. CH',cls:'ch'}]},
- 'sl-hono':{id:'hono',label:'Honoraires & frais',unit:'%',min:6,max:25,step:0.5,dec:1,
-   foot:'Architecte, ingénieurs, géomètre, frais. Appliqué au total des travaux. Repère SIA : 12–18 %.',bench:[{v:15,t:'réf. SIA',cls:'ch'}]},
- 'sl-reserve':{id:'reserve',label:'Réserve / divers',unit:'%',min:0,max:15,step:0.5,dec:1,
-   foot:'Imprévus, contingence. Appliqué au total des travaux. 0 pour neutraliser.',bench:[{v:5,t:'usuel',cls:'ch'}]},
- 'sl-pilotage':{id:'pilotage',label:'Pilotage HIAG',unit:'% du coût construction',min:0,max:5,step:0.5,dec:1,
-   foot:'Honoraires de pilotage HIAG, appliqués au total construction (travaux + honoraires + réserve). Convention HIAG : 2 %.',bench:[{v:2,t:'HIAG',cls:'ch'}]},
- 'sl-risques':{id:'risques',label:'Risques / aléas HIAG',unit:'% du coût construction',min:0,max:30,step:1,dec:0,
-   foot:'Provision pour risques et aléas (HIAG), appliquée au total construction. Convention : 20 %.',bench:[{v:20,t:'HIAG',cls:'ch'}]},
+ 'sl-risques':{id:'risques',label:'Provision risques et aléas ProFilms (MO)',unit:'% du total construction CCHE',min:0,max:30,step:1,dec:0,
+   foot:'Provision pilotée par le maître d\'ouvrage (ProFilms). Le chiffrage CCHE (estimation ±25 %) n\'en contient aucune. Taux à fixer par ProFilms.',bench:[{v:10,t:'proposé',cls:'ch'}]},
+ 'sl-pilotage':{id:'pilotage',label:'Pilotage HIAG',unit:'% du total construction CCHE',min:0,max:5,step:0.5,dec:1,
+   foot:'Honoraires de pilotage HIAG, appliqués au total construction CCHE. Convention HIAG : 2 %.',bench:[{v:2,t:'HIAG',cls:'ch'}]},
  'sl-plateau':{id:'plateau',label:'Plateaux (court terme)',unit:'CHF/m²/jour',min:0.5,max:4,step:0.05,dec:2,
    foot:'Tarif location plateaux. Point Blim = 1,80–2,50 €/m²/j (converti CHF). Défaut ProFilms 1,90 = accessible.',bench:[{lo:1.80,hi:2.50,t:'Point Blim',eur:true},{v:1.90,t:'ProFilms',cls:'ch'}]},
  'sl-annexe':{id:'annexe',label:'Annexes court terme',unit:'CHF/m²/jour',min:0.2,max:3,step:0.05,dec:2,
@@ -545,20 +580,21 @@ function addSpace(){SPACES.push({nom:'Nouvel espace',typo:'annexe',surf:100,haut
 function delSpace(i){SPACES.splice(i,1);renderProg();recompute();}
 
 /* ---------- Matrice prix au m³ par typologie ---------- */
-function renderTypo(){
-  const tb=document.getElementById('typoBody');if(!tb)return;tb.innerHTML='';
-  Object.keys(TYPO).forEach(function(k){const t=TYPO[k];const tot=(t.go||0)+(t.cfc2||0)+(t.cfc3||0);
-    const tr=document.createElement('tr');
-    tr.innerHTML='<td style="text-align:left">'+t.label+'</td>'
-      +'<td><input class="cell" type="number" value="'+t.go+'" oninput="editTypo(\''+k+'\',\'go\',this.value)"></td>'
-      +'<td><input class="cell" type="number" value="'+t.cfc2+'" oninput="editTypo(\''+k+'\',\'cfc2\',this.value)"></td>'
-      +'<td><input class="cell" type="number" value="'+t.cfc3+'" oninput="editTypo(\''+k+'\',\'cfc3\',this.value)"></td>'
-      +'<td id="tpt_'+k+'"><b>'+fmt(tot)+'</b></td>';
-    tb.appendChild(tr);
+function renderCCHE(){
+  const tb=document.getElementById('ccheBody');if(!tb)return;tb.innerHTML='';
+  ['A','B','C','D','E','AMEX'].forEach(function(k){const g=CCHE[k];if(!g)return;
+    const h=document.createElement('tr');h.className='sub';
+    h.innerHTML='<td colspan="4" style="text-align:left">'+esc(g.label)+'</td><td id="cct_'+k+'"></td>';
+    tb.appendChild(h);
+    g.lines.forEach(function(l,i){const tr=document.createElement('tr');
+      tr.innerHTML='<td style="text-align:left;padding-left:18px'+(l.h?';font-weight:600':'')+'">'+esc(l.d)+'</td><td>'+l.u+'</td>'
+        +'<td><input class="cell" type="number" value="'+l.q+'" oninput="editCCHE(\''+k+'\','+i+',\'q\',this.value)"></td>'
+        +'<td><input class="cell" type="number" step="1000" value="'+l.c+'" oninput="editCCHE(\''+k+'\','+i+',\'c\',this.value)"></td>'
+        +'<td id="ccr_'+k+'_'+i+'" style="color:var(--muted)"></td>';
+      tb.appendChild(tr);});
   });
 }
-function editTypo(k,f,v){TYPO[k][f]=parseFloat(v)||0;const e=document.getElementById('tpt_'+k);if(e)e.innerHTML='<b>'+fmt((TYPO[k].go||0)+(TYPO[k].cfc2||0)+(TYPO[k].cfc3||0))+'</b>';recompute();}
-function typoPrice(k){const t=TYPO[k];if(!t)return 0;return (t.go||0)+(t.cfc2||0)+(t.cfc3||0);}
+function editCCHE(k,i,f,v){CCHE[k].lines[i][f]=parseFloat(v)||0;recompute();}
 
 /* ---------- Mécénat ---------- */
 function renderMecenat(){
@@ -622,7 +658,7 @@ function agg(){
 
 /* ---------- Calcul global ---------- */
 function recompute(){
-  P.ssSurf=num('i_ssSurf');P.ssHaut=num('i_ssHaut');P.eurchf=num('i_eurchf');P.ddp=num('i_ddp');P.demol=num('i_demol');P.cession=num('i_cession');
+  P.eurchf=num('i_eurchf');P.ddp=num('i_ddp');P.demol=num('i_demol');P.cession=num('i_cession');
   const A=agg();
   updateProgTotals();
 
@@ -642,36 +678,40 @@ function recompute(){
   SURELEV.forEach(function(b,i){const sc=b.actif?b.surf*b.cout:0;surelev+=sc;if(b.actif)nbB++;const e=document.getElementById('sc_'+i);if(e)e.textContent=chf(sc);});
   document.getElementById('surelevFoot').innerHTML='<tr class="tot"><td>Total réserve surélévation</td><td>'+nbB+' bât.</td><td></td><td></td><td>'+chf(surelev)+'</td></tr>';
 
-  // ===== CAPEX (prix au m³ par typologie, agrégé par bâtiment) =====
+  // ===== CAPEX (chiffrage CCHE par bâtiment : sous-totaux CHF en entrée, ratios calculés) =====
   const bld={};
-  function bAdd(b,key,v){b=b||'—';if(!bld[b])bld[b]={direct:0,vol:0,sv:0,obj:0,quote:0,total:0,surf:0,maxRev:0};bld[b][key]+=v;}
-  let travauxObjets=0;
-  SPACES.forEach(function(s){if(!s.actif)return;const v=s.surf*s.haut;const c=v*typoPrice(s.typo);
-    travauxObjets+=c;bAdd(s.bat,'obj',c);bAdd(s.bat,'direct',c);bAdd(s.bat,'vol',v);bAdd(s.bat,'surf',s.surf);
+  function bAdd(b,key,v){b=b||'—';if(!bld[b])bld[b]={direct:0,cche:0,vol:0,sv:0,quote:0,total:0,surf:0,maxRev:0,hono:0};bld[b][key]+=v;}
+  SPACES.forEach(function(s){if(!s.actif)return;bAdd(s.bat,'surf',s.surf);
     var pr=0;if(s.fam==='plateau')pr=s.surf*P.plateau*365;else if(s.fam==='annexe')pr=s.surf*P.annexe*365;else if(s.fam==='bail')pr=s.surf*P.bail;else if(s.fam==='bailM')pr=s.surf*P.bailM;
     bAdd(s.bat,'maxRev',pr);});
+  let ccheBat=0, amex=0, honoTot=0, honoBat=0, volCCHE=0, construction=0;
+  const ccheSub={};
+  Object.keys(CCHE).forEach(function(k){const g=CCHE[k];let sub=0,vol=0,hono=0;
+    g.lines.forEach(function(l,i){sub+=l.c||0;if(l.v)vol+=l.q||0;if(l.h)hono+=l.c||0;
+      const r=document.getElementById('ccr_'+k+'_'+i);if(r)r.textContent=(l.q?fmt(Math.round((l.c||0)/l.q)):'—');});
+    ccheSub[k]={sub:sub,vol:vol,hono:hono};honoTot+=hono;construction+=sub;
+    const e=document.getElementById('cct_'+k);if(e)e.innerHTML='<b>'+chf(sub)+'</b>';
+    if(k==='AMEX'){amex+=sub;}else{ccheBat+=sub;honoBat+=hono;volCCHE+=vol;bAdd(k,'cche',sub);bAdd(k,'direct',sub);bAdd(k,'vol',vol);bAdd(k,'hono',hono);}
+  });
   SURELEV.forEach(function(b){const sc=b.actif?b.surf*b.cout:0;if(sc){bAdd(b.bat,'direct',sc);bAdd(b.bat,'sv',sc);}});
-  const volSS=P.ssSurf*P.ssHaut, sousSol=volSS*P.ssM3;
-  const travaux=travauxObjets+surelev+sousSol;
-  const honoraires=travaux*P.hono/100, reserve=travaux*P.reserve/100;
-  const baseConstr=travaux+honoraires+reserve;
-  const pilotage=baseConstr*P.pilotage/100, risques=baseConstr*P.risques/100;
+  const ecart=construction-CCHE_REF;
+  const cf=document.getElementById('ccheFoot');
+  if(cf)cf.innerHTML='<tr class="tot"><td colspan="3">TOTAL CHIFFRAGE CCHE (honoraires inclus)</td><td>'+chf(construction)+'</td><td style="color:'+(Math.abs(ecart)<=10000?'var(--good)':'var(--bad)')+'">réf. '+chf(CCHE_REF)+' · écart '+(ecart>=0?'+':'')+fmt(Math.round(ecart))+'</td></tr>';
+  const risques=construction*P.risques/100, pilotage=construction*P.pilotage/100;
   const demol=P.demol, cession=P.cession;
-  const capex=baseConstr+pilotage+risques+demol+cession;
-  // frais partagés répartis sur les bâtiments au prorata du volume construit
-  const shared=honoraires+reserve+pilotage+risques+demol+cession+sousSol;
-  const volTotB=Object.keys(bld).reduce(function(a,b){return a+bld[b].vol;},0);
-  Object.keys(bld).forEach(function(b){const w=volTotB?bld[b].vol/volTotB:0;bld[b].quote=shared*w;bld[b].total=bld[b].direct+bld[b].quote;});
+  const capex=construction+surelev+risques+pilotage+demol+cession;
+  // frais partagés (aménagements extérieurs + provisions + forfaits) répartis au prorata du chiffrage CCHE de chaque bâtiment
+  const shared=amex+risques+pilotage+demol+cession;
+  const directTot=Object.keys(bld).reduce(function(a,b){return a+bld[b].direct;},0);
+  Object.keys(bld).forEach(function(b){const w=directTot?bld[b].direct/directTot:0;bld[b].quote=shared*w;bld[b].total=bld[b].direct+bld[b].quote;});
 
-  const capRows=[['Travaux par typologie (objets actifs)',fmt(A.vol)+' m³',travauxObjets],
-    ['Sous-sol',fmt(volSS)+' m³ × '+fmt(P.ssM3),sousSol],
+  const nbCCHE=Object.keys(ccheSub).filter(function(k){return k!=='AMEX';}).length;
+  const capRows=[['Chiffrage CCHE bâtiments A à E (honoraires inclus)',nbCCHE+' bâtiments',ccheBat],
+    ['Aménagements extérieurs CCHE (galerie, parking, extérieurs)','CCHE',amex],
+    ['__sub','Total construction CCHE',construction],
     ['Réserve surélévation future',nbB+' bâtiment(s)',surelev],
-    ['__sub','Total travaux',travaux],
-    ['Honoraires & frais',fmt2(P.hono)+' %',honoraires],
-    ['Réserve / divers',fmt2(P.reserve)+' %',reserve],
-    ['__sub','Total construction',baseConstr],
-    ['Pilotage HIAG',fmt2(P.pilotage)+' %',pilotage],
-    ['Risques / aléas HIAG',fmt(P.risques)+' %',risques],
+    ['Provision risques et aléas ProFilms (MO)',fmt(P.risques)+' % du total construction',risques],
+    ['Pilotage HIAG',fmt2(P.pilotage)+' % du total construction',pilotage],
     ['Démolition bâtiment existant','forfait',demol],
     ['Cession DDP','forfait',cession]];
   let cb='';capRows.forEach(function(r){
@@ -681,13 +721,19 @@ function recompute(){
   document.getElementById('capexBody').innerHTML=cb;
   document.getElementById('capexKpis').innerHTML=
     kpi('CAPEX total',fmtM(capex),'','hi')
-    +kpi('CAPEX / m²',chf(A.surf?capex/A.surf:0),'surface active')
-    +kpi('CAPEX / m³',chf(A.vol?capex/A.vol:0),'volume actif')
-    +kpi('Coût revient travaux',chf(A.vol?travauxObjets/A.vol:0)+'/m³','objets, hors frais');
+    +kpi('CAPEX / m²',chf(A.surf?capex/A.surf:0),'surface active '+fmt(A.surf)+' m²')
+    +kpi('Construction CCHE / m²',chf(A.surf?construction/A.surf:0),'référence CCHE '+fmtM(CCHE_REF))
+    +kpi('Honoraires inclus (CCHE)',fmtM(honoTot),((construction-honoTot)?fmt2(honoTot/(construction-honoTot)*100):'0')+' % du hors-honoraires');
+  // ratios de vérification par bâtiment
+  let vb='';['A','B','C','D','E'].forEach(function(b){const x=bld[b];const cs=ccheSub[b];if(!x||!cs)return;
+    vb+='<tr><td><b>'+b+'</b></td><td>'+chf(cs.sub)+'</td><td>'+fmt(x.surf)+'</td><td>'+(x.surf?chf(cs.sub/x.surf):'—')+'</td><td>'+fmt(cs.vol)+'</td><td>'+(cs.vol?chf(cs.sub/cs.vol):'—')+'</td><td>'+chf(cs.hono)+'</td><td>'+((cs.sub-cs.hono)?fmt2(cs.hono/(cs.sub-cs.hono)*100):'0')+' %</td></tr>';});
+  vb+='<tr class="tot"><td>TOTAL A à E</td><td>'+chf(ccheBat)+'</td><td>'+fmt(A.surf)+'</td><td>'+(A.surf?chf(ccheBat/A.surf):'—')+'</td><td>'+fmt(volCCHE)+'</td><td>'+(volCCHE?chf(ccheBat/volCCHE):'—')+'</td><td>'+chf(honoBat)+'</td><td>'+((ccheBat-honoBat)?fmt2(honoBat/(ccheBat-honoBat)*100):'0')+' %</td></tr>';
+  const vbEl=document.getElementById('ccheVerifBody');if(vbEl)vbEl.innerHTML=vb;
+  // coût par bâtiment
   const bkeys=Object.keys(bld).sort();
-  let bb='';bkeys.forEach(function(b){const x=bld[b];
-    bb+='<tr><td><b>'+esc(b)+'</b></td><td>'+fmt(x.vol)+'</td><td>'+chf(x.direct)+'</td><td>'+chf(x.quote)+'</td><td><b>'+chf(x.total)+'</b></td><td>'+(capex?fmt2(x.total/capex*100):'0')+'%</td></tr>';});
-  bb+='<tr class="tot"><td>TOTAL</td><td>'+fmt(volTotB)+'</td><td>'+chf(travauxObjets+surelev)+'</td><td>'+chf(shared)+'</td><td>'+chf(capex)+'</td><td>100%</td></tr>';
+  let bb='';bkeys.forEach(function(b){const x=bld[b];if(!x.direct&&!x.surf)return;
+    bb+='<tr><td><b>'+esc(b)+'</b></td><td>'+chf(x.cche)+'</td><td>'+chf(x.sv)+'</td><td>'+chf(x.quote)+'</td><td><b>'+chf(x.total)+'</b></td><td>'+(capex?fmt2(x.total/capex*100):'0')+'%</td></tr>';});
+  bb+='<tr class="tot"><td>TOTAL</td><td>'+chf(ccheBat)+'</td><td>'+chf(surelev)+'</td><td>'+chf(shared)+'</td><td>'+chf(capex)+'</td><td>100%</td></tr>';
   const bbEl=document.getElementById('capexBatBody');if(bbEl)bbEl.innerHTML=bb;
 
   // Recettes
@@ -866,7 +912,7 @@ function recompute(){
   document.getElementById('recapFinBody').innerHTML=rf;
 
   // Charts
-  drawExploCharts({travauxObjets:travauxObjets,sousSol:sousSol,surelev:surelev,honoraires:honoraires,reserve:reserve,pilotage:pilotage,risques:risques,demol:demol,cession:cession,recPl:recPl,recAn:recAn,recBa:recBa,recBaM:recBaM});
+  drawExploCharts({ccheBat:ccheBat,amex:amex,surelev:surelev,risques:risques,pilotage:pilotage,demol:demol,cession:cession,recPl:recPl,recAn:recAn,recBa:recBa,recBaM:recBaM});
   drawFinChart({years:yrs,resNet:resNet,cumul:cumul});
 }
 function row2(a,b){return '<tr><td>'+a+'</td><td>'+b+'</td></tr>';}
@@ -878,8 +924,8 @@ function drawExploCharts(d){
   if(!chartsOk||!document.getElementById('explo').classList.contains('active'))return;
   if(chCapex)chCapex.destroy();
   chCapex=new Chart(document.getElementById('chCapex'),{type:'doughnut',
-    data:{labels:['Travaux objets','Sous-sol','Surélévation','Honoraires','Réserve','Pilotage HIAG','Risques HIAG','Démolition','Cession DDP'],
-      datasets:[{data:[d.travauxObjets,d.sousSol,d.surelev,d.honoraires,d.reserve,d.pilotage,d.risques,d.demol,d.cession],backgroundColor:['#c8674f','#a8533e','#56a37a','#d4a24a','#888888','#5a8fb8','#7aa9cc','#9b6b9e','#666666'],borderColor:'#1e1e1e',borderWidth:2}]},options:donutOpts()});
+    data:{labels:['Chiffrage CCHE bâtiments','Aménagements extérieurs','Surélévation','Provision risques ProFilms','Pilotage HIAG','Démolition','Cession DDP'],
+      datasets:[{data:[d.ccheBat,d.amex,d.surelev,d.risques,d.pilotage,d.demol,d.cession],backgroundColor:['#c8674f','#a8533e','#56a37a','#d4a24a','#5a8fb8','#9b6b9e','#666666'],borderColor:'#1e1e1e',borderWidth:2}]},options:donutOpts()});
   if(chRec)chRec.destroy();
   chRec=new Chart(document.getElementById('chRec'),{type:'doughnut',
     data:{labels:['Plateaux','Annexes','Baux long terme','Baux moyen terme'],datasets:[{data:[d.recPl,d.recAn,d.recBa,d.recBaM],backgroundColor:['#c8674f','#d4a24a','#5a8fb8','#86b8d8'],borderColor:'#1e1e1e',borderWidth:2}]},options:donutOpts()});
@@ -911,18 +957,18 @@ document.querySelectorAll('.tab').forEach(function(t){
 function occInputs(){const o={};['o_pl_1','o_pl_3','o_pl_5','o_an_1','o_an_3','o_an_5','o_ba_1','o_ba_3','o_ba_5','o_bm_1','o_bm_3','o_bm_5'].forEach(function(id){o[id]=val(id);});return o;}
 function chargeInputs(){const o={};['i_sal1','i_sal3','i_sal5','i_fg1','i_fg3','i_fg5',
   'i_assur1','i_assur3','i_assur5','i_admin1','i_admin3','i_admin5','i_autres1','i_autres3','i_autres5','i_impot1','i_impot3','i_impot5','i_concierge1','i_concierge3','i_concierge5','i_appro1','i_appro3','i_appro5','i_location1','i_location3','i_location5'].forEach(function(id){o[id]=val(id);});return o;}
-function collectState(){return {spaces:JSON.parse(JSON.stringify(SPACES)),mecenat:JSON.parse(JSON.stringify(MECENAT)),loans:JSON.parse(JSON.stringify(LOANS)),surelev:JSON.parse(JSON.stringify(SURELEV)),typo:JSON.parse(JSON.stringify(TYPO)),P:JSON.parse(JSON.stringify(P)),occ:occInputs(),charges:chargeInputs()};}
-function syncInputsFromP(){const map={i_ssSurf:'ssSurf',i_ssHaut:'ssHaut',i_eurchf:'eurchf',i_ddp:'ddp',i_demol:'demol',i_cession:'cession'};
+function collectState(){return {spaces:JSON.parse(JSON.stringify(SPACES)),mecenat:JSON.parse(JSON.stringify(MECENAT)),loans:JSON.parse(JSON.stringify(LOANS)),surelev:JSON.parse(JSON.stringify(SURELEV)),cche:JSON.parse(JSON.stringify(CCHE)),P:JSON.parse(JSON.stringify(P)),occ:occInputs(),charges:chargeInputs()};}
+function syncInputsFromP(){const map={i_eurchf:'eurchf',i_ddp:'ddp',i_demol:'demol',i_cession:'cession'};
   Object.keys(map).forEach(function(id){const e=document.getElementById(id);if(e)e.value=P[map[id]];});}
 function applyState(s){
   if(!s)return;
   if(s.spaces)SPACES=s.spaces.map(function(x){if(x.actif===undefined)x.actif=true;return x;});
-  if(s.mecenat)MECENAT=s.mecenat;if(s.loans)LOANS=s.loans;if(s.surelev)SURELEV=s.surelev;if(s.typo)TYPO=s.typo;if(s.P)Object.assign(P,s.P);
+  if(s.mecenat)MECENAT=s.mecenat;if(s.loans)LOANS=s.loans;if(s.surelev)SURELEV=s.surelev;if(s.cche)CCHE=s.cche;if(s.P)Object.assign(P,s.P);
   if(s.occ)Object.keys(s.occ).forEach(function(id){const e=document.getElementById(id);if(e)e.value=s.occ[id];});
   if(s.charges)Object.keys(s.charges).forEach(function(id){const e=document.getElementById(id);if(e)e.value=s.charges[id];});
   syncInputsFromP();
   Object.keys(SLIDERS).forEach(function(k){const sl=SLIDERS[k];const r=document.getElementById('rng_'+sl.id);if(r)r.value=P[sl.id];updateSliderLabel(k);renderBench(k);});
-  renderProg();renderTypo();renderMecenat();renderLoans();renderSurelev();recompute();
+  renderProg();renderCCHE();renderMecenat();renderLoans();renderSurelev();recompute();
 }
 
 /* ---------- Scénarios : stockage partagé (Supabase) ---------- */
@@ -988,32 +1034,33 @@ function exportXlsx(){
   prog.push(['TOTAL ACTIF','','','',A.surf,'','',A.vol,'']);
   XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet(prog),'Programme');
 
-  const tm=[['Typologie','Gros œuvre CHF/m³','CFC2 CHF/m³','CFC3 audiovisuel CHF/m³','Prix revient CHF/m³']];
-  Object.keys(TYPO).forEach(function(k){const t=TYPO[k];tm.push([t.label,t.go,t.cfc2,t.cfc3,(t.go||0)+(t.cfc2||0)+(t.cfc3||0)]);});
-  XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet(tm),'Typologies');
+  const cc=[['Bâtiment','Désignation','Unité','Quantité','Coût CHF','Ratio CHF/unité']];
+  let ccheBat=0,amex=0,construction=0;const ccheSub={};
+  ['A','B','C','D','E','AMEX'].forEach(function(k){const g=CCHE[k];if(!g)return;let sub=0,vol=0,hono=0;
+    g.lines.forEach(function(l){sub+=l.c||0;if(l.v)vol+=l.q||0;if(l.h)hono+=l.c||0;cc.push([k,l.d,l.u,l.q,l.c,l.q?Math.round((l.c||0)/l.q):'']);});
+    cc.push([k,'SOUS-TOTAL '+g.label,'','',sub,'']);ccheSub[k]={sub:sub,vol:vol,hono:hono};construction+=sub;if(k==='AMEX')amex+=sub;else ccheBat+=sub;});
+  cc.push(['','TOTAL CHIFFRAGE CCHE (honoraires inclus)','','',construction,'']);cc.push(['','Référence CCHE','','',CCHE_REF,'']);
+  XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet(cc),'Chiffrage_CCHE');
 
   const bld={};
-  function bAdd(b,key,v){b=b||'—';if(!bld[b])bld[b]={direct:0,vol:0};bld[b][key]+=v;}
-  let travauxObjets=0;
-  SPACES.forEach(function(s){if(!s.actif)return;const v=s.surf*s.haut;const t=TYPO[s.typo]||{};const pu=(t.go||0)+(t.cfc2||0)+(t.cfc3||0);const c=v*pu;travauxObjets+=c;bAdd(s.bat,'direct',c);bAdd(s.bat,'vol',v);});
-  let surelev=0,nbB=0;SURELEV.forEach(function(b){const sc=b.actif?b.surf*b.cout:0;if(sc){surelev+=sc;nbB++;bAdd(b.bat,'direct',sc);}});
-  const volSS=P.ssSurf*P.ssHaut,sousSol=volSS*P.ssM3;
-  const travaux=travauxObjets+surelev+sousSol;
-  const honoraires=travaux*P.hono/100,reserve=travaux*P.reserve/100,baseConstr=travaux+honoraires+reserve;
-  const pilotage=baseConstr*P.pilotage/100,risques=baseConstr*P.risques/100,demol=P.demol,cession=P.cession;
-  const capex=baseConstr+pilotage+risques+demol+cession;
-  const shared=honoraires+reserve+pilotage+risques+demol+cession+sousSol;
-  const volTotB=Object.keys(bld).reduce(function(a,b){return a+bld[b].vol;},0);
+  function bAdd(b,key,v){b=b||'—';if(!bld[b])bld[b]={direct:0,cche:0,sv:0,surf:0,vol:0,hono:0};bld[b][key]+=v;}
+  SPACES.forEach(function(s){if(!s.actif)return;bAdd(s.bat,'surf',s.surf);});
+  Object.keys(ccheSub).forEach(function(k){if(k==='AMEX')return;bAdd(k,'cche',ccheSub[k].sub);bAdd(k,'direct',ccheSub[k].sub);bAdd(k,'vol',ccheSub[k].vol);bAdd(k,'hono',ccheSub[k].hono);});
+  let surelev=0,nbB=0;SURELEV.forEach(function(b){const sc=b.actif?b.surf*b.cout:0;if(sc){surelev+=sc;nbB++;bAdd(b.bat,'direct',sc);bAdd(b.bat,'sv',sc);}});
+  const risques=construction*P.risques/100,pilotage=construction*P.pilotage/100,demol=P.demol,cession=P.cession;
+  const capex=construction+surelev+risques+pilotage+demol+cession;
+  const shared=amex+risques+pilotage+demol+cession;
+  const directTot=Object.keys(bld).reduce(function(a,b){return a+bld[b].direct;},0);
   const cap=[['Poste','Base','CHF'],
-    ['Travaux par typologie',A.vol+' m³',travauxObjets],['Sous-sol',volSS+' m³ x '+P.ssM3,sousSol],['Réserve surélévation',nbB+' bât.',surelev],
-    ['Total travaux','',travaux],['Honoraires & frais',P.hono+' %',honoraires],['Réserve / divers',P.reserve+' %',reserve],
-    ['Total construction','',baseConstr],['Pilotage HIAG',P.pilotage+' %',pilotage],['Risques HIAG',P.risques+' %',risques],
+    ['Chiffrage CCHE bâtiments A à E (honoraires inclus)','CCHE',ccheBat],['Aménagements extérieurs CCHE','CCHE',amex],['Total construction CCHE','',construction],
+    ['Réserve surélévation',nbB+' bât.',surelev],['Provision risques et aléas ProFilms (MO)',P.risques+' %',risques],['Pilotage HIAG',P.pilotage+' %',pilotage],
     ['Démolition bâtiment existant','forfait',demol],['Cession DDP','forfait',cession],['CAPEX TOTAL','',capex]];
   XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet(cap),'CAPEX');
 
-  const cbat=[['Bâtiment','Volume m³','Travaux propres','Quote-part frais','Coût total','% CAPEX']];
-  Object.keys(bld).sort().forEach(function(b){const x=bld[b];const q=shared*(volTotB?x.vol/volTotB:0);const tot=x.direct+q;cbat.push([b,x.vol,x.direct,q,tot,capex?tot/capex*100:0]);});
-  cbat.push(['TOTAL',volTotB,travauxObjets+surelev,shared,capex,100]);
+  const cbat=[['Bâtiment','Chiffrage CCHE','Surélévation','Quote-part frais partagés','Coût total chargé','% CAPEX','Notre surface m²','CHF/m² (CCHE)','Volume constr. CCHE m³','CHF/m³ (CCHE)','Honoraires inclus']];
+  Object.keys(bld).sort().forEach(function(b){const x=bld[b];if(!x.direct&&!x.surf)return;const q=shared*(directTot?x.direct/directTot:0);const tot=x.direct+q;
+    cbat.push([b,x.cche,x.sv,q,tot,capex?tot/capex*100:0,x.surf,x.surf?x.cche/x.surf:'',x.vol,x.vol?x.cche/x.vol:'',x.hono]);});
+  cbat.push(['TOTAL',ccheBat,surelev,shared,capex,100,A.surf,A.surf?ccheBat/A.surf:'','','','']);
   XLSX.utils.book_append_sheet(wb,XLSX.utils.aoa_to_sheet(cbat),'Cout_par_batiment');
 
   const sv=[['Bâtiment','Prévu','Surface m²','Surcoût CHF/m²','Surcoût CHF']];
@@ -1054,8 +1101,8 @@ function exportXlsx(){
 
 /* ---------- Reset ---------- */
 function resetAll(){
-  SPACES=defaultSpaces();MECENAT=defaultMecenat();LOANS=defaultLoans();SURELEV=defaultSurelev();TYPO=defaultTypo();Object.assign(P,defaultP());
-  const map={i_ssSurf:5000,i_ssHaut:3.5,i_eurchf:0.95,i_ddp:20,i_demol:3600000,i_cession:2680000,
+  SPACES=defaultSpaces();MECENAT=defaultMecenat();LOANS=defaultLoans();SURELEV=defaultSurelev();CCHE=defaultCCHE();Object.assign(P,defaultP());
+  const map={i_eurchf:0.95,i_ddp:20,i_demol:3600000,i_cession:2680000,
     i_sal1:450000,i_sal3:600000,i_sal5:700000,i_fg1:150000,i_fg3:200000,i_fg5:250000,
     i_assur1:100000,i_assur3:100000,i_assur5:100000,i_admin1:80000,i_admin3:80000,i_admin5:80000,
     i_autres1:50000,i_autres3:50000,i_autres5:50000,i_impot1:60000,i_impot3:60000,i_impot5:60000,
@@ -1065,17 +1112,17 @@ function resetAll(){
   const occ={o_pl_1:10,o_pl_3:30,o_pl_5:50,o_an_1:15,o_an_3:35,o_an_5:55,o_ba_1:30,o_ba_3:70,o_ba_5:80};
   Object.keys(occ).forEach(function(id){document.getElementById(id).value=occ[id];});
   Object.keys(SLIDERS).forEach(function(k){const s=SLIDERS[k];document.getElementById('rng_'+s.id).value=P[s.id];updateSliderLabel(k);renderBench(k);});
-  renderProg();renderTypo();renderMecenat();renderLoans();renderSurelev();recompute();
+  renderProg();renderCCHE();renderMecenat();renderLoans();renderSurelev();recompute();
 }
 
 /* ---------- Init ---------- */
 Object.keys(SLIDERS).forEach(renderSlider);
-['i_ssSurf','i_ssHaut','i_demol','i_cession','i_eurchf','i_ddp','i_sal1','i_sal3','i_sal5','i_fg1','i_fg3','i_fg5',
+['i_demol','i_cession','i_eurchf','i_ddp','i_sal1','i_sal3','i_sal5','i_fg1','i_fg3','i_fg5',
  'i_assur1','i_assur3','i_assur5','i_admin1','i_admin3','i_admin5','i_autres1','i_autres3','i_autres5','i_impot1','i_impot3','i_impot5','i_concierge1','i_concierge3','i_concierge5','i_appro1','i_appro3','i_appro5','i_location1','i_location3','i_location5',
- 'o_pl_1','o_pl_3','o_pl_5','o_an_1','o_an_3','o_an_5','o_ba_1','o_ba_3','o_ba_5'].forEach(function(id){
+ 'o_pl_1','o_pl_3','o_pl_5','o_an_1','o_an_3','o_an_5','o_ba_1','o_ba_3','o_ba_5','o_bm_1','o_bm_3','o_bm_5'].forEach(function(id){
   const e=document.getElementById(id);if(e)e.addEventListener('input',function(){if(id==='i_eurchf')Object.keys(SLIDERS).forEach(renderBench);recompute();});
 });
-renderProg();renderTypo();renderMecenat();renderLoans();renderSurelev();
+renderProg();renderCCHE();renderMecenat();renderLoans();renderSurelev();
 scStatus(cloudReady()?'Stockage partagé actif.':'Stockage partagé non configuré — mode fichier (.json) actif. Voir les instructions pour activer le partage.',cloudReady()?'good':'muted');
 refreshScenarios();
 recompute();
